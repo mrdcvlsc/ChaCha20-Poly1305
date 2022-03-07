@@ -1,5 +1,7 @@
 ## ChaCha20 & Poly1305
 
+[NOT FINISED YET]
+
 this is a C++ implementation of ```ChaCha20 & Poly1305``` stream cipher described in [RFC - 8439](https://www.rfc-editor.org/info/rfc8439).
 
 All information and content in this _readme.md_'s **Dev Notes** section about ```ChaCha20 & Poly1305``` came from or a pharaphrase of a certain sentence/paragraph/section in [RFC - 8439](https://www.rfc-editor.org/info/rfc8439)... except those bullets that has a **[dsi]** tag at the start which are _(me)developer's self interpretation_.
