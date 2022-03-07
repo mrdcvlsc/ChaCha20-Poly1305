@@ -51,7 +51,24 @@ The [dsi] bullet points might possiblly be an inaccurate or incorrect descriptio
     - A 96-bit nonce, treated as a concatenation of three 32-bit little-endian integers.
     - A 32-bit block count parameter, treated as a 32-bit little-endian integer.
 
-- **The output ChaCha20 Block is a 64 random-looking bytes.**
+- **[dsi] ChaCha20 Sizes**
+
+    - **Key : Size Equivalents**
+        - 256-bits
+        - 8 x **DWORD**s(32-bit), or eight ```unsigned int```
+        - 32 x **BYTE**s(8-bit), or thrity-two ```unsigned char```
+
+    - **Nonce : Size Equivalent**
+        - 96-bits
+        - 3 x **DWORD**s(32-bit), or three ```unsigned int```
+        - 12 x **BYTE**s(8-bit), or twelve ```unsigned char```
+
+    - **ChaCha20 Block Function Output : Size Equivalent**
+        - 512-bits
+        - 16 x **DWORD**s(32-bit), or sixteen ```unsigned int```
+        - 64 x **BYTE**s(8-bit), or sixty-four ```unsigned char```
+
+<br>
 
 - **The ChaCha of RFC-8439**
 

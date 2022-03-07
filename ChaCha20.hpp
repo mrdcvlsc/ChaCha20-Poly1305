@@ -4,7 +4,21 @@
 #include <iostream>
 #include <cstring>
 
-#define CHACHA20_STATE_SIZE 16
+/// Number of bytes(unsigned char) inside a ChaCha20 State
+static const int __CHAx220_STATE_BYTES__ = 16;
+/// Number of bytes(unsigned char) inside a ChaCha20 key
+static const int __CHAx220_KEY_BYTES__ = 32;
+/// Number of dwords(unsigned int) inside a ChaCha20 key
+static const int __CHAx220_KEY_DWORDS__ = 8;
+/// Number of bytes(unsigned char) inside a ChaCha20 nonce
+static const int __CHAx220_NONCE_BYTES__ = 12;
+/// Number of dwords(unsigned int) inside a ChaCha20 nonce
+static const int __CHAx220_NONCE_DWORDS__ = 3;
+
+namespace ChaCha20
+{
+
+}
 
 namespace __internal_chacha20
 {
@@ -30,7 +44,7 @@ namespace __internal_chacha20
 
     unsigned int *initialize_chacha_state(unsigned int *key, unsigned int counter, unsigned int *nounce) {
         
-        unsigned int *state = new unsigned int[16];
+        unsigned int *state = new unsigned int[__CHAx220_STATE_BYTES__];
 
         // indecies 0-3 : constants
         state[0] = 0x61707865;
@@ -59,13 +73,13 @@ namespace __internal_chacha20
         return state;
     }
 
-    unsigned int *chacha20_block(unsigned int *key, unsigned int counter, unsigned int *nounce) {
+    unsigned int *chacha20_block(unsigned int *initial_state, unsigned int *key, unsigned int counter, unsigned int *nounce) {
         
-        unsigned int *initial_state = initialize_chacha_state(key, counter, nounce);
-        unsigned int *state = new unsigned int [16];
+        // unsigned int *initial_state = initialize_chacha_state(key, counter, nounce);
+        unsigned int *state = new unsigned int [__CHAx220_STATE_BYTES__];
 
         // copy initial state to state
-        for(size_t i=0; i<16; ++i)
+        for(size_t i=0; i<__CHAx220_STATE_BYTES__; ++i)
             state[i] = initial_state[i];
 
         // chacha 20 rounds
@@ -84,14 +98,15 @@ namespace __internal_chacha20
         }
 
         // add initialized state to the output state
-        for(size_t i=0; i<16; ++i)
+        for(size_t i=0; i<__CHAx220_STATE_BYTES__; ++i)
             state[i] += initial_state[i];
-
-        delete [] initial_state;
 
         return state;
 
     }
+
+    // 8 unsigned int, 32 bytes, 256-bits
+    // Key = 00:01:02:03: 04:05:06:07: 08:09:0a:0b: 0c:0d:0e:0f: 10:11:12:13: 14:15:16:17: 18:19:1a:1b: 1c:1d:1e:1f.
 }
 
 #endif
