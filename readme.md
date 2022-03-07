@@ -70,6 +70,14 @@ The [dsi] bullet points might possiblly be an inaccurate or incorrect descriptio
 
 <br>
 
+- **[dsi] Serializing the ChaCha20 Block output**
+    ```c++
+    // output_state is an "unsigned int*"
+    unsigned char* serialize = (unsigned char*) output_state;
+    ```
+
+<br>
+
 - **The ChaCha of RFC-8439**
 
     - The ChaCha algorithm described [here/RFC - 8439](https://www.rfc-editor.org/info/rfc8439) uses a **256-bit key**.

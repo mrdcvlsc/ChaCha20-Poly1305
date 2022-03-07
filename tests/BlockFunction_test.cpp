@@ -36,6 +36,8 @@ int main()
 
     bool passed = CompareState(correct_output_state,output_state);
 
+    unsigned char* serialize = (unsigned char*) output_state;
+
     delete [] initial_state;
     delete [] output_state;
 
