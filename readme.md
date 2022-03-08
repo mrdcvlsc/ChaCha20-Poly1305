@@ -55,6 +55,12 @@ The [dsi] bullet points might possiblly be an inaccurate or incorrect descriptio
 
 - **[dsi] ChaCha20 Sizes**
 
+    - **ChaCha20 state : Size Equivalents**
+        - 512-bits
+        - 4x4 **32-bit** Matrix representation using 16 DWORD
+        - 16 x **DWORD**s(32-bit), or sixteen ```unsigned int```
+        - 64 x **BYTE**s(8-bit), or sixty-four ```unsigned char```
+
     - **Key : Size Equivalents**
         - 256-bits
         - 8 x **DWORD**s(32-bit), or eight ```unsigned int```
@@ -106,3 +112,7 @@ The [dsi] bullet points might possiblly be an inaccurate or incorrect descriptio
 
         c=constant k=key b=blockcount n=nonce
         ```
+- **[dsi] ChaCha20 Block Encryption** - 
+    1. get the **key_stream**, this is the 64 byte output of ChaCha20 Block Function.
+    2. get the **plaintext_block**, this is a 64 byte part of a plaintext
+    3. get the **cipher_text** by getting the XOR of **key_stream** & **plaintext_block**; ```cipher_text = plaintext_block ^ key_stream```
