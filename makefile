@@ -28,7 +28,7 @@ clean:
 	@rm ./tests/*.out
 
 # install:
-# 	@ln -s $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/cyfre /usr/local/include/
+# 	@ln -s $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/chacha20 /usr/local/include/
 
 # uninstall:
-# 	@unlink /usr/local/include/cyfre
+# 	@unlink /usr/local/include/chacha20

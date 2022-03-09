@@ -3,7 +3,7 @@
 
 int main() {
 
-    bool Tests[3];
+    bool Tests[4];
 
     int128 MAX(0xffffffffffffffff, 0xffffffffffffffff);
     int128 ONE(0,1);
@@ -17,6 +17,7 @@ int main() {
     }
     else{
         std::cout << "int128test_max+one : PASSED\n";
+        // SUM.printBits();
         Tests[0] = true;
     }
 
@@ -27,6 +28,7 @@ int main() {
     }
     else{
         std::cout << "int128test_max+two : PASSED\n";
+        // SUM.printBits();
         Tests[1] = true;
     }
 
@@ -38,7 +40,34 @@ int main() {
     }
     else{
         std::cout << "int128test_max+max : PASSED\n";
+        // SUM.printBits();
         Tests[2] = true;
+    }
+
+    int128 MAX_MSB_M5(0xfffffffffffffffa, 0xffffffffffffffff);
+    int128 TEN(0,10);
+    int128 CORRECT_MAX_MSB_M5_ADD_TEN(0xfffffffffffffffb,0x0000000000000009);
+    SUM = MAX_MSB_M5 + TEN;
+    if(SUM!=CORRECT_MAX_MSB_M5_ADD_TEN) {
+        std::cout << "int128test_max_msb_m5+ten : FAILED\n";
+        Tests[3] = false;
+    }
+    else{
+        std::cout << "int128test_max_msb_m5+ten : PASSED\n";
+        // SUM.printBits();
+        Tests[3] = true;
+    }
+
+    int128 MAX_M5(0xffffffffffffffff, 0xfffffffffffffffa);
+    int128 CRRTM5(0xffffffffffffffff, 0xfffffffffffffff9);
+    SUM = MAX_M5 + MAX;
+    if(SUM!=CRRTM5) {
+        std::cout << "int128test_max_msb_m5+max_m5 : FAILED\n";
+        Tests[3] = false;
+    }
+    else{
+        std::cout << "int128test_max_msb_m5+max_m5 : PASSED\n";
+        Tests[3] = true;
     }
 
     // end of tests
