@@ -116,3 +116,14 @@ The [dsi] bullet points might possiblly be an inaccurate or incorrect descriptio
     1. get the **key_stream**, this is the 64 byte output of ChaCha20 Block Function.
     2. get the **plaintext_block**, this is a 64 byte part of a plaintext
     3. get the **cipher_text** by getting the XOR of **key_stream** & **plaintext_block**; ```cipher_text = plaintext_block ^ key_stream```
+
+- **Poly1305** - a one-time authenticator designed by D. J. Bernstein.
+
+    - Poly1305 takes a 32-byte one-time key and a message and produces a 16-byte tag. This tag is used to authenticate the message.
+
+- **Inputs of Poly1305**
+    - A 256-bit one-time key
+    - An arbitrary length message
+
+- **Output of Poly1305**
+    - The output is a 128-bit tag.
