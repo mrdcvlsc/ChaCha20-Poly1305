@@ -50,9 +50,7 @@ class int128 {
         if(data != NULL)
             delete [] data;
     }
-
-
-
+    
     unsigned long& msb() { return data[0]; }
     unsigned long& lsb() { return data[1]; }
     const unsigned long& msb() const { return data[0]; }
@@ -81,6 +79,23 @@ class int128 {
         }
 
         return sum;
+    }
+
+    int128 operator-(const int128& sub) const {
+
+        int128 dif(msb(),lsb());
+
+        unsigned long old_lsb = dif.lsb();
+        unsigned long old_msb = dif.msb();
+
+        dif.lsb() -= sub.lsb();
+        dif.msb() -= sub.msb();
+
+        if(dif.lsb() > old_lsb) {
+            dif.msb()--;
+        }
+
+        return dif;
     }
 
     void printHex() const {

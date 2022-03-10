@@ -3,7 +3,7 @@
 
 int main() {
 
-    bool Tests[4];
+    bool Tests[5];
 
     int128 MAX(0xffffffffffffffff, 0xffffffffffffffff);
     int128 ONE(0,1);
@@ -63,27 +63,27 @@ int main() {
     SUM = MAX_M5 + MAX;
     if(SUM!=CRRTM5) {
         std::cout << "int128test_max_msb_m5+max_m5 : FAILED\n";
-        Tests[3] = false;
+        Tests[4] = false;
     }
     else{
         std::cout << "int128test_max_msb_m5+max_m5 : PASSED\n";
-        Tests[3] = true;
+        Tests[4] = true;
     }
 
     // end of tests
     
     size_t failed_cnt = 0;
-    for(size_t i=0; i<3; ++i) {
+    for(size_t i=0; i<5; ++i) {
         if(!Tests[i])
             failed_cnt++;
     }
 
     if(!failed_cnt) {
-        std::cout << "int128test ALL PASSED\n";
+        std::cout << "int128 add test ALL PASSED\n";
         return 0;
     }
     else {
-        std::cout << "int128test ALL FAILED\n";
+        std::cout << "int128 add test ALL FAILED\n";
         return 0;
     }
 }
