@@ -2,7 +2,19 @@
 #include <utility>
 #include "../int-128-256.hpp"
 
-#define TEST_CASES 2
+#define TEST_CASES 3
+
+int128 uint128_fac(unsigned int n) {
+    int128
+        factorial(0,1),
+        big_i(0,1),
+        one(0,1);
+    for(size_t i=0; i<n; ++i) {
+        factorial = factorial * big_i;
+        big_i = big_i + one;
+    }
+    return factorial;
+}
 
 int main() {
     
@@ -42,6 +54,17 @@ int main() {
         Tests[1] = true;
     }
 
+    int128 FACTORIAL_OF_34_CORRECT(0xde1bc4d19efcac82,0x445da75b00000000);
+    int128 FACTORIAL_32 = uint128_fac(34);
+    if(FACTORIAL_32!=FACTORIAL_OF_34_CORRECT) {
+        std::cout << "int128test_factorial(34) : FAILED\n";
+    }
+    else {
+        std::cout << "int128test_factorial(34) : PASSED\n";
+        Tests[2] = true;
+    }
+
+    
     // end of tests
     
     size_t failed_cnt = 0;
