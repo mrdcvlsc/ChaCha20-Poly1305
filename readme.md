@@ -2,7 +2,7 @@
 
 [NOT FINISED YET]
 
-## Tests :
+### Tests :
 
 ![gcc-gnu](https://github.com/mrdcvlsc/ChaCha20-Poly1305/actions/workflows/gcc-gnu.yml/badge.svg)
 ![clang](https://github.com/mrdcvlsc/ChaCha20-Poly1305/actions/workflows/clang.yml/badge.svg)
