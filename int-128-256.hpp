@@ -133,6 +133,36 @@ class int128 {
         return pro;
     }
 
+    int128& operator<<(size_t lshift) {
+        unsigned long msb_carry = lsb() >> (32-lshift);
+        lsb() <<= lshift;
+        msb() <<= lshift;
+        msb() | msb_carry;
+    }
+
+    int128& operator>>(size_t rshift) {
+        unsigned long lsb_carry = msb() << (32-rshift);
+        msb() >>= rshift;
+        lsb() >>= rshift;
+        lsb() | lsb_carry;
+    }
+
+    bool operator<(const int128& right) const {
+        if(msb()<right.msb()) {
+            return true;
+        }
+        else if(msb()==right.msb()) {
+            if(lsb()<right.lsb()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool operator<=(const int128& right) const {
+        return (*this < right) || (*this == right);
+    }
+
     void printHex() const {
         printf("0x%08lx%08lx\n",msb(),lsb());
     }
