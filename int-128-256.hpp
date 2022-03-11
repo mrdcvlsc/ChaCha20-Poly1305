@@ -115,9 +115,9 @@ class int128 {
             "mov %[rhmsb], %%rax\n\t"
             "mul %[lhlsb]\n\t"
             "add %%rax, %[pmsb]"
-            :[pmsb]"+r"(pro.msb()),[plsb]"+r"(pro.lsb())
+            :[pmsb]"=r"(pro.msb()),[plsb]"=r"(pro.lsb())
             :[rhmsb]"r"(mul.msb()), [rhlsb]"r"(mul.lsb()), [lhmsb]"r"(data[0]), [lhlsb]"r"(data[1])
-            : "rax", "rdx", "memory", "cc"
+            : "rax", "rdx", "memory"
         );
     #else
         #error "int128 multiplication has no implementation yet for x86 architectures (32-bit executables)."

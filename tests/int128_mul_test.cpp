@@ -2,7 +2,7 @@
 #include <utility>
 #include "../int-128-256.hpp"
 
-#define TEST_CASES 1
+#define TEST_CASES 2
 
 int main() {
 
@@ -18,13 +18,13 @@ int main() {
     unsigned short scx64 = 7;
     unsigned short scprd = scmax * scx64;
 
-    std::cout << "\ncmax  =         " << std::bitset<8>(cmax) << "\n";
-    std::cout << "cx64  =         " << std::bitset<8>(cx64) << "\n";
-    std::cout << "cprd  =         " << std::bitset<8>(cprd) << "\n\n";
+    // std::cout << "\ncmax  =         " << std::bitset<8>(cmax) << "\n";
+    // std::cout << "cx64  =         " << std::bitset<8>(cx64) << "\n";
+    // std::cout << "cprd  =         " << std::bitset<8>(cprd) << "\n\n";
 
-    std::cout << "scmax = " << std::bitset<16>(scmax) << "\n";
-    std::cout << "scx64 = " << std::bitset<16>(scx64) << "\n";
-    std::cout << "scprd = " << std::bitset<16>(scprd) << "\n\n";
+    // std::cout << "scmax = " << std::bitset<16>(scmax) << "\n";
+    // std::cout << "scx64 = " << std::bitset<16>(scx64) << "\n";
+    // std::cout << "scprd = " << std::bitset<16>(scprd) << "\n\n";
     
 
     int128 MAX(0xffffffffffffffff, 0xffffffffffffffff);
@@ -37,7 +37,6 @@ int main() {
         std::cout << "int128test_zero*max : FAILED\n";
     }
     else {
-        ZERO_MUL.printBits();
         std::cout << "int128test_zero*max : PASSED\n";
         Tests[0] = true;
     }
@@ -49,14 +48,9 @@ int main() {
     }
     else {
         std::cout << "int128test_one*max : PASSED\n";
-        Tests[0] = true;
+        Tests[1] = true;
 
     }
-
-    // unsigned char max = 255;
-    // unsigned char zer = 0;
-    // unsigned char one = 1;
-    // unsigned char two = 2;
 
     // unsigned char max_mul_max = max * max;
     // unsigned char max_mul_zer = max * zer;
@@ -100,7 +94,7 @@ int main() {
         return 0;
     }
     else {
-        std::cout << "int128 mul test ALL FAILED\n";
-        return 0;
+        std::cout << "int128 mul test some FAILED\n";
+        return 1;
     }
 }

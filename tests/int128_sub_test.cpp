@@ -79,6 +79,6 @@ int main() {
     }
     else {
         std::cout << "int128 sub test ALL FAILED\n";
-        return 0;
+        return 1;
     }
 }

@@ -92,6 +92,6 @@ int main() {
     }
     else {
         std::cout << "int128 add test some FAILED\n";
-        return 0;
+        return 1;
     }
 }
