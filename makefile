@@ -1,3 +1,4 @@
+CC=g++
 CPPFLAGS := -Og
 CXXFLAGS := -std=c++11
 
@@ -20,8 +21,8 @@ test: $(OBJ)
 # -------------------------- test program compilation ---------------------------
 
 $(SRC)/%.out: $(SRC)/%.cpp
-	@echo "compiling test program"
-	@g++ $(CPPFLAGS) $(CXXFLAGS) -o $@ $<
+	@echo "compiling test program - compiler : $(CC)"
+	@$(CC) $(CPPFLAGS) $(CXXFLAGS) -o $@ $<
 
 clean:
 	@echo "deleting compiled test programs"
