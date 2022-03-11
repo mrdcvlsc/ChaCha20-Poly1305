@@ -102,8 +102,10 @@ class int128 {
     
         int128 pro(0,0);
 
-#if defined(__GNUC__) || defined(__GNUG__) || defined(__clang__)
-    #if defined(__x86_64__) || defined(__ia64__) || defined(__amd__64__)
+#if(__MINGW64__ || __MINGW32__)
+    #error "int128 multiplication has no implementation yet for mingw32 and mingw64."
+#elif (__GNUC__ || __GNUG__ || __clang__)
+    #if (__x86_64__ || __ia64__ ||__amd__64__)
         asm volatile(
             "mov %[rhlsb], %%rax\n\t"
             "mul %[lhlsb]\n\t"
@@ -120,10 +122,12 @@ class int128 {
             : "rax", "rdx", "memory", "cc"
         );
     #else
-        #error "int128 multiplication has no implementation yet for x86 architectures (32-bit executables)."
+        #error "int128 multiplication has no implementation yet for x86 architectures."
     #endif
 #elif defined(_MSC_VER)
     #error "int128 multiplication has no implementation yet for Microsoft Visual C++ Compiler."
+#else
+    #error "Unknown system : not supported"
 #endif
 
         return pro;

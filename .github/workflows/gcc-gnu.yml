@@ -1,4 +1,4 @@
-name: test
+name: gcc-gnu
 
 on:
   push:
@@ -9,8 +9,8 @@ on:
 jobs:
   build:
 
-    runs-on: windows-latest
-
+    runs-on: ubuntu-latest
+    
     steps:
     - uses: actions/checkout@v2
     - name: make test

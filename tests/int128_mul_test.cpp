@@ -5,7 +5,7 @@
 #define TEST_CASES 2
 
 int main() {
-
+    
     bool Tests[TEST_CASES];
     for(size_t i=0; i<TEST_CASES; ++i)
         Tests[i] = false;
@@ -51,11 +51,11 @@ int main() {
     }
 
     if(!failed_cnt) {
-        std::cout << "int128 mul ALL test PASSED\n";
+        std::cout << "int128 sub ALL test PASSED\n";
         return 0;
     }
     else {
-        std::cout << "int128 mul some test FAILED\n";
+        std::cout << "int128 sub SOME test FAILED\n";
         return 1;
     }
 }

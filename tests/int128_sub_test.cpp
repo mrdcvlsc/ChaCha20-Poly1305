@@ -76,11 +76,11 @@ int main() {
     }
 
     if(!failed_cnt) {
-        std::cout << "int128 sub test ALL PASSED\n";
+        std::cout << "int128 sub ALL test PASSED\n";
         return 0;
     }
     else {
-        std::cout << "int128 sub test ALL FAILED\n";
+        std::cout << "int128 sub SOME test FAILED\n";
         return 1;
     }
 }

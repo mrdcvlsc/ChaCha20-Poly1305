@@ -2,9 +2,14 @@
 
 [NOT FINISED YET]
 
-![sanitizer](https://github.com/mrdcvlsc/ChaCha20-Poly1305/actions/workflows/sanitizer.yml/badge.svg)
-![test](https://github.com/mrdcvlsc/ChaCha20-Poly1305/actions/workflows/test.yml/badge.svg)
+## Tests :
+
+![gcc-gnu](https://github.com/mrdcvlsc/ChaCha20-Poly1305/actions/workflows/gcc-gnu.yml/badge.svg)
+![clang](https://github.com/mrdcvlsc/ChaCha20-Poly1305/actions/workflows/clang.yml/badge.svg)
+![mingw32](https://github.com/mrdcvlsc/ChaCha20-Poly1305/actions/workflows/mingw32.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+
+-----
 
 this is a C++ implementation of ```ChaCha20 & Poly1305``` stream cipher described in [RFC - 8439](https://www.rfc-editor.org/info/rfc8439).
 

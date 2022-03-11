@@ -89,11 +89,11 @@ int main() {
     }
 
     if(!failed_cnt) {
-        std::cout << "int128 add test all PASSED\n";
+        std::cout << "int128 add ALL test PASSED\n";
         return 0;
     }
     else {
-        std::cout << "int128 add test some FAILED\n";
+        std::cout << "int128 add SOME test FAILED\n";
         return 1;
     }
 }

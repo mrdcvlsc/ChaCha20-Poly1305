@@ -1,0 +1,22 @@
+name: clang
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+
+    - name: install clang
+      run: sudo apt install clang
+
+    - uses: actions/checkout@v2
+
+    - name: make test CC=clang
+      run: make test CC=clang
