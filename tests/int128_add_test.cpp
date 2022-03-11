@@ -1,8 +1,10 @@
 #include <iostream>
 #include "../int-128-256.hpp"
 
+#define TEST_CASES 6
+
 int main() {
-    size_t TEST_CASES = 6;
+
     bool Tests[TEST_CASES];
     for(size_t i=0; i<TEST_CASES; ++i)
         Tests[i] = false;
@@ -92,6 +94,6 @@ int main() {
     }
     else {
         std::cout << "int128 add test some FAILED\n";
-        return 0;
+        return 1;
     }
 }

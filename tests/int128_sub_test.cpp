@@ -1,9 +1,11 @@
 #include <iostream>
 #include "../int-128-256.hpp"
 
+#define TEST_CASES 5
+
 int main() {
 
-    bool Tests[5];
+    bool Tests[TEST_CASES];
 
     int128 MAX(0xffffffffffffffff, 0xffffffffffffffff);
     int128 ZERO(0,0);
@@ -68,7 +70,7 @@ int main() {
     // end of tests
     
     size_t failed_cnt = 0;
-    for(size_t i=0; i<5; ++i) {
+    for(size_t i=0; i<TEST_CASES; ++i) {
         if(!Tests[i])
             failed_cnt++;
     }
@@ -79,6 +81,6 @@ int main() {
     }
     else {
         std::cout << "int128 sub test ALL FAILED\n";
-        return 0;
+        return 1;
     }
 }
