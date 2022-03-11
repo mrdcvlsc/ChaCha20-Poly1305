@@ -102,9 +102,9 @@ class int128 {
     
         int128 pro(0,0);
 
-#if(__MINGW64__ || __MINGW32__)
-    #error "int128 multiplication has no implementation yet for mingw32 and mingw64."
-#elif (__GNUC__ || __GNUG__ || __clang__)
+#if(__MINGW32__)
+    #error "int128 multiplication has no implementation yet for mingw32."
+#elif(__GNUC__ || __GNUG__ || __clang__ || __MINGW64__)
     #if (__x86_64__ || __ia64__ ||__amd__64__)
         asm volatile(
             "mov %[rhlsb], %%rax\n\t"
