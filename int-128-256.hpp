@@ -50,7 +50,7 @@ class int128 {
         if(data != NULL)
             delete [] data;
     }
-    
+
     unsigned long& msb() { return data[0]; }
     unsigned long& lsb() { return data[1]; }
     const unsigned long& msb() const { return data[0]; }
@@ -96,6 +96,37 @@ class int128 {
         }
 
         return dif;
+    }
+
+    int128 operator*(const int128& mul) const {
+    
+        int128 pro(0,0);
+
+#if defined(__GNUC__) || defined(__GNUG__) || defined(__clang__)
+    #if defined(__x86_64__) || defined(__ia64__) || defined(__amd__64__)
+        asm volatile(
+            "mov %[rhlsb], %%rax\n\t"
+            "mul %[lhlsb]\n\t"
+            "mov %%rax, %[plsb]\n\t"
+            "mov %%rdx, %[pmsb]\n\t"
+            "mov %[rhlsb], %%rax\n\t"
+            "mul %[lhmsb]\n\t"
+            "add %%rax, %[pmsb]\n\t"
+            "mov %[rhmsb], %%rax\n\t"
+            "mul %[lhlsb]\n\t"
+            "add %%rax, %[pmsb]"
+            :[pmsb]"+r"(pro.msb()),[plsb]"+r"(pro.lsb())
+            :[rhmsb]"r"(mul.msb()), [rhlsb]"r"(mul.lsb()), [lhmsb]"r"(data[0]), [lhlsb]"r"(data[1])
+            : "rax", "rdx", "memory", "cc"
+        );
+    #else
+        #error "int128 multiplication has no implementation yet for x86 architectures (32-bit executables)."
+    #endif
+#elif defined(_MSC_VER)
+    #error "int128 multiplication has no implementation yet for Microsoft Visual C++ Compiler."
+#endif
+
+        return pro;
     }
 
     void printHex() const {
