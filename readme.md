@@ -1,8 +1,6 @@
 ## ChaCha20 & Poly1305
 
-[NOT FINISED YET]
-
-### Tests :
+**tests:**
 
 ![gcc-gnu](https://github.com/mrdcvlsc/ChaCha20-Poly1305/actions/workflows/gcc-gnu.yml/badge.svg)
 ![clang](https://github.com/mrdcvlsc/ChaCha20-Poly1305/actions/workflows/clang.yml/badge.svg)
@@ -10,6 +8,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 -----
+
+[not yet complete]
 
 this is a C++ implementation of ```ChaCha20 & Poly1305``` stream cipher described in [RFC - 8439](https://www.rfc-editor.org/info/rfc8439).
 
