@@ -34,7 +34,7 @@ namespace __internal_chacha20
         // }
 
         unsigned int msb = (num << n);
-        unsigned int lsb = (num >> 32-n);
+        unsigned int lsb = (num >> (32-n));
 
         return msb | lsb;
     }
