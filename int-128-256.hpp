@@ -172,7 +172,6 @@ class int128 {
         }
         return rshifted;
     }
-    ///
 
     int128& operator<<=(size_t lshift) {
         if(lshift < (sizeof(unsigned long)*8)) {
@@ -212,8 +211,6 @@ class int128 {
         return *this;
     }
 
-    ///
-
     bool operator<(const int128& right) const {
         if(msb()<right.msb()) {
             return true;
@@ -228,6 +225,14 @@ class int128 {
 
     bool operator<=(const int128& right) const {
         return (*this < right) || (*this == right);
+    }
+
+    bool operator>(const int128& right) const {
+        return !(*this<=right);
+    }
+
+    bool operator>=(const int128& right) const {
+        return !(*this<right) || (*this == right);
     }
 
     void printHex() const {
