@@ -15,12 +15,14 @@ OBJ := $(patsubst $(SRC)/%.cpp,$(SRC)/%.out,$(SRC_FILES))
 # -------------------------- run test programs ---------------------------
 
 test: $(OBJ)
+	@./$(SRC)/QuarterRound_test.out
 	@./$(SRC)/BlockFunction_test.out
 	@./$(SRC)/Encryption_test.out
 	@./$(SRC)/int128_add_test.out
 	@./$(SRC)/int128_mul_test.out
 	@./$(SRC)/int128_sub_test.out
-	@./$(SRC)/QuarterRound_test.out
+	@./$(SRC)/int128_shifts_test.out
+	
 
 # test: $(OBJ) # not working for some reasons
 # 	@echo "running test programs"

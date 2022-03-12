@@ -133,19 +133,86 @@ class int128 {
         return pro;
     }
 
-    int128& operator<<(size_t lshift) {
-        unsigned long msb_carry = lsb() >> (32-lshift);
-        lsb() <<= lshift;
-        msb() <<= lshift;
-        msb() | msb_carry;
+    int128 operator<<(size_t lshift) const {
+        int128 lshifted = *this;
+        if(lshift < (sizeof(unsigned long)*8)) {
+            unsigned long msb_carry = lshifted.lsb() >> ((sizeof(unsigned long)*8)-lshift);
+            lshifted.lsb() <<= lshift;
+            lshifted.msb() <<= lshift;
+            lshifted.msb() |= msb_carry;
+        }
+        else if(lshift >= (sizeof(unsigned long)*8) && lshift < (sizeof(unsigned long)*8*2)){
+            lshift -= (sizeof(unsigned long)*8);
+            lshifted.msb() = lshifted.lsb();
+            lshifted.lsb() = 0;
+            lshifted.msb() = lshifted.msb() << lshift;
+        }
+        else {
+            lshifted.msb() = lshifted.lsb() = 0;
+        }
+        return lshifted;
     }
 
-    int128& operator>>(size_t rshift) {
-        unsigned long lsb_carry = msb() << (32-rshift);
-        msb() >>= rshift;
-        lsb() >>= rshift;
-        lsb() | lsb_carry;
+    int128 operator>>(size_t rshift) const {
+        int128 rshifted = *this;
+        if(rshift < (sizeof(unsigned long)*8)) {
+            unsigned long lsb_carry = rshifted.msb() << ((sizeof(unsigned long)*8)-rshift);
+            rshifted.msb() >>= rshift;
+            rshifted.lsb() >>= rshift;
+            rshifted.lsb() |= lsb_carry;
+        }
+        else if(rshift >= (sizeof(unsigned long)*8) && rshift < (sizeof(unsigned long)*8*2)){
+            rshift -= (sizeof(unsigned long)*8);
+            rshifted.lsb() = rshifted.msb();
+            rshifted.msb() = 0;
+            rshifted.lsb() >>= rshift;
+        }
+        else {
+            rshifted.msb() = rshifted.lsb() = 0;
+        }
+        return rshifted;
     }
+    ///
+
+    int128& operator<<=(size_t lshift) {
+        if(lshift < (sizeof(unsigned long)*8)) {
+            unsigned long msb_carry = lsb() >> ((sizeof(unsigned long)*8)-lshift);
+            lsb() <<= lshift;
+            msb() <<= lshift;
+            msb() |= msb_carry;
+        }
+        else if(lshift >= (sizeof(unsigned long)*8) && lshift < (sizeof(unsigned long)*8*2)){
+            lshift -= (sizeof(unsigned long)*8);
+            msb() = lsb();
+            lsb() = 0;
+            msb() = msb() << lshift;
+        }
+        else {
+            msb() = lsb() = 0;
+        }
+        return *this;
+    }
+
+    int128& operator>>=(size_t rshift) {
+        if(rshift < (sizeof(unsigned long)*8)) {
+            unsigned long lsb_carry = msb() << ((sizeof(unsigned long)*8)-rshift);
+            msb() >>= rshift;
+            lsb() >>= rshift;
+            lsb() |= lsb_carry;
+        }
+        else if(rshift >= (sizeof(unsigned long)*8) && rshift < (sizeof(unsigned long)*8*2)){
+            rshift -= (sizeof(unsigned long)*8);
+            lsb() = msb();
+            msb() = 0;
+            lsb() >>= rshift;
+        }
+        else {
+            msb() = lsb() = 0;
+        }
+        return *this;
+    }
+
+    ///
 
     bool operator<(const int128& right) const {
         if(msb()<right.msb()) {
@@ -164,11 +231,11 @@ class int128 {
     }
 
     void printHex() const {
-        printf("0x%08lx%08lx\n",msb(),lsb());
+        printf("0x%016lx%016lx\n",msb(),lsb());
     }
 
     void printHex_separated() const {
-        printf("0x%08lx|0x%08lx\n",msb(),lsb());
+        printf("0x%016lx|0x%016lx\n",msb(),lsb());
     }
 
     void printBits() const {
