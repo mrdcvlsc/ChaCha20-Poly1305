@@ -30,11 +30,11 @@ int main() {
     }
 
     if(!failed_cnt) {
-        std::cout << "int128 mul test ALL PASSED\n";
+        std::cout << "int128 mul ALL test PASSED\n";
         return 0;
     }
     else {
-        std::cout << "int128 mul test ALL FAILED\n";
-        return 0;
+        std::cout << "int128 mul SOME test FAILED\n";
+        return 1;
     }
 }

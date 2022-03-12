@@ -22,6 +22,7 @@ test: $(OBJ)
 	@./$(SRC)/int128_mul_test.out
 	@./$(SRC)/int128_sub_test.out
 	@./$(SRC)/int128_shifts_test.out
+	@./$(SRC)/int128_comparisons_test.out
 	
 
 # test: $(OBJ) # not working for some reasons
