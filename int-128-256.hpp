@@ -98,27 +98,48 @@ class int128 {
         return dif;
     }
 
+    /** 
+     * Multiplication of two 128-bit int using 4-bit unsigned int's.
+     * 
+     * this function is taking advantage of the "rdx:rax" registers
+     * and the "mul" assembly instruction to get the "rdx" or the
+     * upper quad-word when multiplying two unsigned 64-bit integers
+     * 
+     * mc = multiplicand
+     * mr = multiplier
+     * pd = product
+     * 
+     * This is the normal multiplication used to get the 256-bit product
+     * 
+     *                     | mc0 | mc1 |
+     *      x              | mr0 | mr1 |
+     *      -------------------------------
+     *         | pd0 | pd1 | pd2 | pd3 |
+     * 
+     * but here we omit the operations to get the pd0, and pd1 since
+     * we only need the 128-bit low part of the product [pd2:pd3]
+    */
     int128 operator*(const int128& mul) const {
     
-        int128 pro(0,0);
+        int128 product(0,0);
 
 #if(__MINGW32__)
     #error "int128 multiplication has no implementation yet for mingw32."
 #elif(__GNUC__ || __GNUG__ || __clang__ || __MINGW64__)
     #if (__x86_64__ || __ia64__ ||__amd__64__)
         asm volatile(
-            "mov %[rhlsb], %%rax\n\t"
-            "mul %[lhlsb]\n\t"
-            "mov %%rax, %[plsb]\n\t"
-            "mov %%rdx, %[pmsb]\n\t"
-            "mov %[rhlsb], %%rax\n\t"
-            "mul %[lhmsb]\n\t"
-            "add %%rax, %[pmsb]\n\t"
-            "mov %[rhmsb], %%rax\n\t"
-            "mul %[lhlsb]\n\t"
-            "add %%rax, %[pmsb]"
-            :[pmsb]"+r"(pro.msb()),[plsb]"+r"(pro.lsb())
-            :[rhmsb]"r"(mul.msb()), [rhlsb]"r"(mul.lsb()), [lhmsb]"r"(data[0]), [lhlsb]"r"(data[1])
+            "mov %[mr1], %%rax\n\t"
+            "mul %[mc1]\n\t"
+            "mov %%rax, %[pd3]\n\t"
+            "mov %%rdx, %[pd2]\n\t"
+            "mov %[mr1], %%rax\n\t"
+            "mul %[mc0]\n\t"
+            "add %%rax, %[pd2]\n\t"
+            "mov %[mr0], %%rax\n\t"
+            "mul %[mc1]\n\t"
+            "add %%rax, %[pd2]"
+            :[pd2]"+r"(product.msb()),[pd3]"+r"(product.lsb())
+            :[mr0]"r"(mul.msb()), [mr1]"r"(mul.lsb()), [mc0]"r"(data[0]), [mc1]"r"(data[1])
             : "rax", "rdx", "memory", "cc"
         );
     #else
@@ -130,7 +151,11 @@ class int128 {
     #error "Unknown system : not supported"
 #endif
 
-        return pro;
+        return product;
+    }
+
+    int128 operator/(const int128& div) const {
+        return int128(0,0);
     }
 
     int128 operator<<(size_t lshift) const {
