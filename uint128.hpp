@@ -10,17 +10,17 @@ class uint128 {
 
     unsigned long *data;
 
-    uint128(unsigned long msb, unsigned long lsb) {
+    uint128(unsigned long msq, unsigned long lsq) {
         data = new unsigned long[2];
-        data[0] = msb;
-        data[1] = lsb;
+        data[0] = msq;
+        data[1] = lsq;
     }
 
     // copy constructor
     uint128(const uint128& src) {
         data = new unsigned long[2];
-        data[0] = src.msb();
-        data[1] = src.lsb();
+        data[0] = src.msq();
+        data[1] = src.lsq();
     }
 
     // move constructor
@@ -31,8 +31,8 @@ class uint128 {
 
     // copy assignment
     uint128& operator=(const uint128& src) {
-        data[0] = src.msb();
-        data[1] = src.lsb();
+        data[0] = src.msq();
+        data[1] = src.lsq();
         return *this;
     }
 
@@ -51,13 +51,17 @@ class uint128 {
             delete [] data;
     }
 
-    unsigned long& msb() { return data[0]; }
-    unsigned long& lsb() { return data[1]; }
-    const unsigned long& msb() const { return data[0]; }
-    const unsigned long& lsb() const { return data[1]; }
+    /// returns the most significant QUADWORD, or the upper uint64 halve of the uint128 
+    unsigned long& msq() { return data[0]; }
+    /// returns the least significant QUADWORD, or the lower uint64 halve of the uint128 
+    unsigned long& lsq() { return data[1]; }
+    /// returns the most significant QUADWORD, or the upper uint64 halve of the uint128 
+    const unsigned long& msq() const { return data[0]; }
+    /// returns the least significant QUADWORD, or the lower uint64 halve of the uint128 
+    const unsigned long& lsq() const { return data[1]; }
 
     bool operator==(const uint128& roperand) const {
-        return (msb() == roperand.msb()) && (lsb() == roperand.lsb());
+        return (msq() == roperand.msq()) && (lsq() == roperand.lsq());
     }
 
     bool operator!=(const uint128& roperand) const {
@@ -66,27 +70,27 @@ class uint128 {
 
     uint128 operator+(const uint128& add) const {
         
-        uint128 sum(msb(),lsb());
+        uint128 sum(msq(),lsq());
 
-        unsigned long old_lsb = sum.lsb();
-        unsigned long old_msb = sum.msb();
+        unsigned long old_lsq = sum.lsq();
+        unsigned long old_msq = sum.msq();
 
-        sum.lsb() += add.lsb();
-        sum.msb() += add.msb();
+        sum.lsq() += add.lsq();
+        sum.msq() += add.msq();
 
-        if(sum.lsb() < old_lsb) {
-            sum.msb()++;
+        if(sum.lsq() < old_lsq) {
+            sum.msq()++;
         }
 
         return sum;
     }
 
     bool operator<(const uint128& right) const {
-        if(msb()<right.msb()) {
+        if(msq()<right.msq()) {
             return true;
         }
-        else if(msb()==right.msb()) {
-            if(lsb()<right.lsb()) {
+        else if(msq()==right.msq()) {
+            if(lsq()<right.lsq()) {
                 return true;
             }
         }
@@ -106,45 +110,45 @@ class uint128 {
     }
 
     bool operator&&(const uint128& right) const {
-        return (msb() || lsb()) && (right.msb() || right.lsb());
+        return (msq() || lsq()) && (right.msq() || right.lsq());
     }
 
     bool operator||(const uint128& right) const {
-        return (msb() || lsb()) || (right.msb() || right.lsb());
+        return (msq() || lsq()) || (right.msq() || right.lsq());
     }
 
     bool operator!() const {
-        return !(msb() || lsb());
+        return !(msq() || lsq());
     }
 
     uint128 operator~() const {
-        return uint128(~msb(),~lsb());
+        return uint128(~msq(),~lsq());
     }
 
     uint128 operator^(const uint128& right) const {
-        return uint128(msb()^right.msb(), lsb()^right.lsb());
+        return uint128(msq()^right.msq(), lsq()^right.lsq());
     }
 
     uint128 operator|(const uint128& right) const {
-        return uint128(msb()|right.msb(), lsb()|right.lsb());
+        return uint128(msq()|right.msq(), lsq()|right.lsq());
     }
 
     uint128 operator&(const uint128& right) const {
-        return uint128(msb()&right.msb(), lsb()&right.lsb());
+        return uint128(msq()&right.msq(), lsq()&right.lsq());
     }
 
     uint128 operator-(const uint128& sub) const {
 
-        uint128 dif(msb(),lsb());
+        uint128 dif(msq(),lsq());
 
-        unsigned long old_lsb = dif.lsb();
-        unsigned long old_msb = dif.msb();
+        unsigned long old_lsq = dif.lsq();
+        unsigned long old_msq = dif.msq();
 
-        dif.lsb() -= sub.lsb();
-        dif.msb() -= sub.msb();
+        dif.lsq() -= sub.lsq();
+        dif.msq() -= sub.msq();
 
-        if(dif.lsb() > old_lsb) {
-            dif.msb()--;
+        if(dif.lsq() > old_lsq) {
+            dif.msq()--;
         }
 
         return dif;
@@ -190,8 +194,8 @@ class uint128 {
             "mov %[mr0], %%rax\n\t"
             "mul %[mc1]\n\t"
             "add %%rax, %[pd2]"
-            :[pd2]"+r"(product.msb()),[pd3]"+r"(product.lsb())
-            :[mr0]"r"(mul.msb()), [mr1]"r"(mul.lsb()), [mc0]"r"(data[0]), [mc1]"r"(data[1])
+            :[pd2]"+r"(product.msq()),[pd3]"+r"(product.lsq())
+            :[mr0]"r"(mul.msq()), [mr1]"r"(mul.lsq()), [mc0]"r"(data[0]), [mc1]"r"(data[1])
             : "rax", "rdx", "memory", "cc"
         );
     #else
@@ -213,15 +217,41 @@ class uint128 {
      * lsq - least significant quadword
     */
     uint128 ep_div(const uint128& divisor)  const {
+        uint128(0,0);
+        // get the msq of the quotient
+        unsigned long msqr = 0;
 
+
+        return uint128(0,0);
     }
 
+    /** long division using bits */
     uint128 ss_div(const uint128& divisor) const {
+        
+        uint128 quotient(0,0), pdvn(0,0), bit(0,0), one(0,1);
 
+        for(size_t i=0; i<128; ++i) {
+            
+            pdvn = pdvn << 1;
+            quotient = quotient << 1;
+
+            bit = *this << i;
+            bit = bit >> 127;
+
+            pdvn = pdvn ^ bit;
+
+            if(pdvn>=divisor) {
+                quotient = quotient ^ one;
+
+                pdvn = pdvn - divisor;
+            }
+        }
+
+        return quotient;
     }
 
     uint128 operator/(const uint128& divisor) const {
-        if(divisor.msb()==0 && divisor.lsb()==0) {
+        if(divisor.msq()==0 && divisor.lsq()==0) {
             throw std::domain_error("division by zero is not possible");
         }
         else if(*this == divisor) {
@@ -236,19 +266,19 @@ class uint128 {
     uint128 operator<<(size_t lshift) const {
         uint128 lshifted = *this;
         if(lshift < (sizeof(unsigned long)*8)) {
-            unsigned long msb_carry = lshifted.lsb() >> ((sizeof(unsigned long)*8)-lshift);
-            lshifted.lsb() <<= lshift;
-            lshifted.msb() <<= lshift;
-            lshifted.msb() |= msb_carry;
+            unsigned long msq_carry = lshifted.lsq() >> ((sizeof(unsigned long)*8)-lshift);
+            lshifted.lsq() <<= lshift;
+            lshifted.msq() <<= lshift;
+            lshifted.msq() |= msq_carry;
         }
         else if(lshift >= (sizeof(unsigned long)*8) && lshift < (sizeof(unsigned long)*8*2)){
             lshift -= (sizeof(unsigned long)*8);
-            lshifted.msb() = lshifted.lsb();
-            lshifted.lsb() = 0;
-            lshifted.msb() = lshifted.msb() << lshift;
+            lshifted.msq() = lshifted.lsq();
+            lshifted.lsq() = 0;
+            lshifted.msq() = lshifted.msq() << lshift;
         }
         else {
-            lshifted.msb() = lshifted.lsb() = 0;
+            lshifted.msq() = lshifted.lsq() = 0;
         }
         return lshifted;
     }
@@ -256,81 +286,81 @@ class uint128 {
     uint128 operator>>(size_t rshift) const {
         uint128 rshifted = *this;
         if(rshift < (sizeof(unsigned long)*8)) {
-            unsigned long lsb_carry = rshifted.msb() << ((sizeof(unsigned long)*8)-rshift);
-            rshifted.msb() >>= rshift;
-            rshifted.lsb() >>= rshift;
-            rshifted.lsb() |= lsb_carry;
+            unsigned long lsq_carry = rshifted.msq() << ((sizeof(unsigned long)*8)-rshift);
+            rshifted.msq() >>= rshift;
+            rshifted.lsq() >>= rshift;
+            rshifted.lsq() |= lsq_carry;
         }
         else if(rshift >= (sizeof(unsigned long)*8) && rshift < (sizeof(unsigned long)*8*2)){
             rshift -= (sizeof(unsigned long)*8);
-            rshifted.lsb() = rshifted.msb();
-            rshifted.msb() = 0;
-            rshifted.lsb() >>= rshift;
+            rshifted.lsq() = rshifted.msq();
+            rshifted.msq() = 0;
+            rshifted.lsq() >>= rshift;
         }
         else {
-            rshifted.msb() = rshifted.lsb() = 0;
+            rshifted.msq() = rshifted.lsq() = 0;
         }
         return rshifted;
     }
 
     uint128& operator<<=(size_t lshift) {
         if(lshift < (sizeof(unsigned long)*8)) {
-            unsigned long msb_carry = lsb() >> ((sizeof(unsigned long)*8)-lshift);
-            lsb() <<= lshift;
-            msb() <<= lshift;
-            msb() |= msb_carry;
+            unsigned long msq_carry = lsq() >> ((sizeof(unsigned long)*8)-lshift);
+            lsq() <<= lshift;
+            msq() <<= lshift;
+            msq() |= msq_carry;
         }
         else if(lshift >= (sizeof(unsigned long)*8) && lshift < (sizeof(unsigned long)*8*2)){
             lshift -= (sizeof(unsigned long)*8);
-            msb() = lsb();
-            lsb() = 0;
-            msb() = msb() << lshift;
+            msq() = lsq();
+            lsq() = 0;
+            msq() = msq() << lshift;
         }
         else {
-            msb() = lsb() = 0;
+            msq() = lsq() = 0;
         }
         return *this;
     }
 
     uint128& operator>>=(size_t rshift) {
         if(rshift < (sizeof(unsigned long)*8)) {
-            unsigned long lsb_carry = msb() << ((sizeof(unsigned long)*8)-rshift);
-            msb() >>= rshift;
-            lsb() >>= rshift;
-            lsb() |= lsb_carry;
+            unsigned long lsq_carry = msq() << ((sizeof(unsigned long)*8)-rshift);
+            msq() >>= rshift;
+            lsq() >>= rshift;
+            lsq() |= lsq_carry;
         }
         else if(rshift >= (sizeof(unsigned long)*8) && rshift < (sizeof(unsigned long)*8*2)){
             rshift -= (sizeof(unsigned long)*8);
-            lsb() = msb();
-            msb() = 0;
-            lsb() >>= rshift;
+            lsq() = msq();
+            msq() = 0;
+            lsq() >>= rshift;
         }
         else {
-            msb() = lsb() = 0;
+            msq() = lsq() = 0;
         }
         return *this;
     }
 
     void printHex() const {
-        printf("0x%016lx%016lx\n",msb(),lsb());
+        printf("0x%016lx%016lx\n",msq(),lsq());
     }
 
     void printHex_separated() const {
-        printf("0x%016lx|0x%016lx\n",msb(),lsb());
+        printf("0x%016lx|0x%016lx\n",msq(),lsq());
     }
 
     void printBits() const {
-        std::bitset<64> msb(data[0]);
-        std::bitset<64> lsb(data[1]);
+        std::bitset<64> msq(data[0]);
+        std::bitset<64> lsq(data[1]);
 
-        std::cout << msb << lsb << "\n";
+        std::cout << msq << lsq << "\n";
     }
 
     void printBits_separated() const {
-        std::bitset<64> msb(data[0]);
-        std::bitset<64> lsb(data[1]);
+        std::bitset<64> msq(data[0]);
+        std::bitset<64> lsq(data[1]);
 
-        std::cout << msb << "|" << lsb << "\n";
+        std::cout << msq << "|" << lsq << "\n";
     }
 };
 

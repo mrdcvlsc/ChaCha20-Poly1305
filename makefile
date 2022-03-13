@@ -18,11 +18,12 @@ test: $(OBJ)
 	@./$(SRC)/QuarterRound_test.out
 	@./$(SRC)/BlockFunction_test.out
 	@./$(SRC)/Encryption_test.out
-	@./$(SRC)/int128_add_test.out
-	@./$(SRC)/int128_mul_test.out
-	@./$(SRC)/int128_sub_test.out
-	@./$(SRC)/int128_shifts_test.out
-	@./$(SRC)/int128_comparisons_test.out
+	@./$(SRC)/uint128_shifts_test.out
+	@./$(SRC)/uint128_comparisons_test.out
+	@./$(SRC)/uint128_add_test.out
+	@./$(SRC)/uint128_mul_test.out
+	@./$(SRC)/uint128_sub_test.out
+	@./$(SRC)/uint128_div_test.out
 	
 
 # test: $(OBJ) # not working for some reasons
