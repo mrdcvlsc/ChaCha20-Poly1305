@@ -81,6 +81,58 @@ class int128 {
         return sum;
     }
 
+    bool operator<(const int128& right) const {
+        if(msb()<right.msb()) {
+            return true;
+        }
+        else if(msb()==right.msb()) {
+            if(lsb()<right.lsb()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool operator<=(const int128& right) const {
+        return (*this < right) || (*this == right);
+    }
+
+    bool operator>(const int128& right) const {
+        return !(*this<=right);
+    }
+
+    bool operator>=(const int128& right) const {
+        return !(*this<right) || (*this == right);
+    }
+
+    bool operator&&(const int128& right) const {
+        return (msb() || lsb()) && (right.msb() || right.lsb());
+    }
+
+    bool operator||(const int128& right) const {
+        return (msb() || lsb()) || (right.msb() || right.lsb());
+    }
+
+    bool operator!() const {
+        return !(msb() || lsb());
+    }
+
+    int128 operator~() const {
+        return int128(~msb(),~lsb());
+    }
+
+    int128 operator^(const int128& right) const {
+        return int128(msb()^right.msb(), lsb()^right.lsb());
+    }
+
+    int128 operator|(const int128& right) const {
+        return int128(msb()|right.msb(), lsb()|right.lsb());
+    }
+
+    int128 operator&(const int128& right) const {
+        return int128(msb()&right.msb(), lsb()&right.lsb());
+    }
+
     int128 operator-(const int128& sub) const {
 
         int128 dif(msb(),lsb());
@@ -154,7 +206,24 @@ class int128 {
         return product;
     }
 
-    int128 operator/(const int128& div) const {
+    int128 ep_div(const int128& divisor)  const {
+
+    }
+
+    int128 ss_div(const int128& divisor) const {
+
+    }
+
+    int128 operator/(const int128& divisor) const {
+        if(divisor.msb()==0 && divisor.lsb()==0) {
+            throw std::domain_error("division by zero is not possible");
+        }
+        else if(*this == divisor) {
+            return int128(0,1); // remainder zero
+        }
+        else if(*this < divisor) {
+            return int128(0,0); // remainder *this (dividen)
+        }
         return int128(0,0);
     }
 
@@ -234,30 +303,6 @@ class int128 {
             msb() = lsb() = 0;
         }
         return *this;
-    }
-
-    bool operator<(const int128& right) const {
-        if(msb()<right.msb()) {
-            return true;
-        }
-        else if(msb()==right.msb()) {
-            if(lsb()<right.lsb()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    bool operator<=(const int128& right) const {
-        return (*this < right) || (*this == right);
-    }
-
-    bool operator>(const int128& right) const {
-        return !(*this<=right);
-    }
-
-    bool operator>=(const int128& right) const {
-        return !(*this<right) || (*this == right);
     }
 
     void printHex() const {
