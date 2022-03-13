@@ -1,43 +1,43 @@
-#ifndef uidMRDCVLSC_int128_HPP
-#define uidMRDCVLSC_int128_HPP
+#ifndef uidMRDCVLSC_uint128_HPP
+#define uidMRDCVLSC_uint128_HPP
 
 #include <iostream>
 #include <bitset>
 
-class int128 {
+class uint128 {
     
     public:
 
     unsigned long *data;
 
-    int128(unsigned long msb, unsigned long lsb) {
+    uint128(unsigned long msb, unsigned long lsb) {
         data = new unsigned long[2];
         data[0] = msb;
         data[1] = lsb;
     }
 
     // copy constructor
-    int128(const int128& src) {
+    uint128(const uint128& src) {
         data = new unsigned long[2];
         data[0] = src.msb();
         data[1] = src.lsb();
     }
 
     // move constructor
-    int128(int128&& src) noexcept {
+    uint128(uint128&& src) noexcept {
         data = src.data;
         src.data = NULL;
     }
 
     // copy assignment
-    int128& operator=(const int128& src) {
+    uint128& operator=(const uint128& src) {
         data[0] = src.msb();
         data[1] = src.lsb();
         return *this;
     }
 
     // move assignment
-    int128& operator=(int128&& src) {
+    uint128& operator=(uint128&& src) {
         if(data != NULL)
             delete [] data;
 
@@ -46,7 +46,7 @@ class int128 {
         return *this;
     }
 
-    ~int128(){
+    ~uint128(){
         if(data != NULL)
             delete [] data;
     }
@@ -56,17 +56,17 @@ class int128 {
     const unsigned long& msb() const { return data[0]; }
     const unsigned long& lsb() const { return data[1]; }
 
-    bool operator==(const int128& roperand) const {
+    bool operator==(const uint128& roperand) const {
         return (msb() == roperand.msb()) && (lsb() == roperand.lsb());
     }
 
-    bool operator!=(const int128& roperand) const {
+    bool operator!=(const uint128& roperand) const {
         return !(*this == roperand);
     }
 
-    int128 operator+(const int128& add) const {
+    uint128 operator+(const uint128& add) const {
         
-        int128 sum(msb(),lsb());
+        uint128 sum(msb(),lsb());
 
         unsigned long old_lsb = sum.lsb();
         unsigned long old_msb = sum.msb();
@@ -81,7 +81,7 @@ class int128 {
         return sum;
     }
 
-    bool operator<(const int128& right) const {
+    bool operator<(const uint128& right) const {
         if(msb()<right.msb()) {
             return true;
         }
@@ -93,23 +93,23 @@ class int128 {
         return false;
     }
 
-    bool operator<=(const int128& right) const {
+    bool operator<=(const uint128& right) const {
         return (*this < right) || (*this == right);
     }
 
-    bool operator>(const int128& right) const {
+    bool operator>(const uint128& right) const {
         return !(*this<=right);
     }
 
-    bool operator>=(const int128& right) const {
+    bool operator>=(const uint128& right) const {
         return !(*this<right) || (*this == right);
     }
 
-    bool operator&&(const int128& right) const {
+    bool operator&&(const uint128& right) const {
         return (msb() || lsb()) && (right.msb() || right.lsb());
     }
 
-    bool operator||(const int128& right) const {
+    bool operator||(const uint128& right) const {
         return (msb() || lsb()) || (right.msb() || right.lsb());
     }
 
@@ -117,25 +117,25 @@ class int128 {
         return !(msb() || lsb());
     }
 
-    int128 operator~() const {
-        return int128(~msb(),~lsb());
+    uint128 operator~() const {
+        return uint128(~msb(),~lsb());
     }
 
-    int128 operator^(const int128& right) const {
-        return int128(msb()^right.msb(), lsb()^right.lsb());
+    uint128 operator^(const uint128& right) const {
+        return uint128(msb()^right.msb(), lsb()^right.lsb());
     }
 
-    int128 operator|(const int128& right) const {
-        return int128(msb()|right.msb(), lsb()|right.lsb());
+    uint128 operator|(const uint128& right) const {
+        return uint128(msb()|right.msb(), lsb()|right.lsb());
     }
 
-    int128 operator&(const int128& right) const {
-        return int128(msb()&right.msb(), lsb()&right.lsb());
+    uint128 operator&(const uint128& right) const {
+        return uint128(msb()&right.msb(), lsb()&right.lsb());
     }
 
-    int128 operator-(const int128& sub) const {
+    uint128 operator-(const uint128& sub) const {
 
-        int128 dif(msb(),lsb());
+        uint128 dif(msb(),lsb());
 
         unsigned long old_lsb = dif.lsb();
         unsigned long old_msb = dif.msb();
@@ -171,12 +171,12 @@ class int128 {
      * but here we omit the operations to get the pd0, and pd1 since
      * we only need the 128-bit low part of the product [pd2:pd3]
     */
-    int128 operator*(const int128& mul) const {
+    uint128 operator*(const uint128& mul) const {
     
-        int128 product(0,0);
+        uint128 product(0,0);
 
 #if(__MINGW32__)
-    #error "int128 multiplication has no implementation yet for mingw32."
+    #error "uint128 multiplication has no implementation yet for mingw32."
 #elif(__GNUC__ || __GNUG__ || __clang__ || __MINGW64__)
     #if (__x86_64__ || __ia64__ ||__amd__64__)
         asm volatile(
@@ -195,10 +195,10 @@ class int128 {
             : "rax", "rdx", "memory", "cc"
         );
     #else
-        #error "int128 multiplication has no implementation yet for x86 architectures."
+        #error "uint128 multiplication has no implementation yet for x86 architectures."
     #endif
 #elif defined(_MSC_VER)
-    #error "int128 multiplication has no implementation yet for Microsoft Visual C++ Compiler."
+    #error "uint128 multiplication has no implementation yet for Microsoft Visual C++ Compiler."
 #else
     #error "Unknown system : not supported"
 #endif
@@ -206,29 +206,35 @@ class int128 {
         return product;
     }
 
-    int128 ep_div(const int128& divisor)  const {
+    /** this is only for dividing two uint128 where the divisor's msq is zero
+     * and the dividen has values in both it's own msq:lsq
+     * 
+     * msq - most significant quadword
+     * lsq - least significant quadword
+    */
+    uint128 ep_div(const uint128& divisor)  const {
 
     }
 
-    int128 ss_div(const int128& divisor) const {
+    uint128 ss_div(const uint128& divisor) const {
 
     }
 
-    int128 operator/(const int128& divisor) const {
+    uint128 operator/(const uint128& divisor) const {
         if(divisor.msb()==0 && divisor.lsb()==0) {
             throw std::domain_error("division by zero is not possible");
         }
         else if(*this == divisor) {
-            return int128(0,1); // remainder zero
+            return uint128(0,1); // remainder zero
         }
         else if(*this < divisor) {
-            return int128(0,0); // remainder *this (dividen)
+            return uint128(0,0); // remainder *this (dividen)
         }
-        return int128(0,0);
+        return uint128(0,0);
     }
 
-    int128 operator<<(size_t lshift) const {
-        int128 lshifted = *this;
+    uint128 operator<<(size_t lshift) const {
+        uint128 lshifted = *this;
         if(lshift < (sizeof(unsigned long)*8)) {
             unsigned long msb_carry = lshifted.lsb() >> ((sizeof(unsigned long)*8)-lshift);
             lshifted.lsb() <<= lshift;
@@ -247,8 +253,8 @@ class int128 {
         return lshifted;
     }
 
-    int128 operator>>(size_t rshift) const {
-        int128 rshifted = *this;
+    uint128 operator>>(size_t rshift) const {
+        uint128 rshifted = *this;
         if(rshift < (sizeof(unsigned long)*8)) {
             unsigned long lsb_carry = rshifted.msb() << ((sizeof(unsigned long)*8)-rshift);
             rshifted.msb() >>= rshift;
@@ -267,7 +273,7 @@ class int128 {
         return rshifted;
     }
 
-    int128& operator<<=(size_t lshift) {
+    uint128& operator<<=(size_t lshift) {
         if(lshift < (sizeof(unsigned long)*8)) {
             unsigned long msb_carry = lsb() >> ((sizeof(unsigned long)*8)-lshift);
             lsb() <<= lshift;
@@ -286,7 +292,7 @@ class int128 {
         return *this;
     }
 
-    int128& operator>>=(size_t rshift) {
+    uint128& operator>>=(size_t rshift) {
         if(rshift < (sizeof(unsigned long)*8)) {
             unsigned long lsb_carry = msb() << ((sizeof(unsigned long)*8)-rshift);
             msb() >>= rshift;
