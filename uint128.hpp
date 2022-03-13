@@ -225,7 +225,7 @@ class uint128 {
         return uint128(0,0);
     }
 
-    /** long division using bits */
+    /** long division using bits, shifts and subtract */
     uint128 ss_div(const uint128& divisor) const {
         
         uint128 quotient(0,0), pdvn(0,0), bit(0,0), one(0,1);
