@@ -77,23 +77,6 @@ class uint128 {
         return !(*this == roperand);
     }
 
-    uint128 operator+(const uint128& add) const {
-        
-        uint128 sum(msq(),lsq());
-
-        unsigned long old_lsq = sum.lsq();
-        unsigned long old_msq = sum.msq();
-
-        sum.lsq() += add.lsq();
-        sum.msq() += add.msq();
-
-        if(sum.lsq() < old_lsq) {
-            sum.msq()++;
-        }
-
-        return sum;
-    }
-
     bool operator<(const uint128& right) const {
         if(msq()<right.msq()) {
             return true;
@@ -149,6 +132,23 @@ class uint128 {
 
     uint128 operator&(const uint128& right) const {
         return uint128(msq()&right.msq(), lsq()&right.lsq());
+    }
+
+    uint128 operator+(const uint128& add) const {
+        
+        uint128 sum(msq(),lsq());
+
+        unsigned long old_lsq = sum.lsq();
+        unsigned long old_msq = sum.msq();
+
+        sum.lsq() += add.lsq();
+        sum.msq() += add.msq();
+
+        if(sum.lsq() < old_lsq) {
+            sum.msq()++;
+        }
+
+        return sum;
     }
 
     uint128 operator-(const uint128& sub) const {
@@ -275,6 +275,8 @@ class uint128 {
             }
         }
 
+        // pdvn is the remainder
+
         return quotient;
     }
 
@@ -287,6 +289,9 @@ class uint128 {
         }
         else if(*this < divisor) {
             return uint128(0,0); // remainder *this (dividen)
+        }
+        else {
+            return this->ss_div(divisor);
         }
         return uint128(0,0);
     }
@@ -315,7 +320,7 @@ class uint128 {
     uint128 operator>>(size_t rshift) const {
         uint128 rshifted = *this;
         if(!rshift) {}
-        else if(rshift < ULONGBITS && rshift) {
+        else if(rshift < ULONGBITS) {
             unsigned long lsq_carry = rshifted.msq() << (ULONGBITS-rshift);
             rshifted.msq() >>= rshift;
             rshifted.lsq() >>= rshift;
@@ -335,7 +340,7 @@ class uint128 {
 
     uint128& operator<<=(size_t lshift) {
         if(!lshift) {}
-        else if(lshift < ULONGBITS && lshift) {
+        else if(lshift < ULONGBITS) {
             unsigned long msq_carry = lsq() >> (ULONGBITS-lshift);
             lsq() <<= lshift;
             msq() <<= lshift;
@@ -355,7 +360,7 @@ class uint128 {
 
     uint128& operator>>=(size_t rshift) {
         if(!rshift) {}
-        else if(rshift < ULONGBITS && rshift) {
+        else if(rshift < ULONGBITS) {
             unsigned long lsq_carry = msq() << (ULONGBITS-rshift);
             msq() >>= rshift;
             lsq() >>= rshift;
