@@ -4,6 +4,15 @@
 #include <iostream>
 #include <bitset>
 
+#if (__x86_64__ || __ia64__ ||__amd__64__)
+#define ULONGBITS 64
+#define ULONGBITS_2x 128
+#else
+#define ULONGBITS 32
+#define ULONGBITS_2x 64
+#endif
+
+
 class uint128 {
     
     public:
@@ -129,6 +138,11 @@ class uint128 {
         return uint128(msq()^right.msq(), lsq()^right.lsq());
     }
 
+    uint128& operator^=(const uint128& right) {
+        msq()^=right.msq(), lsq()^=right.lsq();
+        return *this;
+    }
+
     uint128 operator|(const uint128& right) const {
         return uint128(msq()|right.msq(), lsq()|right.lsq());
     }
@@ -152,6 +166,21 @@ class uint128 {
         }
 
         return dif;
+    }
+
+    uint128& operator-=(const uint128& sub) {
+
+        unsigned long old_lsq = lsq();
+        unsigned long old_msq = msq();
+
+        lsq() -= sub.lsq();
+        msq() -= sub.msq();
+
+        if(lsq() > old_lsq) {
+            msq()--;
+        }
+
+        return *this;
     }
 
     /** 
@@ -231,19 +260,18 @@ class uint128 {
         uint128 quotient(0,0), pdvn(0,0), bit(0,0), one(0,1);
 
         for(size_t i=0; i<128; ++i) {
-            
+
             pdvn = pdvn << 1;
             quotient = quotient << 1;
 
             bit = *this << i;
             bit = bit >> 127;
 
-            pdvn = pdvn ^ bit;
+            pdvn = pdvn | bit;
 
             if(pdvn>=divisor) {
-                quotient = quotient ^ one;
-
                 pdvn = pdvn - divisor;
+                quotient = quotient | one;
             }
         }
 
@@ -265,14 +293,15 @@ class uint128 {
 
     uint128 operator<<(size_t lshift) const {
         uint128 lshifted = *this;
-        if(lshift < (sizeof(unsigned long)*8)) {
-            unsigned long msq_carry = lshifted.lsq() >> ((sizeof(unsigned long)*8)-lshift);
+        if(!lshift) {}
+        else if(lshift < ULONGBITS) {
+            unsigned long msq_carry = lshifted.lsq() >> (ULONGBITS-lshift);
             lshifted.lsq() <<= lshift;
             lshifted.msq() <<= lshift;
             lshifted.msq() |= msq_carry;
         }
-        else if(lshift >= (sizeof(unsigned long)*8) && lshift < (sizeof(unsigned long)*8*2)){
-            lshift -= (sizeof(unsigned long)*8);
+        else if(lshift >= ULONGBITS && lshift < ULONGBITS_2x){
+            lshift -= ULONGBITS;
             lshifted.msq() = lshifted.lsq();
             lshifted.lsq() = 0;
             lshifted.msq() = lshifted.msq() << lshift;
@@ -285,14 +314,15 @@ class uint128 {
 
     uint128 operator>>(size_t rshift) const {
         uint128 rshifted = *this;
-        if(rshift < (sizeof(unsigned long)*8)) {
-            unsigned long lsq_carry = rshifted.msq() << ((sizeof(unsigned long)*8)-rshift);
+        if(!rshift) {}
+        else if(rshift < ULONGBITS && rshift) {
+            unsigned long lsq_carry = rshifted.msq() << (ULONGBITS-rshift);
             rshifted.msq() >>= rshift;
             rshifted.lsq() >>= rshift;
             rshifted.lsq() |= lsq_carry;
         }
-        else if(rshift >= (sizeof(unsigned long)*8) && rshift < (sizeof(unsigned long)*8*2)){
-            rshift -= (sizeof(unsigned long)*8);
+        else if(rshift >= ULONGBITS && rshift < ULONGBITS_2x){
+            rshift -= ULONGBITS;
             rshifted.lsq() = rshifted.msq();
             rshifted.msq() = 0;
             rshifted.lsq() >>= rshift;
@@ -304,14 +334,15 @@ class uint128 {
     }
 
     uint128& operator<<=(size_t lshift) {
-        if(lshift < (sizeof(unsigned long)*8)) {
-            unsigned long msq_carry = lsq() >> ((sizeof(unsigned long)*8)-lshift);
+        if(!lshift) {}
+        else if(lshift < ULONGBITS && lshift) {
+            unsigned long msq_carry = lsq() >> (ULONGBITS-lshift);
             lsq() <<= lshift;
             msq() <<= lshift;
             msq() |= msq_carry;
         }
-        else if(lshift >= (sizeof(unsigned long)*8) && lshift < (sizeof(unsigned long)*8*2)){
-            lshift -= (sizeof(unsigned long)*8);
+        else if(lshift >= ULONGBITS && lshift < ULONGBITS_2x){
+            lshift -= ULONGBITS;
             msq() = lsq();
             lsq() = 0;
             msq() = msq() << lshift;
@@ -323,14 +354,15 @@ class uint128 {
     }
 
     uint128& operator>>=(size_t rshift) {
-        if(rshift < (sizeof(unsigned long)*8)) {
-            unsigned long lsq_carry = msq() << ((sizeof(unsigned long)*8)-rshift);
+        if(!rshift) {}
+        else if(rshift < ULONGBITS && rshift) {
+            unsigned long lsq_carry = msq() << (ULONGBITS-rshift);
             msq() >>= rshift;
             lsq() >>= rshift;
             lsq() |= lsq_carry;
         }
-        else if(rshift >= (sizeof(unsigned long)*8) && rshift < (sizeof(unsigned long)*8*2)){
-            rshift -= (sizeof(unsigned long)*8);
+        else if(rshift >= ULONGBITS && rshift < ULONGBITS_2x){
+            rshift -= ULONGBITS;
             lsq() = msq();
             msq() = 0;
             lsq() >>= rshift;
