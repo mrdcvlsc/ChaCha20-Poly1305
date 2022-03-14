@@ -246,51 +246,52 @@ class uint256 {
 #elif(__GNUC__ || __GNUG__ || __clang__ || __MINGW64__)
     #if (__x86_64__ || __ia64__ ||__amd__64__)
         asm volatile(
-            "mov %[mc3], %%rax\n\t" // 1
-            "mul %[mr3]\n\t"
-            "mov %%rax, %[pd7]\n\t"
-            "mov %%rdx, %[pd6]\n\t"
 
-            "mov %[mc2], %%rax\n\t" // 2
-            "mul %[mr3]\n\t"
-            "add %%rax, %[pd6]\n\t"
-            "adc %%rdx, %[pd5]\n\t"
+            "movq %[mc3], %%rax\n\t" // 1
+            "mulq %[mr3]\n\t"
+            "movq %%rax, %[pd7]\n\t"
+            "movq %%rdx, %[pd6]\n\t"
 
-            "mov %[mc1], %%rax\n\t" // 3
-            "mul %[mr3]\n\t"
-            "add %%rax, %[pd5]\n\t"
-            "adc %%rdx, %[pd4]\n\t"
+            "movq %[mc2], %%rax\n\t" // 2
+            "mulq %[mr3]\n\t"
+            "addq %%rax, %[pd6]\n\t"
+            "movq %%rdx, %[pd5]\n\t"
 
-            "mov %[mc0], %%rax\n\t" // 4
-            "mul %[mr3]\n\t"
-            "add %%rax, %[pd4]\n\t" //
+            "movq %[mc3], %%rax\n\t" // 5
+            "mulq %[mr2]\n\t"
+            "addq %%rax, %[pd6]\n\t"
+            "adcq %%rdx, %[pd5]\n\t"
 
-            "mov %[mc3], %%rax\n\t" // 5
-            "mul %[mr2]\n\t"
-            "add %%rax, %[pd6]\n\t"
-            "adc %%rdx, %[pd5]\n\t"
+            "movq %[mc1], %%rax\n\t" // 3
+            "mulq %[mr3]\n\t"
+            "addq %%rax, %[pd5]\n\t"
+            "adcq %%rdx, %[pd4]\n\t"
 
-            "mov %[mc2], %%rax\n\t" // 6
-            "mul %[mr2]\n\t"
-            "add %%rax, %[pd5]\n\t"
-            "adc %%rdx, %[pd4]\n\t"
+            "movq %[mc2], %%rax\n\t" // 6
+            "mulq %[mr2]\n\t"
+            "addq %%rax, %[pd5]\n\t"
+            "adcq %%rdx, %[pd4]\n\t"
 
-            "mov %[mc1], %%rax\n\t" // 7
-            "mul %[mr2]\n\t"
-            "add %%rax, %[pd4]\n\t"
+            "movq %[mc3], %%rax\n\t" // 8
+            "mulq %[mr1]\n\t"
+            "addq %%rax, %[pd5]\n\t"
+            "adcq %%rdx, %[pd4]\n\t"
 
-            "mov %[mc3], %%rax\n\t" // 8
-            "mul %[mr1]\n\t"
-            "add %%rax, %[pd5]\n\t"
-            "adc %%rdx, %[pd4]\n\t"
+            "movq %[mc0], %%rax\n\t" // 4
+            "mulq %[mr3]\n\t"
+            "addq %%rax, %[pd4]\n\t"
 
-            "mov %[mc2], %%rax\n\t" // 9
-            "mul %[mr1]\n\t"
-            "add %%rdx, %[pd4]\n\t"
+            "movq %[mc1], %%rax\n\t" // 7
+            "mulq %[mr2]\n\t"
+            "addq %%rax, %[pd4]\n\t"
 
-            "mov %[mc3], %%rax\n\t" // 10
-            "mul %[mr0]\n\t"
-            "add %%rax, %[pd4]"
+            "movq %[mc2], %%rax\n\t" // 9
+            "mulq %[mr1]\n\t"
+            "addq %%rdx, %[pd4]\n\t"
+
+            "movq %[mc3], %%rax\n\t" // 10
+            "mulq %[mr0]\n\t"
+            "addq %%rax, %[pd4]\n\t"
 
             : // outputs
                 [pd4]"+r"(product.msdq().msq()),
@@ -298,10 +299,10 @@ class uint256 {
                 [pd6]"+r"(product.lsdq().msq()),
                 [pd7]"+r"(product.lsdq().lsq())
             : // inputs 
-                [mc0]"r"(mul.msdq().msq()),
-                [mc1]"r"(mul.msdq().lsq()),
-                [mc2]"r"(mul.lsdq().msq()),
-                [mc3]"r"(mul.lsdq().lsq()),
+                [mc0]"r"(msdq().msq()),
+                [mc1]"r"(msdq().lsq()),
+                [mc2]"r"(lsdq().msq()),
+                [mc3]"r"(lsdq().lsq()),
 
                 [mr0]"r"(mul.msdq().msq()),
                 [mr1]"r"(mul.msdq().lsq()),
