@@ -19,6 +19,10 @@ class uint128 {
 
     unsigned long *data;
 
+    uint128() {
+        data = NULL;
+    }
+
     uint128(unsigned long msq, unsigned long lsq) {
         data = new unsigned long[2];
         data[0] = msq;
@@ -40,6 +44,9 @@ class uint128 {
 
     // copy assignment
     uint128& operator=(const uint128& src) {
+        if(data == NULL)
+            data = new unsigned long[2];
+
         data[0] = src.msq();
         data[1] = src.lsq();
         return *this;
@@ -176,6 +183,25 @@ class uint128 {
         return *this;
     }
 
+    uint128& operator++() {
+
+        unsigned long old_lsq = lsq();
+        unsigned long old_msq = msq();
+
+        lsq() += 1;
+        msq() += 0;
+
+        if(lsq() < old_lsq) {
+            msq()++;
+        }
+
+        return *this;
+    }
+
+    uint128& operator++(int) {
+        return ++*this;
+    }
+
     uint128 operator-(const uint128& sub) const {
 
         uint128 dif(msq(),lsq());
@@ -206,6 +232,25 @@ class uint128 {
         }
 
         return *this;
+    }
+
+    uint128& operator--() {
+
+        unsigned long old_lsq = lsq();
+        unsigned long old_msq = msq();
+
+        lsq() -= 1;
+        msq() -= 0;
+
+        if(lsq() > old_lsq) {
+            msq()--;
+        }
+
+        return *this;
+    }
+
+    uint128& operator--(int) {
+        return --*this;
     }
 
     /** 
@@ -337,7 +382,14 @@ class uint128 {
             // long alias schoolbook division (and 64-bit numbers as digits) to avoid an overflow
             // of the quotient.
 
-            
+            // 1. divide the upper quad-word of the quotient with the divisor and get the upper_quotient
+            // 2. mod the upper quad-word of the quotient with the divisor and get get the upper_remainder
+            // 3. set the upper quad-word of the quotient to the upper_quotient
+            // 4. put the upper_remainder in the rdx register
+            // 5. put the lower quad-word in the rax register
+            // 6. divide the rdx:rax with the divisor using the "div" assembly instruction
+            // 7. then move the values of the rdx:rax to the msq():lsq() of the quotient
+                        
         }
 
         return quotient;
