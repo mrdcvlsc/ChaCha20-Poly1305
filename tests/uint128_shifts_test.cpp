@@ -2,7 +2,7 @@
 #include <utility>
 #include "../uint128.hpp"
 
-#define TEST_CASES 24
+#define TEST_CASES 28
 
 int main() {
 
@@ -29,6 +29,7 @@ int main() {
     uint128 RSH128(0x0000000000000000, 0x0000000000000000);
 
     // L-SHIFT ANSWERS
+    uint128 ls000 = MAXVAL << 0;
     uint128 ls007 = MAXVAL << 7;
     uint128 ls064 = MAXVAL << 64;
     uint128 ls063 = MAXVAL << 63;
@@ -37,6 +38,7 @@ int main() {
     uint128 ls128 = MAXVAL << 128;
 
     // R-SHIFT ANSWERS
+    uint128 rs000 = MAXVAL >> 0;
     uint128 rs007 = MAXVAL >> 7;
     uint128 rs064 = MAXVAL >> 64;
     uint128 rs063 = MAXVAL >> 63;
@@ -45,6 +47,7 @@ int main() {
     uint128 rs128 = MAXVAL >> 128;
 
     // L-ASIGN-SHIFT ANSWERS
+    uint128 Als000 = MAXVAL; Als000 <<= 0;
     uint128 Als007 = MAXVAL; Als007 <<= 7;
     uint128 Als064 = MAXVAL; Als064 <<= 64;
     uint128 Als063 = MAXVAL; Als063 <<= 63;
@@ -53,6 +56,7 @@ int main() {
     uint128 Als128 = MAXVAL; Als128 <<= 128;
 
     // R-ASIGN-SHIFT ANSWERS
+    uint128 Ars000 = MAXVAL; Ars000 >>= 0;
     uint128 Ars007 = MAXVAL; Ars007 >>= 7;
     uint128 Ars064 = MAXVAL; Ars064 >>= 64;
     uint128 Ars063 = MAXVAL; Ars063 >>= 63;
@@ -258,6 +262,39 @@ int main() {
     else {
         std::cout << "uint128 max >> 128 : PASSED\n";
         Tests[23] = true;
+    }
+
+    // ZEROR-SHIFTS
+    if(ls000!=MAXVAL) {
+        std::cout << "uint128 max << 0 : FAILED\n";
+    }
+    else {
+        std::cout << "uint128 max << 0 : PASSED\n";
+        Tests[24] = true;
+    }
+
+    if(rs000!=MAXVAL) {
+        std::cout << "uint128 max >> 0 : FAILED\n";
+    }
+    else {
+        std::cout << "uint128 max >> 0 : PASSED\n";
+        Tests[25] = true;
+    }
+
+    if(Als000!=MAXVAL) {
+        std::cout << "uint128 max << 0 : FAILED\n";
+    }
+    else {
+        std::cout << "uint128 max << 0 : PASSED\n";
+        Tests[26] = true;
+    }
+
+    if(Ars000!=MAXVAL) {
+        std::cout << "uint128 max >> 0 : FAILED\n";
+    }
+    else {
+        std::cout << "uint128 max >> 0 : PASSED\n";
+        Tests[27] = true;
     }
 
     // end of tests
