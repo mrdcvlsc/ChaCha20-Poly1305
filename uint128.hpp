@@ -67,13 +67,16 @@ class uint128 {
             delete [] data;
     }
 
-    /// returns the most significant QUADWORD, or the upper uint64 halve of the uint128 
+    /// returns the most significant QUADWORD, or the upper uint64 halve of the uint128.
     unsigned long& msq() { return data[0]; }
-    /// returns the least significant QUADWORD, or the lower uint64 halve of the uint128 
+
+    /// returns the least significant QUADWORD, or the lower uint64 halve of the uint128.
     unsigned long& lsq() { return data[1]; }
-    /// returns the most significant QUADWORD, or the upper uint64 halve of the uint128 
+
+    /// returns the most significant QUADWORD, or the upper uint64 halve of the uint128.
     const unsigned long& msq() const { return data[0]; }
-    /// returns the least significant QUADWORD, or the lower uint64 halve of the uint128 
+
+    /// returns the least significant QUADWORD, or the lower uint64 halve of the uint128.
     const unsigned long& lsq() const { return data[1]; }
 
     bool operator==(const uint128& roperand) const {

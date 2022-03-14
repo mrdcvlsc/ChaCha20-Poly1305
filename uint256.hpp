@@ -60,13 +60,16 @@ class uint256 {
             delete [] data;
     }
 
-    /// returns the most significant QUADWORD, or the upper uint64 halve of the uint256 
+    /// returns the most significant QUADWORD, or the upper uint64 halve of the uint256.
     uint128& msdq() { return data[0]; }
-    /// returns the least significant QUADWORD, or the lower uint64 halve of the uint256 
+    
+    /// returns the least significant QUADWORD, or the lower uint64 halve of the uint256.
     uint128& lsdq() { return data[1]; }
-    /// returns the most significant QUADWORD, or the upper uint64 halve of the uint256 
+
+    /// returns the most significant QUADWORD, or the upper uint64 halve of the uint256.
     const uint128& msdq() const { return data[0]; }
-    /// returns the least significant QUADWORD, or the lower uint64 halve of the uint256 
+
+    /// returns the least significant QUADWORD, or the lower uint64 halve of the uint256.
     const uint128& lsdq() const { return data[1]; }
 
     bool operator==(const uint256& roperand) const {
@@ -209,25 +212,27 @@ class uint256 {
     }
 
     /** 
-     * Multiplication of two 128-bit int using 4-bit uint128's.
+     * Multiplication of two 256-bit.
      * 
      * this function is taking advantage of the "rdx:rax" registers
      * and the "mul" assembly instruction to get the "rdx" or the
-     * upper quad-word when multiplying two unsigned 64-bit integers
+     * upper quad-word when multiplying two unsigned 64-bit integers.
      * 
-     * mc = multiplicand
-     * mr = multiplier
-     * pd = product
+     * mc = multiplicand.
+     * mr = multiplier.
+     * pd = product.
      * 
-     * This is the normal multiplication used to get the 256-bit product
+     * This is the normal multiplication used to get the 256-bit product.
+     *
+     * [0 - most] - [3 - least].
      * 
-     *                     | mc0 | mc1 |
-     *      x              | mr0 | mr1 |
-     *      -------------------------------
-     *         | pd0 | pd1 | pd2 | pd3 |
+     *         | mc0 | mc1 | mc2 | mc3 |.
+     *      x  | mr0 | mr1 | mr2 | mr3 |.
+     *      -------------------------------.
+     *         | pd4 | pd5 | pd6 | pd7 | .
      * 
-     * but here we omit the operations to get the pd0, and pd1 since
-     * we only need the 128-bit low part of the product [pd2:pd3]
+     * here we omit the operations to get the pd0, pd1, pd2 and pd3 since
+     * we only need the 256-bit low part of the product [pd4:pd5:pd6:pd7].
     */
     uint256 operator*(const uint256& mul) const {
     
@@ -241,18 +246,67 @@ class uint256 {
 #elif(__GNUC__ || __GNUG__ || __clang__ || __MINGW64__)
     #if (__x86_64__ || __ia64__ ||__amd__64__)
         asm volatile(
-            "mov %[mr1], %%rax\n\t"
-            "mul %[mc1]\n\t"
-            "mov %%rax, %[pd3]\n\t"
-            "mov %%rdx, %[pd2]\n\t"
-            "mov %[mr1], %%rax\n\t"
-            "mul %[mc0]\n\t"
-            "add %%rax, %[pd2]\n\t"
-            "mov %[mr0], %%rax\n\t"
-            "mul %[mc1]\n\t"
-            "add %%rax, %[pd2]"
-            :[pd2]"+r"(product.msdq()),[pd3]"+r"(product.lsdq())
-            :[mr0]"r"(mul.msdq()), [mr1]"r"(mul.lsdq()), [mc0]"r"(data[0]), [mc1]"r"(data[1])
+            "mov %[mc3], %%rax\n\t" // 1
+            "mul %[mr3]\n\t"
+            "mov %%rax, %[pd7]\n\t"
+            "mov %%rdx, %[pd6]\n\t"
+
+            "mov %[mc2], %%rax\n\t" // 2
+            "mul %[mr3]\n\t"
+            "add %%rax, %[pd6]\n\t"
+            "adc %%rdx, %[pd5]\n\t"
+
+            "mov %[mc1], %%rax\n\t" // 3
+            "mul %[mr3]\n\t"
+            "add %%rax, %[pd5]\n\t"
+            "adc %%rdx, %[pd4]\n\t"
+
+            "mov %[mc0], %%rax\n\t" // 4
+            "mul %[mr3]\n\t"
+            "add %%rax, %[pd4]\n\t" //
+
+            "mov %[mc3], %%rax\n\t" // 5
+            "mul %[mr2]\n\t"
+            "add %%rax, %[pd6]\n\t"
+            "adc %%rdx, %[pd5]\n\t"
+
+            "mov %[mc2], %%rax\n\t" // 6
+            "mul %[mr2]\n\t"
+            "add %%rax, %[pd5]\n\t"
+            "adc %%rdx, %[pd4]\n\t"
+
+            "mov %[mc1], %%rax\n\t" // 7
+            "mul %[mr2]\n\t"
+            "add %%rax, %[pd4]\n\t"
+
+            "mov %[mc3], %%rax\n\t" // 8
+            "mul %[mr1]\n\t"
+            "add %%rax, %[pd5]\n\t"
+            "adc %%rdx, %[pd4]\n\t"
+
+            "mov %[mc2], %%rax\n\t" // 9
+            "mul %[mr1]\n\t"
+            "add %%rdx, %[pd4]\n\t"
+
+            "mov %[mc3], %%rax\n\t" // 10
+            "mul %[mr0]\n\t"
+            "add %%rax, %[pd4]"
+
+            : // outputs
+                [pd4]"+r"(product.msdq().msq()),
+                [pd5]"+r"(product.msdq().lsq()),
+                [pd6]"+r"(product.lsdq().msq()),
+                [pd7]"+r"(product.lsdq().lsq())
+            : // inputs 
+                [mc0]"r"(mul.msdq().msq()),
+                [mc1]"r"(mul.msdq().lsq()),
+                [mc2]"r"(mul.lsdq().msq()),
+                [mc3]"r"(mul.lsdq().lsq()),
+
+                [mr0]"r"(mul.msdq().msq()),
+                [mr1]"r"(mul.msdq().lsq()),
+                [mr2]"r"(mul.lsdq().msq()),
+                [mr3]"r"(mul.lsdq().lsq())
             : "rax", "rdx", "memory", "cc"
         );
     #else
@@ -501,7 +555,6 @@ class uint256 {
 
     void printHex_separated() const {
         printf("0x%016lx:%016lx|%016lx:%016lx\n",msdq().msq(),msdq().lsq(),lsdq().msq(),lsdq().lsq());
-        printf("0x%016lx|0x%016lx\n",msdq(),lsdq());
     }
 
     void printBits() const {
