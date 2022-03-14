@@ -257,21 +257,21 @@ class uint128 {
     /** long division using bits, shifts and subtract */
     uint128 ss_div(const uint128& divisor) const {
         
-        uint128 quotient(0,0), pdvn(0,0), bit(0,0), one(0,1);
+        uint128 quotient(0,0), pdvn(0,0), bit(0,0);
 
         for(size_t i=0; i<128; ++i) {
 
-            pdvn = pdvn << 1;
-            quotient = quotient << 1;
+            pdvn <<= 1;
+            quotient <<= 1;
 
             bit = *this << i;
-            bit = bit >> 127;
+            bit >>= 127;
 
-            pdvn = pdvn | bit;
+            pdvn.lsq() |= bit.lsq();
 
             if(pdvn>=divisor) {
-                pdvn = pdvn - divisor;
-                quotient = quotient | one;
+                pdvn -= divisor;
+                quotient.lsq() |= 1;
             }
         }
 
