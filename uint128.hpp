@@ -130,8 +130,18 @@ class uint128 {
         return uint128(msq()|right.msq(), lsq()|right.lsq());
     }
 
+    uint128& operator|=(const uint128& right) {
+        msq()|=right.msq(), lsq()=right.lsq();
+        return *this;
+    }
+
     uint128 operator&(const uint128& right) const {
         return uint128(msq()&right.msq(), lsq()&right.lsq());
+    }
+
+    uint128& operator&=(const uint128& right) {
+        msq()&=right.msq(), lsq()&=right.lsq();
+        return *this;
     }
 
     uint128 operator+(const uint128& add) const {
@@ -149,6 +159,21 @@ class uint128 {
         }
 
         return sum;
+    }
+
+    uint128& operator+=(const uint128& add) {
+
+        unsigned long old_lsq = lsq();
+        unsigned long old_msq = msq();
+
+        lsq() += add.lsq();
+        msq() += add.msq();
+
+        if(lsq() < old_lsq) {
+            msq()++;
+        }
+
+        return *this;
     }
 
     uint128 operator-(const uint128& sub) const {
@@ -239,19 +264,83 @@ class uint128 {
         return product;
     }
 
-    /** this is only for dividing two uint128 where the divisor's msq is zero
-     * and the dividen has values in both it's own msq:lsq
+    /** 
+     * Multiplication of two 128-bit int using 4-bit unsigned int's.
      * 
-     * msq - most significant quadword
-     * lsq - least significant quadword
+     * this function is taking advantage of the "rdx:rax" registers
+     * and the "mul" assembly instruction to get the "rdx" or the
+     * upper quad-word when multiplying two unsigned 64-bit integers
+     * 
+     * mc = multiplicand
+     * mr = multiplier
+     * pd = product
+     * 
+     * This is the normal multiplication used to get the 256-bit product
+     * 
+     *                     | mc0 | mc1 |
+     *      x              | mr0 | mr1 |
+     *      -------------------------------
+     *         | pd0 | pd1 | pd2 | pd3 |
+     * 
+     * but here we omit the operations to get the pd0, and pd1 since
+     * we only need the 128-bit low part of the product [pd2:pd3]
     */
-    uint128 ep_div(const uint128& divisor)  const {
-        uint128(0,0);
-        // get the msq of the quotient
-        unsigned long msqr = 0;
+    uint128& operator*=(const uint128& mul) {
+        *this = *this * mul;
+        return *this;
+    }
 
+    // UNFINISHED
+    /** this is only for dividing uint128 to a uint64,
+     * this takes advantage of the "div" assembly instruction*/
+    uint128 ep_div(unsigned int divisor)  const {
 
-        return uint128(0,0);
+        // first we assign the value of the dividen to the quotient.
+        // this is because the "div" instruction works on rdx:rax,
+        // treating is as the dividen at first, then proceeds to store
+        // the outputs:
+        // quotient to the rax register
+        // remainder to the rdx register 
+        uint128 quotient = *this;
+        unsigned long remainder = 0;
+
+        if(divisor>msq()) {
+            // If the divisor is less than 264, but greater than the upper half of the dividend,
+            // the upper halves of quotient and remainder are 0, and a single DIV instruction yields their lower halves.
+#if(__MINGW32__)
+    #error "uint128/uint64 division has no implementation yet for mingw32."
+#elif(__GNUC__ || __GNUG__ || __clang__ || __MINGW64__)
+    #if (__x86_64__ || __ia64__ ||__amd__64__)
+        asm volatile(
+            "mov %[qmsq], %%rdx\n\t"
+            "mov %[qlsq], %%rax\n\t"
+            "div %[dvsr]\n\t"
+            "mov %%rax, %[qlsq]\n\t"
+            // "mov %%rdx, %[rmndr]" // enable line to get remainder
+            :[qlsq]"+m"(quotient.lsq()) // , [rmndr]"=m"(remainder) // enable line to get remainder
+            :[qmsq]"m"(quotient.msq()), [dvsr]"m"(data[0])
+            : "rax", "rdx", "memory", "cc"
+        );
+    #else
+        #error "uint128/uint64 division has no implementation yet for x86 architectures."
+    #endif
+#elif defined(_MSC_VER)
+    #error "uint128/uint64 division has no implementation yet for Microsoft Visual C++ Compiler."
+#else
+    #error "Unknown system : not supported"
+#endif
+        }
+        else if(divisor<=msq()) {
+            // If the divisor is less than 264 and not greater than the upper half of the dividend,
+            // the upper half of the remainder is 0 too, while its lower half and (both halves of)
+            // the quotient are produced with two consecutive DIV instructions using the so-called
+            // long alias schoolbook division (and 64-bit numbers as digits) to avoid an overflow
+            // of the quotient.
+
+            
+        }
+
+        return quotient;
     }
 
     /** long division using bits, shifts and subtract */
@@ -296,9 +385,31 @@ class uint128 {
         return uint128(0,0);
     }
 
+    uint128& operator/=(const uint128& divisor) {
+        uint128 quotient(0,0);
+        if(divisor.msq()==0 && divisor.lsq()==0) {
+            throw std::domain_error("division by zero is not possible");
+        }
+        else if(*this == divisor) {
+            quotient.msq() = 0;
+            quotient.lsq() = 1;
+            // remainder zero
+        }
+        else if(*this < divisor) {
+            quotient.msq() = 0;
+            quotient.lsq() = 0;
+            // remainder *this (dividen)
+        }
+        else {
+            quotient = this->ss_div(divisor);
+        }
+        *this = std::move(quotient);
+        return *this;
+    }
+
     uint128 operator<<(size_t lshift) const {
         uint128 lshifted = *this;
-        if(!lshift) {}
+        if(!lshift) { /* Do nothing */ }
         else if(lshift < ULONGBITS) {
             unsigned long msq_carry = lshifted.lsq() >> (ULONGBITS-lshift);
             lshifted.lsq() <<= lshift;
@@ -319,7 +430,7 @@ class uint128 {
 
     uint128 operator>>(size_t rshift) const {
         uint128 rshifted = *this;
-        if(!rshift) {}
+        if(!rshift) { /* Do nothing */ }
         else if(rshift < ULONGBITS) {
             unsigned long lsq_carry = rshifted.msq() << (ULONGBITS-rshift);
             rshifted.msq() >>= rshift;
@@ -339,7 +450,7 @@ class uint128 {
     }
 
     uint128& operator<<=(size_t lshift) {
-        if(!lshift) {}
+        if(!lshift) { /* Do nothing */ }
         else if(lshift < ULONGBITS) {
             unsigned long msq_carry = lsq() >> (ULONGBITS-lshift);
             lsq() <<= lshift;
@@ -359,7 +470,7 @@ class uint128 {
     }
 
     uint128& operator>>=(size_t rshift) {
-        if(!rshift) {}
+        if(!rshift) { /* Do nothing */ }
         else if(rshift < ULONGBITS) {
             unsigned long lsq_carry = msq() << (ULONGBITS-rshift);
             msq() >>= rshift;

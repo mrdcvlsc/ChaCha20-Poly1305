@@ -10,7 +10,7 @@ uint128 uint128_fac(unsigned int n) {
         big_i(0,1),
         one(0,1);
     for(size_t i=0; i<n; ++i) {
-        factorial = factorial * big_i;
+        factorial *= big_i;
         big_i = big_i + one;
     }
     return factorial;
@@ -35,32 +35,33 @@ int main() {
     uint128 ONE(0,1);
     uint128 TWO(0,2);
 
-    uint128 ZERO_MUL = ZERO * MAX;
+    uint128 ZERO_MUL = ZERO;
+    ZERO_MUL *= MAX;
     if(ZERO_MUL!=ZERO) {
-        std::cout << "uint128test_zero*max : FAILED\n";
+        std::cout << "uint128test_assign_zero*max : FAILED\n";
     }
     else {
-        std::cout << "uint128test_zero*max : PASSED\n";
+        std::cout << "uint128test_assign_zero*max : PASSED\n";
         Tests[0] = true;
     }
 
-    uint128 ONE_MUL = ONE * MAX;
-
+    uint128 ONE_MUL = ONE;
+    ONE_MUL *= MAX;
     if(ONE_MUL!=MAX) { // should be max , only for debugging was set to zero
-        std::cout << "uint128test_one*max : FAILED\n";
+        std::cout << "uint128test_assign_one*max : FAILED\n";
     }
     else {
-        std::cout << "uint128test_one*max : PASSED\n";
+        std::cout << "uint128test_assign_one*max : PASSED\n";
         Tests[1] = true;
     }
 
     uint128 FACTORIAL_OF_34_CORRECT(0xde1bc4d19efcac82,0x445da75b00000000);
     uint128 FACTORIAL_32 = uint128_fac(34);
     if(FACTORIAL_32!=FACTORIAL_OF_34_CORRECT) {
-        std::cout << "uint128test_factorial(34) : FAILED\n";
+        std::cout << "uint128test_assign_factorial(34) : FAILED\n";
     }
     else {
-        std::cout << "uint128test_factorial(34) : PASSED\n";
+        std::cout << "uint128test_assign_factorial(34) : PASSED\n";
         Tests[2] = true;
     }
 
@@ -74,11 +75,11 @@ int main() {
     }
 
     if(!failed_cnt) {
-        std::cout << "uint128 mul ALL test PASSED\n";
+        std::cout << "uint128 assign-mul ALL test PASSED\n";
         return 0;
     }
     else {
-        std::cout << "uint128 mul SOME test FAILED\n";
+        std::cout << "uint128 assign-mul SOME test FAILED\n";
         return 1;
     }
 }

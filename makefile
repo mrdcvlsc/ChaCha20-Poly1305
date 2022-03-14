@@ -24,6 +24,11 @@ test: $(OBJ)
 	@./$(SRC)/uint128_mul_test.out
 	@./$(SRC)/uint128_sub_test.out
 	@./$(SRC)/uint128_div_test.out
+	@./$(SRC)/uint128_assign_add_test.out
+	@./$(SRC)/uint128_assign_mul_test.out
+	@./$(SRC)/uint128_assign_sub_test.out
+	@./$(SRC)/uint128_div_ope_assign_test.out
+	@./$(SRC)/uint128_div_operator_test.out
 	
 
 # test: $(OBJ) # not working for some reasons
