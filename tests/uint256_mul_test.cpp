@@ -37,8 +37,6 @@ int main() {
     uint256 MAX128(uint128(0,0),uint128(0xffffffffffffffff,0xffffffffffffffff));
     uint256 UPPER_MAX128(uint128(0xffffffffffffffff,0xffffffffffffffff),uint128(0,0));
 
-    UPPER_MAX128.printHex();
-
     uint256 PROD = MAX128 * MAX128;
     uint256 PRODMAX = MAX * MAX;
     uint256 PROD_UPPER_MAX = UPPER_MAX128*UPPER_MAX128;
@@ -77,8 +75,6 @@ int main() {
 
     if(PRODMAX!=MAXMAX) {
         std::cout << "uint256test_max256^2 : FAILED\n";
-        MAXMAX.printHex();
-        PRODMAX.printHex();
     }
     else {
         std::cout << "uint256test_max256^2 : PASSED\n";

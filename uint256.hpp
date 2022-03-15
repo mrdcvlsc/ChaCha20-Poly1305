@@ -286,7 +286,7 @@ class uint256 {
             "mov %[mc2], %%rax\n\t" // 6
             "mul %[mr2]\n\t"
             "add %%rax, %[pd5]\n\t"
-            "adc %%rdx, %[pd4]\n\t"
+            "add %%rdx, %[pd4]\n\t"
 
             "mov %[mc1], %%rax\n\t" // 7
             "mul %[mr2]\n\t"
