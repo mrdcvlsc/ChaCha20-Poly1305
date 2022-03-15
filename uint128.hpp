@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <bitset>
+#include <utility>
 
 #if (__x86_64__ || __ia64__ ||__amd__64__)
 #define ULONGBITS 64
@@ -310,6 +311,94 @@ class uint128 {
 #endif
 
         return product;
+    }
+
+
+    // add with carry
+    std::pair<uint128,uint128> __fadd(const uint128& add) const {
+        
+        uint128 sum(msq(),lsq()), carry(0,0);
+
+        unsigned long old_lsq = sum.lsq();
+        unsigned long old_msq = sum.msq();
+
+        sum.lsq() += add.lsq();
+        sum.msq() += add.msq();
+
+        if(sum.lsq() < old_lsq) {
+            sum.msq()++;
+        }
+
+        if(sum.msq() < old_msq) {
+            carry++;
+        }
+
+        return {carry,sum};
+    }
+    
+    /** 
+     * Full Product of Multiplication of two 128-bit int using 4-bit unsigned int's.
+     * 
+     * this function is taking advantage of the "rdx:rax" registers
+     * and the "mul" assembly instruction to get the "rdx" or the
+     * upper quad-word when multiplying two unsigned 64-bit integers.
+     * 
+     * mc = multiplicand.
+     * mr = multiplier.
+     * pd = product.
+     * 
+     * This is the normal multiplication used to get the 256-bit product.
+     * 
+     *                     | mc0 | mc1 |
+     *      x              | mr0 | mr1 |
+     *      -------------------------------
+     *         | pd0 | pd1 | pd2 | pd3 |
+    */
+    std::pair<uint128,uint128> __fmull(const uint128& mul) const {
+    
+        uint128 HIGH(0,0);
+        uint128 LOW(0,0);
+
+#if(__MINGW32__)
+    #error "uint128 multiplication has no implementation yet for mingw32."
+#elif(__GNUC__ || __GNUG__ || __clang__ || __MINGW64__)
+    #if (__x86_64__ || __ia64__ ||__amd__64__)
+        asm volatile(
+            "mov %[mc1], %%rax\n\t"
+            "mul %[mr1]\n\t"
+            "mov %%rax, %[pd3]\n\t"
+            "mov %%rdx, %[pd2]\n\t"
+
+            "mov %[mc0], %%rax\n\t"
+            "mul %[mr1]\n\t"
+            "add %%rax, %[pd2]\n\t"
+            "add %%rdx, %[pd1]\n\t"
+
+            "mov %[mc1], %%rax\n\t"
+            "mul %[mr0]\n\t"
+            "add %%rax, %[pd2]\n\t"
+            "adc %%rdx, %[pd1]\n\t"
+            "adc $0, %[pd0]\n\t"
+
+            "mov %[mc0], %%rax\n\t"
+            "mul %[mr0]\n\t"
+            "add %%rax, %[pd1]\n\t"
+            "add %%rdx, %[pd0]"
+
+            :[pd0]"+r"(HIGH.msq()),[pd1]"+r"(HIGH.lsq()),[pd2]"+r"(LOW.msq()),[pd3]"+r"(LOW.lsq())
+            :[mr0]"r"(mul.msq()), [mr1]"r"(mul.lsq()), [mc0]"r"(data[0]), [mc1]"r"(data[1])
+            : "rax", "rdx", "memory", "cc"
+        );
+    #else
+        #error "uint128 multiplication has no implementation yet for x86 architectures."
+    #endif
+#elif defined(_MSC_VER)
+    #error "uint128 multiplication has no implementation yet for Microsoft Visual C++ Compiler."
+#else
+    #error "Unknown system : not supported"
+#endif
+
+        return {HIGH,LOW};
     }
 
     /** 

@@ -17,60 +17,60 @@ class uint256 {
     
     public:
 
-    uint128 *data;
+    uint128 *dqdata;
 
     uint256(const uint128& msdq, const uint128& lsdq) {
-        data = new uint128[2];
-        data[0] = msdq;
-        data[1] = lsdq;
+        dqdata = new uint128[2];
+        dqdata[0] = msdq;
+        dqdata[1] = lsdq;
     }
 
     // copy constructor
     uint256(const uint256& src) {
-        data = new uint128[2];
-        data[0] = src.msdq();
-        data[1] = src.lsdq();
+        dqdata = new uint128[2];
+        dqdata[0] = src.msdq();
+        dqdata[1] = src.lsdq();
     }
 
     // move constructor
     uint256(uint256&& src) noexcept {
-        data = src.data;
-        src.data = NULL;
+        dqdata = src.dqdata;
+        src.dqdata = NULL;
     }
 
     // copy assignment
     uint256& operator=(const uint256& src) {
-        data[0] = src.msdq();
-        data[1] = src.lsdq();
+        dqdata[0] = src.msdq();
+        dqdata[1] = src.lsdq();
         return *this;
     }
 
     // move assignment
     uint256& operator=(uint256&& src) {
-        if(data != NULL)
-            delete [] data;
+        if(dqdata != NULL)
+            delete [] dqdata;
 
-        data = src.data;
-        src.data = NULL;
+        dqdata = src.dqdata;
+        src.dqdata = NULL;
         return *this;
     }
 
     ~uint256(){
-        if(data != NULL)
-            delete [] data;
+        if(dqdata != NULL)
+            delete [] dqdata;
     }
 
     /// returns the most significant QUADWORD, or the upper uint64 halve of the uint256.
-    uint128& msdq() { return data[0]; }
+    uint128& msdq() { return dqdata[0]; }
     
     /// returns the least significant QUADWORD, or the lower uint64 halve of the uint256.
-    uint128& lsdq() { return data[1]; }
+    uint128& lsdq() { return dqdata[1]; }
 
     /// returns the most significant QUADWORD, or the upper uint64 halve of the uint256.
-    const uint128& msdq() const { return data[0]; }
+    const uint128& msdq() const { return dqdata[0]; }
 
     /// returns the least significant QUADWORD, or the lower uint64 halve of the uint256.
-    const uint128& lsdq() const { return data[1]; }
+    const uint128& lsdq() const { return dqdata[1]; }
 
     bool operator==(const uint256& roperand) const {
         return (msdq() == roperand.msdq()) && (lsdq() == roperand.lsdq());
@@ -235,63 +235,75 @@ class uint256 {
      * we only need the 256-bit low part of the product [pd4:pd5:pd6:pd7].
     */
     uint256 operator*(const uint256& mul) const {
-    
+        
         uint256 product(
             __UINT128_CONSTANT_ZERO,
             __UINT128_CONSTANT_ZERO
         );
 
+        /// SLOWER VERSION
+        // std::pair<uint128,uint128> UPPER12 = lsdq().__fmull(mul.lsdq());
+        // uint128 UPPER1 = msdq() * mul.lsdq();
+        // uint128 LOWER1 = lsdq() * mul.msdq();
+
+        // product.lsdq() = std::move(UPPER12.second);
+        // product.msdq() = std::move(UPPER12.first);
+        // product.msdq() = product.msdq() + UPPER1;
+        // product.msdq() = product.msdq() + LOWER1;
+        
+        /// FAST VERSION
 #if(__MINGW32__)
     #error "uint256 multiplication has no implementation yet for mingw32."
 #elif(__GNUC__ || __GNUG__ || __clang__ || __MINGW64__)
     #if (__x86_64__ || __ia64__ ||__amd__64__)
         asm volatile(
 
-            "movq %[mc3], %%rax\n\t" // 1
-            "mulq %[mr3]\n\t"
-            "movq %%rax, %[pd7]\n\t"
-            "movq %%rdx, %[pd6]\n\t"
+            "mov %[mc3], %%rax\n\t" // 1
+            "mul %[mr3]\n\t"
+            "mov %%rax, %[pd7]\n\t"
+            "mov %%rdx, %[pd6]\n\t"
 
-            "movq %[mc2], %%rax\n\t" // 2
-            "mulq %[mr3]\n\t"
-            "addq %%rax, %[pd6]\n\t"
-            "movq %%rdx, %[pd5]\n\t"
+            "mov %[mc2], %%rax\n\t" // 2
+            "mul %[mr3]\n\t"
+            "add %%rax, %[pd6]\n\t"
+            "mov %%rdx, %[pd5]\n\t"
 
-            "movq %[mc3], %%rax\n\t" // 5
-            "mulq %[mr2]\n\t"
-            "addq %%rax, %[pd6]\n\t"
-            "adcq %%rdx, %[pd5]\n\t"
+            "mov %[mc1], %%rax\n\t" // 3
+            "mul %[mr3]\n\t"
+            "add %%rax, %[pd5]\n\t"
+            "mov %%rdx, %[pd4]\n\t"
+            
+            "mov %[mc0], %%rax\n\t" // 4
+            "mul %[mr3]\n\t"
+            "add %%rax, %[pd4]\n\t"
 
-            "movq %[mc1], %%rax\n\t" // 3
-            "mulq %[mr3]\n\t"
-            "addq %%rax, %[pd5]\n\t"
-            "adcq %%rdx, %[pd4]\n\t"
+            "mov %[mc3], %%rax\n\t" // 5
+            "mul %[mr2]\n\t"
+            "add %%rax, %[pd6]\n\t"
+            "adc %%rdx, %[pd5]\n\t"
+            "adc $0, %[pd4]\n\t"
 
-            "movq %[mc2], %%rax\n\t" // 6
-            "mulq %[mr2]\n\t"
-            "addq %%rax, %[pd5]\n\t"
-            "adcq %%rdx, %[pd4]\n\t"
+            "mov %[mc2], %%rax\n\t" // 6
+            "mul %[mr2]\n\t"
+            "add %%rax, %[pd5]\n\t"
+            "adc %%rdx, %[pd4]\n\t"
 
-            "movq %[mc3], %%rax\n\t" // 8
-            "mulq %[mr1]\n\t"
-            "addq %%rax, %[pd5]\n\t"
-            "adcq %%rdx, %[pd4]\n\t"
+            "mov %[mc1], %%rax\n\t" // 7
+            "mul %[mr2]\n\t"
+            "add %%rax, %[pd4]\n\t"
 
-            "movq %[mc0], %%rax\n\t" // 4
-            "mulq %[mr3]\n\t"
-            "addq %%rax, %[pd4]\n\t"
+            "mov %[mc3], %%rax\n\t" // 8
+            "mul %[mr1]\n\t"
+            "add %%rax, %[pd5]\n\t"
+            "adc %%rdx, %[pd4]\n\t"
 
-            "movq %[mc1], %%rax\n\t" // 7
-            "mulq %[mr2]\n\t"
-            "addq %%rax, %[pd4]\n\t"
+            "mov %[mc2], %%rax\n\t" // 9
+            "mul %[mr1]\n\t"
+            "add %%rax, %[pd4]\n\t"
 
-            "movq %[mc2], %%rax\n\t" // 9
-            "mulq %[mr1]\n\t"
-            "addq %%rdx, %[pd4]\n\t"
-
-            "movq %[mc3], %%rax\n\t" // 10
-            "mulq %[mr0]\n\t"
-            "addq %%rax, %[pd4]\n\t"
+            "mov %[mc3], %%rax\n\t" // 10
+            "mul %[mr0]\n\t"
+            "add %%rax, %[pd4]\n\t"
 
             : // outputs
                 [pd4]"+r"(product.msdq().msq()),
@@ -376,7 +388,7 @@ class uint256 {
             "mov %%rax, %[qlsdq]\n\t"
             // "mov %%rdx, %[rmndr]" // enable line to get remainder
             :[qlsdq]"+m"(quotient.lsdq()) // , [rmndr]"=m"(remainder) // enable line to get remainder
-            :[qmsdq]"m"(quotient.msdq()), [dvsr]"m"(data[0])
+            :[qmsdq]"m"(quotient.msdq()), [dvsr]"m"(dqdata[0])
             : "rax", "rdx", "memory", "cc"
         );
     #else
@@ -559,21 +571,21 @@ class uint256 {
     }
 
     void printBits() const {
-        std::bitset<64> msdq_msq(data[0].msq());
-        std::bitset<64> msdq_lsq(data[0].lsq());
+        std::bitset<64> msdq_msq(dqdata[0].msq());
+        std::bitset<64> msdq_lsq(dqdata[0].lsq());
 
-        std::bitset<64> lsdq_msq(data[1].msq());
-        std::bitset<64> lsdq_lsq(data[1].lsq());
+        std::bitset<64> lsdq_msq(dqdata[1].msq());
+        std::bitset<64> lsdq_lsq(dqdata[1].lsq());
 
         std::cout << msdq_msq << msdq_lsq << lsdq_msq << lsdq_lsq << "\n";
     }
 
     void printBits_separated() const {
-        std::bitset<64> msdq_msq(data[0].msq());
-        std::bitset<64> msdq_lsq(data[0].lsq());
+        std::bitset<64> msdq_msq(dqdata[0].msq());
+        std::bitset<64> msdq_lsq(dqdata[0].lsq());
 
-        std::bitset<64> lsdq_msq(data[1].msq());
-        std::bitset<64> lsdq_lsq(data[1].lsq());
+        std::bitset<64> lsdq_msq(dqdata[1].msq());
+        std::bitset<64> lsdq_lsq(dqdata[1].lsq());
 
         std::cout << msdq_msq << ":" << msdq_lsq << "|" << lsdq_msq << ":" << lsdq_lsq << "\n";
     }
