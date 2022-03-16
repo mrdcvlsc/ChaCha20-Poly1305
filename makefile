@@ -32,6 +32,7 @@ test: $(OBJ)
 	@./$(SRC)/uint256_mul_test.out
 	@./$(SRC)/uint256_shifts_test.out
 	@./$(SRC)/uint256_div_test.out
+	@./$(SRC)/uint256_mod_test.out
 
 # test: $(OBJ) # not working for some reasons
 # 	@echo "running test programs"

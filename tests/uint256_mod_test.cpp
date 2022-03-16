@@ -5,7 +5,7 @@
 
 // #define PRINT_FAILED_OUTPUTS
 std::vector<bool> TEST_RESULTS;
-const static std::string TEST_NAME = "uint256 division";
+const static std::string TEST_NAME = "uint256 mod";
 void ASSERT_UINT256(const uint256& A, const uint256& B, const std::string& TEST_MESSAGE);
 
 int main() {
@@ -21,32 +21,32 @@ int main() {
     uint256 SEVENS(uint128(0,0),uint128(0,7777777777));
 
     // ANSWERS
-    uint256 MAXMAX = MAX / MAX;
-    uint256 MAXNUM1 = MAX / NUM1;
-    uint256 MAXONE = MAX / ONE;
-    uint256 MAXTWO = MAX / TWO;
-    uint256 MAXSEVENS = MAX / SEVENS;
+    uint256 MAXMAX = MAX % MAX;
+    uint256 MAXNUM1 = MAX % NUM1;
+    uint256 MAXONE = MAX % ONE;
+    uint256 MAXTWO = MAX % TWO;
+    uint256 MAXSEVENS = MAX % SEVENS;
 
-    uint256 SEVENSSEVENS = SEVENS / SEVENS;
-    uint256 SEVENSMAX = SEVENS / MAX;
-    uint256 SEVENSONE = SEVENS / ONE;
-    uint256 SEVENSTWO = SEVENS / TWO;
+    uint256 SEVENSSEVENS = SEVENS % SEVENS;
+    uint256 SEVENSMAX = SEVENS % MAX;
+    uint256 SEVENSONE = SEVENS % ONE;
+    uint256 SEVENSTWO = SEVENS % TWO;
 
-    uint256 NUM1SEVENS = NUM1 / SEVENS;
+    uint256 NUM1SEVENS = NUM1 % SEVENS;
 
     // TEST CORRECT ANSWER
-    uint256 MAXMAX_CORRECT = ONE;
-    uint256 MAXNUM1_CORRECT(uint128(0,0),uint128(0,0x5350664a6));
-    uint256 MAXONE_CORRECT = MAX;
-    uint256 MAXTWO_CORRECT(uint128(0x7fffffffffffffff, 0xffffffffffffffff), uint128(0xffffffffffffffff, 0xffffffffffffffff));
-    uint256 MAXSEVENS_CORRECT(uint128(0x8d5da3ce, 0x49195e642b636865), uint128(0x8e4177e9c449ee6a, 0x33673529c9315c68));
+    uint256 MAXMAX_CORRECT = ZERO;
+    uint256 MAXNUM1_CORRECT(uint128(0x22e7b548, 0x749a443b2f9b21f4), uint128(0xc9502bfaa43c879b, 0xe92a920fa009e06d));
+    uint256 MAXONE_CORRECT = ZERO;
+    uint256 MAXTWO_CORRECT = ONE;
+    uint256 MAXSEVENS_CORRECT(uint128(0, 0), uint128(0, 0x1748d7617));
 
-    uint256 SEVENSSENVES_CORRECT = ONE;
-    uint256 SEVENSMAX_CORRECT = ZERO;
-    uint256 SEVENSONE_CORRECT = SEVENS;
-    uint256 SEVENSTWO_CORRECT(uint128(0,0), uint128(0,0xe7cbbc38));
+    uint256 SEVENSSENVES_CORRECT = ZERO;
+    uint256 SEVENSMAX_CORRECT(uint128(0,0),uint128(0,0x1cf977871));
+    uint256 SEVENSONE_CORRECT = ZERO;
+    uint256 SEVENSTWO_CORRECT = ONE;
 
-    uint256 NUM1SEVENS_CORRECT(uint128(0,0x1b2604a7c831e170), uint128(0x612b0dac6f117c22, 0xb7b9368cf15ed0d9));
+    uint256 NUM1SEVENS_CORRECT(uint128(0,0), uint128(0, 0xe9f2422a));
 
     // TESTING ANSWER
     ASSERT_UINT256(MAXMAX,MAXMAX_CORRECT,"MAX/MAX");
@@ -72,12 +72,12 @@ int main() {
     std::cout << "---------------------------------\n";
     std::cout << TEST_NAME << " RESULT:" << "\n";
     if(!failed_cnt) {
-        std::cout << "ALL test PASSED\n";
+        std::cout << "\tALL test PASSED\n";
         std::cout << "---------------------------------\n";
         return 0;
     }
     else {
-        std::cout << "SOME test FAILED\n";
+        std::cout << "\tSOME test FAILED\n";
         std::cout << "---------------------------------\n";
         return 1;
     }

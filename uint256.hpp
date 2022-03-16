@@ -449,6 +449,35 @@ class uint256 {
         return quotient;
     }
 
+    /** long division using bits, shifts and subtract */
+    uint256 ss_mod(const uint256& divisor) const {
+        
+        uint256
+            quotient(__UINT128_CONSTANT_ZERO,__UINT128_CONSTANT_ZERO),
+            pdvn(__UINT128_CONSTANT_ZERO,__UINT128_CONSTANT_ZERO),
+            bit(__UINT128_CONSTANT_ZERO,__UINT128_CONSTANT_ZERO);
+
+        for(size_t i=0; i<U256BITS; ++i) {
+
+            pdvn <<= 1;
+            quotient <<= 1;
+
+            bit = *this << i;
+            bit >>= U255BITS;
+
+            pdvn.lsdq().lsq() |= bit.lsdq().lsq();
+
+            if(pdvn>=divisor) {
+                pdvn -= divisor;
+                quotient.lsdq().lsq() |= 1;
+            }
+        }
+
+        // pdvn is the remainder
+
+        return pdvn;
+    }
+
     uint256 operator/(const uint256& divisor) const {
         if(divisor.msdq()==__UINT128_CONSTANT_ZERO && divisor.lsdq()==__UINT128_CONSTANT_ZERO) {
             throw std::domain_error("division by zero is not possible");
@@ -462,10 +491,23 @@ class uint256 {
         else if(divisor.isOne()) {
             return *this;
         }
-        else {
-            return this->ss_div(divisor);
+        return this->ss_div(divisor);
+    }
+
+    uint256 operator%(const uint256& divisor) const {
+        if(divisor.msdq()==__UINT128_CONSTANT_ZERO && divisor.lsdq()==__UINT128_CONSTANT_ZERO) {
+            throw std::domain_error("% mod:division by zero is not possible");
         }
-        return uint256(__UINT128_CONSTANT_ZERO,__UINT128_CONSTANT_ZERO);
+        else if(*this == divisor) {
+            return uint256(__UINT128_CONSTANT_ZERO,__UINT128_CONSTANT_ZERO); // remainder zero
+        }
+        else if(*this < divisor) {
+            return *this; // remainder *this (dividen)
+        }
+        else if(divisor.isOne()) {
+            return uint256(__UINT128_CONSTANT_ZERO,__UINT128_CONSTANT_ZERO);  // remainder zero
+        }
+        return this->ss_mod(divisor);
     }
 
     uint256& operator/=(const uint256& divisor) {
@@ -490,6 +532,31 @@ class uint256 {
             quotient = this->ss_div(divisor);
         }
         *this = std::move(quotient);
+        return *this;
+    }
+
+    uint256& operator%=(const uint256& divisor) {
+        uint256 remainder(__UINT128_CONSTANT_ZERO,__UINT128_CONSTANT_ZERO);
+        if(divisor.msdq()==__UINT128_CONSTANT_ZERO && divisor.lsdq()==__UINT128_CONSTANT_ZERO) {
+            throw std::domain_error("% mod:division by zero is not possible");
+        }
+        else if(*this == divisor) {
+            remainder.msdq() = __UINT128_CONSTANT_ZERO;
+            remainder.lsdq() = __UINT128_CONSTANT_ONE;
+            // remainder zero
+        }
+        else if(*this < divisor) {
+            return *this;
+        }
+        else if(divisor.isOne()) {
+            remainder.msdq() = __UINT128_CONSTANT_ZERO;
+            remainder.lsdq() = __UINT128_CONSTANT_ONE;
+            // remainder zero
+        }
+        else {
+            remainder = this->ss_mod(divisor);
+        }
+        *this = std::move(remainder);
         return *this;
     }
 
