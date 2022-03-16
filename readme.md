@@ -21,13 +21,14 @@ The [dsi] bullet points might possiblly be an inaccurate or incorrect descriptio
 
 ## Dev Notes
 - **ChaCha state** - The description of the ChaCha algorithm will at various time refer to the **ChaCha state** as a **"vector"** of 16 elements represented as a 4x4 **"matrix"**. The matrix notation is more _visually convenient_ and gives a better notion as to _why some rounds_ are called **"column rounds"** while others are called **"diagonal rounds"**.
-
-```
-0 1 2 3
-4 5 6 7
-8 9 10 11
-12 13 14 15
-```
+    ```
+    +-----------+
+    | 0| 1| 2| 3|
+    | 4| 5| 6| 7|
+    | 8| 9|10|11|
+    |12|13|14|15|
+    +-----------+
+    ```
 
 - **ChaCha** - is the algorithm name
 
@@ -88,8 +89,12 @@ The [dsi] bullet points might possiblly be an inaccurate or incorrect descriptio
 <br>
 
 - **[dsi] Serializing the ChaCha20 Block output**
+
     ```c++
-    // output_state is an "unsigned int*"
+    unsigned int output_state[16];
+    // ...
+    // after some processing
+    // ...
     unsigned char* serialize = (unsigned char*) output_state;
     ```
 

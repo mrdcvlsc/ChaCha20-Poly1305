@@ -1,5 +1,5 @@
 CC := g++
-CPPFLAGS := -Og
+CPPFLAGS := -g -Og
 CXXFLAGS := -std=c++11
 
 OS := $(shell uname)
@@ -33,6 +33,7 @@ test: $(OBJ)
 	@./$(SRC)/uint256_shifts_test.out
 	@./$(SRC)/uint256_div_test.out
 	@./$(SRC)/uint256_mod_test.out
+	@./$(SRC)/poly1305_mac_test.out
 
 # test: $(OBJ) # not working for some reasons
 # 	@echo "running test programs"

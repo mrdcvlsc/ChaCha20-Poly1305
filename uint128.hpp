@@ -8,6 +8,7 @@
 #define UINT128BITS 128
 #define UINT128BITS_2x 256
 #define UINT127BITS 127
+#define UINT128BYTES 16
 
 #if (__x86_64__ || __ia64__ ||__amd__64__)
 #define ULONGBITS 64
@@ -635,6 +636,10 @@ class uint128 {
             msq() = lsq() = 0;
         }
         return *this;
+    }
+
+    void swapHighLow() {
+        std::swap(data[0],data[1]);
     }
 
     void printHex() const {

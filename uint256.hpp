@@ -9,6 +9,8 @@
 #define U255BITS 255
 #define U256BITS_2x 512
 
+#define POLY1305_KEYBYTES 32
+
 const static uint128 __UINT128_CONSTANT_ZERO(0,0);
 const static uint128 __UINT128_CONSTANT_ONE(0,1);
 const static uint128 __UINT128_CONSTANT_TWO(0,2);
@@ -18,6 +20,18 @@ class uint256 {
     public:
 
     uint128 *dqdata;
+
+    /**This is a special constructor for the poly1305 algorithm.
+     * 
+     * This stores the 16 byte part of a key into the lower 128-bit
+     * half of the uin256 and set the higher part to zero.
+    */
+    uint256(unsigned char *input_byte) {
+        unsigned long *deserialize = (unsigned long*) input_byte;
+        dqdata = new uint128[2];
+        dqdata[0] = __UINT128_CONSTANT_ZERO;
+        dqdata[1] = uint128(deserialize[0],deserialize[1]);
+    }
 
     uint256(const uint128& msdq, const uint128& lsdq) {
         dqdata = new uint128[2];
