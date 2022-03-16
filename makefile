@@ -30,7 +30,8 @@ test: $(OBJ)
 	@./$(SRC)/uint128_div_ope_assign_test.out
 	@./$(SRC)/uint128_div_operator_test.out
 	@./$(SRC)/uint256_mul_test.out
-	
+	@./$(SRC)/uint256_shifts_test.out
+	@./$(SRC)/uint256_div_test.out
 
 # test: $(OBJ) # not working for some reasons
 # 	@echo "running test programs"

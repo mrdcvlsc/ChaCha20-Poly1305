@@ -6,7 +6,7 @@
 #include "uint128.hpp"
 
 #define U256BITS 256
-#define U255BITS 256
+#define U255BITS 255
 #define U256BITS_2x 512
 
 const static uint128 __UINT128_CONSTANT_ZERO(0,0);
@@ -72,6 +72,13 @@ class uint256 {
     /// returns the least significant QUADWORD, or the lower uint64 halve of the uint256.
     const uint128& lsdq() const { return dqdata[1]; }
 
+    bool isOne() const {
+        if((msdq().msq()==0 && msdq().lsq()==0) &&
+           (lsdq().msq()==0 && lsdq().lsq()==1))
+            return true;
+        return false;
+    }
+
     bool operator==(const uint256& roperand) const {
         return (msdq() == roperand.msdq()) && (lsdq() == roperand.lsdq());
     }
@@ -134,7 +141,7 @@ class uint256 {
     }
 
     uint256& operator|=(const uint256& right) {
-        msdq()|=right.msdq(), lsdq()=right.lsdq();
+        msdq()|=right.msdq(), lsdq()|=right.lsdq();
         return *this;
     }
 
@@ -429,11 +436,11 @@ class uint256 {
             bit = *this << i;
             bit >>= U255BITS;
 
-            pdvn.lsdq() |= bit.lsdq();
+            pdvn.lsdq().lsq() |= bit.lsdq().lsq();
 
             if(pdvn>=divisor) {
                 pdvn -= divisor;
-                quotient.lsdq() |= __UINT128_CONSTANT_ONE;
+                quotient.lsdq().lsq() |= 1;
             }
         }
 
@@ -451,6 +458,9 @@ class uint256 {
         }
         else if(*this < divisor) {
             return uint256(__UINT128_CONSTANT_ZERO,__UINT128_CONSTANT_ZERO); // remainder *this (dividen)
+        }
+        else if(divisor.isOne()) {
+            return *this;
         }
         else {
             return this->ss_div(divisor);
@@ -473,6 +483,9 @@ class uint256 {
             quotient.lsdq() = __UINT128_CONSTANT_ZERO;
             // remainder *this (dividen)
         }
+        else if(divisor.isOne()) {
+            return *this;
+        }
         else {
             quotient = this->ss_div(divisor);
         }
@@ -483,14 +496,14 @@ class uint256 {
     uint256 operator<<(size_t lshift) const {
         uint256 lshifted = *this;
         if(!lshift) { /* Do nothing */ }
-        else if(lshift < U256BITS) {
-            uint128 msdq_carry = lshifted.lsdq() >> (U256BITS-lshift);
+        else if(lshift < UINT128BITS) {
+            uint128 msdq_carry = lshifted.lsdq() >> (UINT128BITS-lshift);
             lshifted.lsdq() <<= lshift;
             lshifted.msdq() <<= lshift;
             lshifted.msdq() |= msdq_carry;
         }
-        else if(lshift >= U256BITS && lshift < U256BITS_2x){
-            lshift -= U256BITS;
+        else if(lshift >= UINT128BITS && lshift < UINT128BITS_2x){
+            lshift -= UINT128BITS;
             lshifted.msdq() = lshifted.lsdq();
             lshifted.lsdq() = __UINT128_CONSTANT_ZERO;
             lshifted.msdq() = lshifted.msdq() << lshift;
@@ -504,14 +517,14 @@ class uint256 {
     uint256 operator>>(size_t rshift) const {
         uint256 rshifted = *this;
         if(!rshift) { /* Do nothing */ }
-        else if(rshift < U256BITS) {
-            uint128 lsdq_carry = rshifted.msdq() << (U256BITS-rshift);
+        else if(rshift < UINT128BITS) {
+            uint128 lsdq_carry = rshifted.msdq() << (UINT128BITS-rshift);
             rshifted.msdq() >>= rshift;
             rshifted.lsdq() >>= rshift;
             rshifted.lsdq() |= lsdq_carry;
         }
-        else if(rshift >= U256BITS && rshift < U256BITS_2x){
-            rshift -= U256BITS;
+        else if(rshift >= UINT128BITS && rshift < UINT128BITS_2x){
+            rshift -= UINT128BITS;
             rshifted.lsdq() = rshifted.msdq();
             rshifted.msdq() = __UINT128_CONSTANT_ZERO;
             rshifted.lsdq() >>= rshift;
@@ -524,14 +537,14 @@ class uint256 {
 
     uint256& operator<<=(size_t lshift) {
         if(!lshift) { /* Do nothing */ }
-        else if(lshift < U256BITS) {
-            uint128 msdq_carry = lsdq() >> (U256BITS-lshift);
+        else if(lshift < UINT128BITS) {
+            uint128 msdq_carry = lsdq() >> (UINT128BITS-lshift);
             lsdq() <<= lshift;
             msdq() <<= lshift;
             msdq() |= msdq_carry;
         }
-        else if(lshift >= U256BITS && lshift < U256BITS_2x){
-            lshift -= U256BITS;
+        else if(lshift >= UINT128BITS && lshift < UINT128BITS_2x){
+            lshift -= UINT128BITS;
             msdq() = lsdq();
             lsdq() = __UINT128_CONSTANT_ZERO;
             msdq() = msdq() << lshift;
@@ -544,14 +557,14 @@ class uint256 {
 
     uint256& operator>>=(size_t rshift) {
         if(!rshift) { /* Do nothing */ }
-        else if(rshift < U256BITS) {
-            uint128 lsdq_carry = msdq() << (U256BITS-rshift);
+        else if(rshift < UINT128BITS) {
+            uint128 lsdq_carry = msdq() << (UINT128BITS-rshift);
             msdq() >>= rshift;
             lsdq() >>= rshift;
             lsdq() |= lsdq_carry;
         }
-        else if(rshift >= U256BITS && rshift < U256BITS_2x){
-            rshift -= U256BITS;
+        else if(rshift >= UINT128BITS && rshift < UINT128BITS_2x){
+            rshift -= UINT128BITS;
             lsdq() = msdq();
             msdq() = __UINT128_CONSTANT_ZERO;
             lsdq() >>= rshift;

@@ -5,6 +5,10 @@
 #include <bitset>
 #include <utility>
 
+#define UINT128BITS 128
+#define UINT128BITS_2x 256
+#define UINT127BITS 127
+
 #if (__x86_64__ || __ia64__ ||__amd__64__)
 #define ULONGBITS 64
 #define ULONGBITS_2x 128
@@ -142,7 +146,7 @@ class uint128 {
     }
 
     uint128& operator|=(const uint128& right) {
-        msq()|=right.msq(), lsq()=right.lsq();
+        msq()|=right.msq(), lsq()|=right.lsq();
         return *this;
     }
 
