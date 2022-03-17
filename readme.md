@@ -9,7 +9,15 @@
 
 -----
 
-this is a from scratch, C++ (with slight inline assembyl) implementation of ```ChaCha20 & Poly1305``` stream cipher described in [RFC - 8439](https://www.rfc-editor.org/info/rfc8439).
+**Environment Requirements:**
+- x86_64 architecture
+- little endian system
+
+If you system does not have these requirements, it might produce wrong results or might not even compile.
+
+-----
+
+This is a from scratch, C++ (with slight inline assembyl) implementation of ```ChaCha20 & Poly1305``` stream cipher described in [RFC - 8439](https://www.rfc-editor.org/info/rfc8439).
 
 All information and content in this _readme.md_'s **Dev Notes** section about ```ChaCha20 & Poly1305``` came from or a pharaphrase of a certain sentence/paragraph/section in [RFC - 8439](https://www.rfc-editor.org/info/rfc8439)... except those bullets that has a **[dsi]** tag at the start which are _(me)developer's self interpretation_.
 
