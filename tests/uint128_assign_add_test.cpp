@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../uint128.hpp"
+#include "../ChaCha20.hpp"
 
 #define TEST_CASES 6
 

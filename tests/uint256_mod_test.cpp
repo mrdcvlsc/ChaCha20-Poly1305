@@ -1,7 +1,7 @@
 #include <iostream>
 #include <utility>
 #include <vector>
-#include "../uint256.hpp"
+#include "../ChaCha20.hpp"
 
 // #define PRINT_FAILED_OUTPUTS
 std::vector<bool> TEST_RESULTS;

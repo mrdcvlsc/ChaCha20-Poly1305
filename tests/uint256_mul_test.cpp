@@ -1,6 +1,6 @@
 #include <iostream>
 #include <utility>
-#include "../uint256.hpp"
+#include "../ChaCha20.hpp"
 
 #define TEST_CASES 6
 
