@@ -158,3 +158,42 @@ The [dsi] bullet points might possiblly be an inaccurate or incorrect descriptio
     - The block counter is set to zero.
 
     - The protocol will specify a 96-bit or 64-bit nonce. This MUST be unique per invocation with the same key, so it MUST NOT be randomly generated. A counter is a good way to implement this, but other methods, such as a Linear Feedback Shift Register (LFSR) are also . ChaCha20 as specified here requires a 96-bit nonce. So if the provided nonce is only 64-bit, then the first 32 bits of the nonce will be set to a constant number. This will usually be zero, but for protocols with multiple senders it may be different for each sender, but SHOULD be the same for all invocations of the function with the same key by a particular sender.
+
+- **AEAD Construction**
+
+    AEAD_CHACHA20_POLY1305 is an **authenticated encryption** with additional data algorithm.
+    
+    The **inputs** to AEAD_CHACHA20_POLY1305 are:
+
+    - A 256-bit key = ```unsigned char key[32]```.
+    - A 96-bit nonce = ```unsigned int[3]``` -- different for each invocation with the same key.
+    - An arbitrary length plaintext.
+    - Arbitrary length additional authenticated data (AAD).
+
+    **Steps:**
+    
+    - First, a Poly1305 one-time key is generated from the 256-bit key and nonce.
+
+    - Next, the ChaCha20 encryption function is called to encrypt the plaintext, using the same key and nonce, and with the initial counter set to 1.
+
+    - Finally, the Poly1305 function is called with the Poly1305 key calculated above, and a message constructed as a concatenation of the following:
+
+        - The AAD.
+        - padding1 -- the padding is up to 15 zero bytes, and it brings the total length so far to an integral multiple of 16. If the length of the AAD was already an integral multiple of 16 bytes, this field is zero-length.
+        - The ciphertext.
+        - padding2 -- the padding is up to 15 zero bytes, and it brings the total length so far to an integral multiple of 16. If the length of the ciphertext was already an integral multiple of 16 bytes, this field is zero-length.
+        - The length of the additional data in octets (as a 64-bit little-endian integer).
+        - The length of the ciphertext in octets (as a 64-bit little-endian integer).
+
+    - The **output** from the AEAD is the concatenation of:
+
+        - A ciphertext of the same length as the plaintext.
+        - A 128-bit tag, which is the output of the Poly1305 function.
+
+    - **Decryption** is similar with the following differences:
+
+        - The roles of ciphertext and plaintext are reversed, so the ChaCha20 encryption function is applied to the ciphertext, producing the plaintext.
+
+        - The Poly1305 function is still run on the AAD and the ciphertext, not the plaintext.
+
+        - The calculated tag is bitwise compared to the received tag. The message is authenticated if and only if the tags match.

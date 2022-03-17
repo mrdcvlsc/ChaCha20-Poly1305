@@ -27,6 +27,7 @@ static const int __CHAx220_BLK_FUNC_OUTPUT_BYTES__ = 64;
 static const int __CHAx220_BLK_FUNC_OUTPUT_DWORDS__ = 16;
 
 #define HALF_KEY_BYTES 16
+#define __CHACHA_STATE_COUNTER_INDEX__ 12
 
 namespace __internal_chacha20
 {
@@ -55,7 +56,7 @@ namespace __internal_chacha20
     * @param counter a 32 bit unsigned integer block counter, this is essential when
     * initializing ChaCha states for different ChaCha blocks, It creates uniqueness for different blocks.
     * @param nonce a 12-bytes/96-bits number only once, in some crypto scheme, this is called an IV.*/
-    void initialize_chacha_state( // function parameters
+    void init_state( // function parameters
         unsigned int *output,
         unsigned int *key,
         unsigned int counter,
@@ -91,10 +92,8 @@ namespace __internal_chacha20
      * @note the input and output are both 16 unsigned int arrays.
      * 
      * @param output this is where the result of the transformed ChaCha state will go.
-     * @param input this is the initial ChaCha state.
-     * @param nonce a 12-bytes/96-bits number only once, in some crypto scheme, this is called an IV.
-    */
-    void chacha20_block( // function parameters
+     * @param input this is the initial ChaCha state.*/
+    void apply_20rounds( // function parameters
         unsigned int *output,
         unsigned int *input) { // function body
         
@@ -144,12 +143,12 @@ namespace __internal_poly1305 {
     /**Generates the 16 byte(128-bits) tag using the 32 byte(256-bits) one time key
      * and an arbitrary length message.
      * 
+     * @param output an `unsigned char` array with an element size of 16 where the output tag will be written.
      * @param key an `unsigned char` array with 32 elements (bytes).
      * @param msg an `unsigned char` array, this is the message.
      * @param msg_len the length of the `msg` array.
-     * @param output an `unsigned char` array with an element size of 16, the output will be written here.
     */
-    void poly1305_mac(unsigned char *key, unsigned char* msg, size_t msg_len, unsigned char *output) {
+    void mac(unsigned char *output, unsigned char *key, unsigned char* msg, size_t msg_len) {
         
         unsigned char *unclamped_r = new unsigned char[HALF_KEY_BYTES];
         memcpy(unclamped_r,key,HALF_KEY_BYTES);
@@ -199,20 +198,58 @@ namespace __internal_poly1305 {
         delete [] unclamped_r;
     }
 
-    // void poly1305_key_gen(unsigned char *output, unsigned char *key, unsigned int *nonce) {
-    //     unsigned int counter = 0;
-    //     // __internal_chacha20::chacha20_block(output,key,)
-    // }
+    /**Generate the one-time Poly1305 key pseudorandomly.
+     * 
+     * @param output a 32 byte unsigned char array where the generated key will be stored.
+     * @param key aa 32 byte or 256-bit session integrity key.
+     * @param nonce a number only once, this must be unique per invocation with he same key,
+     * so it MUST NOT be randomly generated (because random number generation might produce
+     * the same value). Instead a counter is a good way to get the value for the nonce instead.
+     * other methods, such as a Linear Feedback Shift Register (LFSR) are also possible.
+     * @param counter optional argument, this defaults to 0
+    */
+    void key_gen(unsigned char *output, unsigned char *key, unsigned int *nonce, unsigned int counter=0) {
+        
+        unsigned int *initial_state = new unsigned int[__CHAx220_STATE_DWORDS__];
+        unsigned int *transformed_state = new unsigned int[__CHAx220_STATE_DWORDS__];
+        
+        __internal_chacha20::init_state(initial_state,(unsigned int*)key,counter,nonce);
+        __internal_chacha20::apply_20rounds((unsigned int*)transformed_state,initial_state);
+        
+
+        // We take the first 256 bits of the serialized state, and use those as the
+        // one-time Poly1305 key:
+        memcpy(output,transformed_state,32);
+
+        delete [] transformed_state;
+        delete [] initial_state;
+    }
 }
 
 namespace ChaCha20
 {
+    /**The ChaCha20 Block Encryption.
+     * @param key A 256-bit key, treated as a concatenation of eight 32-bit little-endian integers.
+     * @param counter a 32 bit unsigned integer block counter, this is essential when
+     * initializing ChaCha states for different ChaCha blocks, It creates uniqueness for different blocks.
+     * @param nonce a number only once.
+     * @param plaintext this is the message to be encrypted.
+     * @param len this is the size of the message in bytes.
+     * @return cipher_text this is the encrypted plaintext message,
+     * the return value is an unsigned char pointer, the allocated heap size
+     * is the as the plaintext length or the size of the message.
+     * 
+     * WARNING!!! - THE POINTER ASSIGNED TO THIS FUNCTION SHOULD NOT BE ALLOCATED YET, THE ALLOCATION
+     * WILL HAPPED INSIDE THIS FUNCTION, AND AFTER THE ASSIGNED POINTER IS USED, IT
+     * SHOULD BE FREED USING THE delete [] KEYWORD!.
+    */
     unsigned char *encrypt( // function parameters
         unsigned char *key,
         unsigned int counter,
         unsigned char *nonce,
         unsigned char *plaintext,
-        size_t len) { // function body
+        size_t len
+    ) { // function body
 
         unsigned int *plaintext_blocked = (unsigned int*) plaintext;
 
@@ -222,24 +259,27 @@ namespace ChaCha20
         size_t blocks = len/__CHAx220_BLK_FUNC_OUTPUT_BYTES__;
         size_t lastblock_bytes = (len%__CHAx220_BLK_FUNC_OUTPUT_BYTES__);
 
-        unsigned int *initial_state = new unsigned int[__CHAx220_STATE_DWORDS__];
+        unsigned int *chacha_state = new unsigned int[__CHAx220_STATE_DWORDS__];
         unsigned int *key_stream = new unsigned int[__CHAx220_STATE_DWORDS__];
+
+        // initialize ChaCha20 state
+        __internal_chacha20::init_state(
+            chacha_state,
+            (unsigned int*)key,
+            counter,
+            (unsigned int*)nonce
+        );
 
         for(size_t i=0; i<blocks; ++i) {
 
-            // initialize ChaCha20 state for the current block
-            __internal_chacha20::initialize_chacha_state(
-                initial_state,
-                (unsigned int*)key,
-                counter+i,
-                (unsigned int*)nonce
+            // perform ChaCha20 Block Function and get the key_stream output
+            __internal_chacha20::apply_20rounds(
+                key_stream,
+                chacha_state
             );
 
-            // perform ChaCha20 Block Function and get the key_stream output
-            __internal_chacha20::chacha20_block(
-                key_stream,
-                initial_state
-            );
+            // increment the chacha state's counter index
+            ++chacha_state[__CHACHA_STATE_COUNTER_INDEX__] += i;
 
             if(blocks) {
                 for( // loop condition
@@ -259,18 +299,10 @@ namespace ChaCha20
             unsigned int *padded_last_block = (unsigned int*) padded_last_bytes;
             memcpy(padded_last_bytes,plaintext+(__CHAx220_BLK_FUNC_OUTPUT_BYTES__*blocks),lastblock_bytes);
 
-            // initialize ChaCha20 state for the current block
-            __internal_chacha20::initialize_chacha_state(
-                initial_state,
-                (unsigned int*)key,
-                counter+blocks,
-                (unsigned int*)nonce
-            );
-
             // perform ChaCha20 Block Function and get the key_stream output
-            __internal_chacha20::chacha20_block(
+            __internal_chacha20::apply_20rounds(
                 key_stream,
-                initial_state
+                chacha_state
             );
             
             for( // loop condition
@@ -286,11 +318,212 @@ namespace ChaCha20
             delete [] padded_last_bytes;
         }
 
-        delete [] initial_state;
+        delete [] chacha_state;
         delete [] key_stream;
 
         return cipher_text;
-    }    
+    }
+
+    /**The ChaCha20 Block Encryption.
+     * @param cipher_text this is the encrypted plaintext message,
+     * here it is a heap allocated unsigned char array pointer that
+     * has the same length as the plaintext.
+     * @param key A 256-bit key, treated as a concatenation of eight 32-bit little-endian integers.
+     * @param counter a 32 bit unsigned integer block counter, this is essential when
+     * initializing ChaCha states for different ChaCha blocks, It creates uniqueness for different blocks.
+     * @param nonce a number only once.
+     * @param plaintext this is the message to be encrypted.
+     * @param len this is the size of the message in bytes.
+     * */
+    void encrypt( // function parameters
+        unsigned char *cipher_text,
+        unsigned char *key,
+        unsigned int counter,
+        unsigned char *nonce,
+        unsigned char *plaintext,
+        size_t len
+    ) { // function body
+
+        unsigned int *plaintext_blocked = (unsigned int*) plaintext;
+
+        unsigned int *cipher_blocked = (unsigned int*) cipher_text;
+
+        size_t blocks = len/__CHAx220_BLK_FUNC_OUTPUT_BYTES__;
+        size_t lastblock_bytes = (len%__CHAx220_BLK_FUNC_OUTPUT_BYTES__);
+
+        unsigned int *chacha_state = new unsigned int[__CHAx220_STATE_DWORDS__];
+        unsigned int *key_stream = new unsigned int[__CHAx220_STATE_DWORDS__];
+
+        // initialize ChaCha20 state
+        __internal_chacha20::init_state(
+            chacha_state,
+            (unsigned int*)key,
+            counter,
+            (unsigned int*)nonce
+        );
+
+        for(size_t i=0; i<blocks; ++i) {
+
+            // perform ChaCha20 Block Function and get the key_stream output
+            __internal_chacha20::apply_20rounds(
+                key_stream,
+                chacha_state
+            );
+
+            // increment the chacha state's counter index
+            ++chacha_state[__CHACHA_STATE_COUNTER_INDEX__] += i;
+
+            if(blocks) {
+                for( // loop condition
+                    size_t j=(__CHAx220_BLK_FUNC_OUTPUT_DWORDS__*i), k=0;
+                    j<((__CHAx220_BLK_FUNC_OUTPUT_DWORDS__*i)+__CHAx220_BLK_FUNC_OUTPUT_DWORDS__);
+                    ++j) {
+
+                    cipher_blocked[j] = plaintext_blocked[j] ^ key_stream[k++];
+                }
+            }
+        }
+
+        // XOR remaining key_stream bytes and plaintext bytes
+        if(lastblock_bytes) {
+
+            unsigned char *padded_last_bytes = new unsigned char[__CHAx220_BLK_FUNC_OUTPUT_BYTES__];
+            unsigned int *padded_last_block = (unsigned int*) padded_last_bytes;
+            memcpy(padded_last_bytes,plaintext+(__CHAx220_BLK_FUNC_OUTPUT_BYTES__*blocks),lastblock_bytes);
+
+            // perform ChaCha20 Block Function and get the key_stream output
+            __internal_chacha20::apply_20rounds(
+                key_stream,
+                chacha_state
+            );
+            
+            for( // loop condition
+                size_t j=(__CHAx220_BLK_FUNC_OUTPUT_DWORDS__*blocks), k=0;
+                j<((__CHAx220_BLK_FUNC_OUTPUT_DWORDS__*blocks)+__CHAx220_BLK_FUNC_OUTPUT_DWORDS__);
+                ++j, ++k) {
+
+                padded_last_block[k] ^= key_stream[k];
+            }
+
+            memcpy(cipher_text+(__CHAx220_BLK_FUNC_OUTPUT_BYTES__*blocks),padded_last_bytes,lastblock_bytes);
+
+            delete [] padded_last_bytes;
+        }
+
+        delete [] chacha_state;
+        delete [] key_stream;
+    }
+
+    /**This function gets the next multiple of 16 from a given number.
+     *
+     * @return returns the needed padding size in bytes.*/
+    size_t pad16_size(size_t len) {
+        if(len%16==0)
+            return 0;
+        return 16-(len%16);
+    }
+    
+    /**AEAD_CHACHA20_POLY1305 is an authenticated encryption.
+     * 
+     * Note: the nonce is produced inside this function by concatenating
+     * the constant and iv; (constant|iv).
+     * 
+     * @param ciphertext this is the resulting cipher text output.
+     * @param tag this is the resulting 128-bit/16-bytes of unsigned
+     * char array output, used for authenticating the cipher text.
+     * @param plaintext this is the input plain text that will be encrypted.
+     * @param text_len this is the size of the input plaintext and the output ciphertext in bytes.
+     * @param aad Arbitrary length additional authenticated data (AAD).
+     * @param aad_len this is the size of the input add in bytes.
+     * @param key a 256-bit key or 32 byte unsigned char array.
+     * @param iv initialization vector or IV.
+     * @param constant a 32-bit unsigned integer.
+    */
+    void aead_encrypt(
+        unsigned char *ciphertext, unsigned char *tag,
+        unsigned char *plaintext, size_t text_len,
+        unsigned char *aad, size_t aad_len, unsigned char *key,
+        unsigned char *iv, unsigned char *constant
+    ) {
+        // nonce = constant | iv
+        unsigned int *nonce = new unsigned int[3];
+        unsigned char *nonce_char = (unsigned char*) nonce;
+
+        memcpy(nonce_char,constant,4);
+        memcpy(nonce_char+4,iv,8);
+
+        // otk = key_gen(key, nonce)
+        unsigned char *poly1305_key = new unsigned char[32];
+        __internal_poly1305::key_gen(poly1305_key,key,(unsigned int*)nonce);
+
+        // ciphertext = chacha20_encrypt(key, 1, nonce, plaintext)
+        encrypt(ciphertext,key,1,(unsigned char*)nonce,plaintext,text_len);
+
+        size_t padding1 = pad16_size(aad_len);
+        size_t padding2 = pad16_size(text_len);
+
+        size_t mac_len = aad_len+padding1;
+        mac_len += (text_len+padding2);
+        mac_len += 16;
+        unsigned char *mac_data = new unsigned char[mac_len];
+
+        size_t curr_pos = 0;
+        memcpy(mac_data,aad,aad_len);
+        memset(mac_data+(curr_pos+=aad_len),0x00,padding1);
+        memcpy(mac_data+(curr_pos+=padding1),ciphertext,text_len);
+        memset(mac_data+(curr_pos+=text_len),0x00,padding2);
+        memcpy(mac_data+(curr_pos+=padding2), &aad_len,8);
+        memcpy(mac_data+(curr_pos+=8), &text_len,8);
+
+        __internal_poly1305::mac(tag,poly1305_key,mac_data,mac_len);
+
+        delete [] mac_data;
+        delete [] poly1305_key;
+        delete [] nonce;
+    }
+
+    void aead_decrypt(
+        unsigned char *plaintext, unsigned char *tag,
+        unsigned char *ciphertext, size_t text_len,
+        unsigned char *aad, size_t aad_len, unsigned char *key,
+        unsigned char *iv, unsigned char *constant
+    ) {
+        // nonce = constant | iv
+        unsigned int *nonce = new unsigned int[3];
+        unsigned char *nonce_char = (unsigned char*) nonce;
+
+        memcpy(nonce_char,constant,4);
+        memcpy(nonce_char+4,iv,8);
+
+        // otk = key_gen(key, nonce)
+        unsigned char *poly1305_key = new unsigned char[32];
+        __internal_poly1305::key_gen(poly1305_key,key,(unsigned int*)nonce);
+
+        // plaintext = chacha20_encrypt(key, 1, nonce, ciphertext)
+        encrypt(plaintext,key,1,(unsigned char*)nonce,ciphertext,text_len);
+
+        size_t padding1 = pad16_size(aad_len);
+        size_t padding2 = pad16_size(text_len);
+
+        size_t mac_len = aad_len+padding1;
+        mac_len += (text_len+padding2);
+        mac_len += 16;
+        unsigned char *mac_data = new unsigned char[mac_len];
+
+        size_t curr_pos = 0;
+        memcpy(mac_data,aad,aad_len);
+        memset(mac_data+(curr_pos+=aad_len),0x00,padding1);
+        memcpy(mac_data+(curr_pos+=padding1),plaintext,text_len);
+        memset(mac_data+(curr_pos+=text_len),0x00,padding2);
+        memcpy(mac_data+(curr_pos+=padding2), &aad_len,8);
+        memcpy(mac_data+(curr_pos+=8), &text_len,8);
+
+        __internal_poly1305::mac(tag,poly1305_key,mac_data,mac_len);
+
+        delete [] mac_data;
+        delete [] poly1305_key;
+        delete [] nonce;
+    }
 }
 
 #endif

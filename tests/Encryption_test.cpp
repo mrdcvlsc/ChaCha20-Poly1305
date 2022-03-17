@@ -1,6 +1,13 @@
 #include <iostream>
 #include "../ChaCha20.hpp"
 
+void printBytes(unsigned char* bytearray, size_t len) {
+    for(size_t i=0; i<len; ++i) {
+        printf("%02x ", bytearray[i]);
+    }
+    std::cout << "\n";
+}
+
 int main()
 {
     unsigned char key[32] = {

@@ -34,6 +34,8 @@ test: $(OBJ)
 	@./$(SRC)/uint256_div_test.out
 	@./$(SRC)/uint256_mod_test.out
 	@./$(SRC)/poly1305_mac_test.out
+	@./$(SRC)/poly1305_keygen.out
+	@./$(SRC)/chacha20_aead_enc_dec.out
 
 # test: $(OBJ) # not working for some reasons
 # 	@echo "running test programs"

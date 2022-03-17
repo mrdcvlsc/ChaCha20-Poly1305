@@ -40,8 +40,8 @@ int main()
     unsigned int *initial_state = new unsigned int[__CHAx220_STATE_DWORDS__];
     unsigned int* output_state = new unsigned int[__CHAx220_BLK_FUNC_OUTPUT_DWORDS__];
 
-    __internal_chacha20::initialize_chacha_state(initial_state,(unsigned int*)key,1,(unsigned int*)nonce);
-    __internal_chacha20::chacha20_block(output_state,initial_state);
+    __internal_chacha20::init_state(initial_state,(unsigned int*)key,1,(unsigned int*)nonce);
+    __internal_chacha20::apply_20rounds(output_state,initial_state);
     
     unsigned char* serialize = (unsigned char*) output_state;
 
