@@ -25,6 +25,13 @@ The [dsi] bullet points might possiblly be an inaccurate or incorrect descriptio
 
 -----
 
+make -f staticlib
+make -f staticlib static_test
+make -f staticlib clean_tests
+make -f staticlib clean
+
+-----
+
 ## Dev Notes
 - **ChaCha state** - The description of the ChaCha algorithm will at various time refer to the **ChaCha state** as a **"vector"** of 16 elements represented as a 4x4 **"matrix"**. The matrix notation is more _visually convenient_ and gives a better notion as to _why some rounds_ are called **"column rounds"** while others are called **"diagonal rounds"**.
     ```

@@ -1,5 +1,28 @@
+# target : g++ test.cpp -o test2.out -DMAKE_LIB -I./ -L./ -static -lchacha20
+# target new :
+# 		g++ -I./ -c uint128.cpp
+#		ar -r libchacha20.a uint128.o
+# 		g++ uint128t.cpp -o test3.out -I ./ -L./ -
+#		./test3.out
+
 CC := g++
-CPPFLAGS := -g -Og
+
+default:
+	@echo "creating static lib"
+	@echo "compiling uint128..."
+	@$(CC) -c uint128.cpp -O2 -DMAKE_LIB
+	@echo "compiling uint256..."
+	@$(CC) -c uint256.cpp -O2 -DMAKE_LIB
+	@echo "compiling ChaCha20..."
+	@$(CC) -c ChaCha20.cpp -O2 -DMAKE_LIB
+	@echo "compiling libchacha20.a..."
+	ar -r libchacha20.a uint128.o uint256.o ChaCha20.o
+
+clean:
+	@echo "removing objects..."
+	@rm *.o libchacha20.a *.out
+
+CPPFLAGS := -g -Og -I./ -L./ -lchacha20 -DMAKE_LIB
 CXXFLAGS := -std=c++11 -Wall -Wextra
 
 OS := $(shell uname)
@@ -14,7 +37,7 @@ OBJ := $(patsubst $(SRC)/%.cpp,$(SRC)/%.out,$(SRC_FILES))
 
 # -------------------------- run test programs ---------------------------
 
-header_test: $(OBJ)
+static_test: $(OBJ)
 	@./$(SRC)/QuarterRound_test.out
 	@./$(SRC)/BlockFunction_test.out
 	@./$(SRC)/Encryption_test.out
@@ -45,9 +68,9 @@ header_test: $(OBJ)
 
 $(SRC)/%.out: $(SRC)/%.cpp
 	@echo "compiling test program - compiler : $(CC)"
-	@$(CC) $(CPPFLAGS) $(CXXFLAGS) -o $@ $<
+	$(CC) $(CXXFLAGS) -o $@ $< $(CPPFLAGS)
 
-clean:
+clean_tests:
 	@echo "deleting compiled test programs"
 	@rm ./$(SRC)/*.out
 

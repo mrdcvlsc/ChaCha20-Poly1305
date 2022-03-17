@@ -1,8 +1,10 @@
 #ifndef uidMRDCVLSC_uint256_CPP
 #define uidMRDCVLSC_uint256_CPP
-
 #include <iostream>
-#include "uint256.hpp"
+
+#ifdef MAKE_LIB
+#include "ChaCha20-Poly1305.hpp"
+#endif
 
 /**This is a special constructor for the poly1305 algorithm.
  * 

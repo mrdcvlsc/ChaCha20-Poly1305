@@ -1,8 +1,10 @@
 #ifndef _UINT128_CPP_mrdcvlsc_
 #define _UINT128_CPP_mrdcvlsc_
-
 #include <iostream>
-#include "uint128.hpp"
+
+#ifdef MAKE_LIB
+#include "ChaCha20-Poly1305.hpp"
+#endif
 
 uint128::uint128() {
     data = NULL;

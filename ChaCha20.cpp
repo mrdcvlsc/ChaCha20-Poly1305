@@ -1,8 +1,10 @@
 #ifndef _CHACHA20_CPP_mrdcvlsc_
 #define _CHACHA20_CPP_mrdcvlsc_
-
 #include <iostream>
-#include "ChaCha20.hpp"
+
+#ifdef MAKE_LIB
+#include "ChaCha20-Poly1305.hpp"
+#endif
 
 namespace __internal_chacha20
 {
@@ -14,7 +16,7 @@ namespace __internal_chacha20
         return msb | lsb;
     }
 
-    inline void QUARTERROUND(unsigned int *state, size_t x, size_t y, size_t z, size_t w) {
+    void QUARTERROUND(unsigned int *state, size_t x, size_t y, size_t z, size_t w) {
         
         state[x] += state[y]; state[w] ^= state[x]; state[w] = bit_left_roll(state[w],16);
         state[z] += state[w]; state[y] ^= state[z]; state[y] = bit_left_roll(state[y],12);
@@ -99,6 +101,11 @@ namespace __internal_chacha20
 }
 
 namespace __internal_poly1305 {
+
+    static const uint256
+        PLY_CNSTNT_1(uint128(0,0),uint128(0,1)),
+        PLY_CNSTNT_5(uint128(0,0),uint128(0,5)),
+        PLY_CNSTNT_2POWER128(uint128(0,0x1), uint128(0x0000000000000000, 0x0000000000000000));
 
     void clamp(unsigned char r[HALF_KEY_BYTES]) {
         r[3] &= 15;
