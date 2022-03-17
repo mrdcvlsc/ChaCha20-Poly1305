@@ -165,7 +165,7 @@ class uint128 {
         uint128 sum(msq(),lsq());
 
         unsigned long old_lsq = sum.lsq();
-        unsigned long old_msq = sum.msq();
+        // unsigned long old_msq = sum.msq();
 
         sum.lsq() += add.lsq();
         sum.msq() += add.msq();
@@ -180,7 +180,7 @@ class uint128 {
     uint128& operator+=(const uint128& add) {
 
         unsigned long old_lsq = lsq();
-        unsigned long old_msq = msq();
+        // unsigned long old_msq = msq();
 
         lsq() += add.lsq();
         msq() += add.msq();
@@ -195,7 +195,7 @@ class uint128 {
     uint128& operator++() {
 
         unsigned long old_lsq = lsq();
-        unsigned long old_msq = msq();
+        // unsigned long old_msq = msq();
 
         lsq() += 1;
         msq() += 0;
@@ -216,7 +216,7 @@ class uint128 {
         uint128 dif(msq(),lsq());
 
         unsigned long old_lsq = dif.lsq();
-        unsigned long old_msq = dif.msq();
+        // unsigned long old_msq = dif.msq();
 
         dif.lsq() -= sub.lsq();
         dif.msq() -= sub.msq();
@@ -231,7 +231,7 @@ class uint128 {
     uint128& operator-=(const uint128& sub) {
 
         unsigned long old_lsq = lsq();
-        unsigned long old_msq = msq();
+        // unsigned long old_msq = msq();
 
         lsq() -= sub.lsq();
         msq() -= sub.msq();
@@ -246,7 +246,7 @@ class uint128 {
     uint128& operator--() {
 
         unsigned long old_lsq = lsq();
-        unsigned long old_msq = msq();
+        // unsigned long old_msq = msq();
 
         lsq() -= 1;
         msq() -= 0;
@@ -444,7 +444,7 @@ class uint128 {
         // quotient to the rax register
         // remainder to the rdx register 
         uint128 quotient = *this;
-        unsigned long remainder = 0;
+        // unsigned long remainder = 0;
 
         if(divisor>msq()) {
             // If the divisor is less than 264, but greater than the upper half of the dividend,

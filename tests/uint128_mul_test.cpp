@@ -22,14 +22,6 @@ int main() {
     for(size_t i=0; i<TEST_CASES; ++i)
         Tests[i] = false;
 
-    unsigned char cmax = 255;
-    unsigned char cx64 = 7;
-    unsigned char cprd = cmax * cx64;
-
-    unsigned short scmax = 255;
-    unsigned short scx64 = 7;
-    unsigned short scprd = scmax * scx64;    
-
     uint128 MAX(0xffffffffffffffff, 0xffffffffffffffff);
     uint128 ZERO(0,0);
     uint128 ONE(0,1);

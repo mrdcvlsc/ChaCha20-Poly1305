@@ -141,3 +141,20 @@ The [dsi] bullet points might possiblly be an inaccurate or incorrect descriptio
 
 - **Output of Poly1305**
     - The output is a 128-bit tag.
+
+- **Poly1305 key generation**
+    
+    Generate the one-time
+    Poly1305 key pseudorandomly.
+
+    To generate such a key pair (r,s), we will use the ChaCha20 block function.
+
+    Note that in the AEAD construction defined in Section 2.8, the same key is used for encryption and key generation.
+
+    Parameters:
+
+    - The 256-bit session integrity key is used as the ChaCha20 key.
+
+    - The block counter is set to zero.
+
+    - The protocol will specify a 96-bit or 64-bit nonce. This MUST be unique per invocation with the same key, so it MUST NOT be randomly generated. A counter is a good way to implement this, but other methods, such as a Linear Feedback Shift Register (LFSR) are also . ChaCha20 as specified here requires a 96-bit nonce. So if the provided nonce is only 64-bit, then the first 32 bits of the nonce will be set to a constant number. This will usually be zero, but for protocols with multiple senders it may be different for each sender, but SHOULD be the same for all invocations of the function with the same key by a particular sender.
