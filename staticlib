@@ -9,6 +9,10 @@ CC := g++
 INSTALL_PREFIX=/usr/local/
 
 default:
+	@echo "creating build directory"
+	@mkdir build
+	@mkdir build/include
+	@mkdir build/lib
 	@echo "creating static lib"
 	@echo "compiling uint128..."
 	@$(CC) -c uint128.cpp -O2 -DMAKE_LIB
@@ -20,16 +24,14 @@ default:
 	@ar -r libchacha20.a uint128.o uint256.o ChaCha20.o
 	@echo "build done : output -> libchacha20.a"
 	@echo "moving files to build folder"
-	@mv -s $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/libchacha.a ./build/lib/
-	@mv -s $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/ChaCha20-Poly1305.hpp ./build/include/
-	@mv -s $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/uint128.hpp ./build/include/
-	@mv -s $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/uint256.hpp ./build/include/
+	@mv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))libchacha20.a ./build/lib/
+	@cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))ChaCha20-Poly1305.hpp ./build/include/
 
-clean:
+cleanup:
 	@echo "removing objects..."
-	@rm *.o *.out tests/*.out
+	@rm *.o
 
-CPPFLAGS := -g -Og -I./ -L./ -lchacha20 -DMAKE_LIB
+CPPFLAGS := -g -Og -I./build/include -L./build/lib -lchacha20 -DMAKE_LIB
 CXXFLAGS := -std=c++11 -Wall -Wextra
 
 OS := $(shell uname)
@@ -67,10 +69,6 @@ static_test: $(OBJ)
 	@./$(SRC)/poly1305_keygen.out
 	@./$(SRC)/chacha20_aead_enc_dec.out
 
-# test: $(OBJ) # not working for some reasons
-# 	@echo "running test programs"
-# 	@for o in $(SRC)/*.out; do ./$$o; done
-
 # -------------------------- test program compilation ---------------------------
 
 $(SRC)/%.out: $(SRC)/%.cpp
@@ -78,10 +76,9 @@ $(SRC)/%.out: $(SRC)/%.cpp
 	@$(CC) $(CXXFLAGS) -o $@ $< $(CPPFLAGS)
 
 install:
-	@cp -s $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/libchacha.a $(INSTALL_PREFIX)lib
-	@cp -s $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/ChaCha20-Poly1305.hpp $(INSTALL_PREFIX)include
-	@cp -s $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/uint128.hpp $(INSTALL_PREFIX)include
-	@cp -s $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/uint256.hpp $(INSTALL_PREFIX)include
+	@cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/build/lib/libchacha.a $(INSTALL_PREFIX)lib
+	@cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/build/lib/ChaCha20-Poly1305.hpp $(INSTALL_PREFIX)include
 
-# uninstall:
-# 	@unlink /usr/local/include/chacha20
+uninstall:
+	@rm $(INSTALL_PREFIX)lib/libchacha.a
+	@rm $(INSTALL_PREFIX)include/ChaCha20-Poly1305.hpp
