@@ -6,6 +6,7 @@
 #		./test3.out
 
 CC := g++
+INSTALL_PREFIX=/usr/local/
 
 default:
 	@echo "creating static lib"
@@ -16,11 +17,17 @@ default:
 	@echo "compiling ChaCha20..."
 	@$(CC) -c ChaCha20.cpp -O2 -DMAKE_LIB
 	@echo "compiling libchacha20.a..."
-	ar -r libchacha20.a uint128.o uint256.o ChaCha20.o
+	@ar -r libchacha20.a uint128.o uint256.o ChaCha20.o
+	@echo "build done : output -> libchacha20.a"
+	@echo "moving files to build folder"
+	@mv -s $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/libchacha.a ./build/lib/
+	@mv -s $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/ChaCha20-Poly1305.hpp ./build/include/
+	@mv -s $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/uint128.hpp ./build/include/
+	@mv -s $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/uint256.hpp ./build/include/
 
 clean:
 	@echo "removing objects..."
-	@rm *.o libchacha20.a *.out
+	@rm *.o *.out tests/*.out
 
 CPPFLAGS := -g -Og -I./ -L./ -lchacha20 -DMAKE_LIB
 CXXFLAGS := -std=c++11 -Wall -Wextra
@@ -67,15 +74,14 @@ static_test: $(OBJ)
 # -------------------------- test program compilation ---------------------------
 
 $(SRC)/%.out: $(SRC)/%.cpp
-	@echo "compiling test program - compiler : $(CC)"
-	$(CC) $(CXXFLAGS) -o $@ $< $(CPPFLAGS)
+	@echo "compiling test program (static build) - compiler : $(CC)"
+	@$(CC) $(CXXFLAGS) -o $@ $< $(CPPFLAGS)
 
-clean_tests:
-	@echo "deleting compiled test programs"
-	@rm ./$(SRC)/*.out
-
-# install:
-# 	@ln -s $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/chacha20 /usr/local/include/
+install:
+	@cp -s $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/libchacha.a $(INSTALL_PREFIX)lib
+	@cp -s $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/ChaCha20-Poly1305.hpp $(INSTALL_PREFIX)include
+	@cp -s $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/uint128.hpp $(INSTALL_PREFIX)include
+	@cp -s $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/uint256.hpp $(INSTALL_PREFIX)include
 
 # uninstall:
 # 	@unlink /usr/local/include/chacha20

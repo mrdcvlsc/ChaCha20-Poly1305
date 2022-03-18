@@ -203,7 +203,7 @@ namespace __internal_poly1305 {
     }
 }
 
-namespace ChaCha20
+namespace ChaCha20_Poly1305
 {
     /**The ChaCha20 Block Encryption.
      * @param key A 256-bit key, treated as a concatenation of eight 32-bit little-endian integers.

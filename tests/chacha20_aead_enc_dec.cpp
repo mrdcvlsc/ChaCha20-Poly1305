@@ -57,8 +57,8 @@ int main() {
     unsigned char recovered[114];
     unsigned char tag[16];
     unsigned char recovered_tag[16];
-    ChaCha20::aead_encrypt(ciphertext,tag,plaintext,114,AAD,12,key,iv,constant);
-    ChaCha20::aead_decrypt(recovered,recovered_tag,ciphertext,114,AAD,12,key,iv,constant);
+    ChaCha20_Poly1305::aead_encrypt(ciphertext,tag,plaintext,114,AAD,12,key,iv,constant);
+    ChaCha20_Poly1305::aead_decrypt(recovered,recovered_tag,ciphertext,114,AAD,12,key,iv,constant);
 
  
     // TESTING ANSWER 

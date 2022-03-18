@@ -1,0 +1,24 @@
+name: build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: compile the static library
+      run: make -f staticlib
+
+    - name: run the tests for the static library
+      run: make -f staticlib static_test
+
+    - name: cleanup
+      run: make -f staticlib clean
