@@ -6,12 +6,17 @@
 #include "ChaCha20-Poly1305.hpp"
 #endif
 
+// #define DEVMODE
+#ifdef DEVMODE
+#include "ChaCha20-Poly1305.hpp"
+#endif
+
 /**This is a special constructor for the poly1305 algorithm.
  * 
  * This stores the 16 byte part of a key into the lower 128-bit
  * half of the uin256 and set the higher part to zero.
 */
-uint256::uint256(unsigned char *input_byte) {
+uint256::uint256(const unsigned char *input_byte) {
     unsigned long *deserialize = (unsigned long*) input_byte;
     dqdata = new uint128[2];
     dqdata[0] = __UINT128_CONSTANT_ZERO;

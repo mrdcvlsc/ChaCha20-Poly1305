@@ -3,7 +3,7 @@
 #include <vector>
 
 #ifndef MAKE_LIB
-#include "../Header-Only-ChaCha20-Poly1305.hpp"
+#include "../Header-Mode-ChaCha20-Poly1305.hpp"
 #else
 #include <ChaCha20-Poly1305.hpp>
 #endif
@@ -50,7 +50,7 @@ int main() {
 
     unsigned char iv[8] = { 0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47 };
    
-    unsigned char constant[4] = { 0x07, 0x00, 0x00, 0x00 };   
+    unsigned char constant[4] = { 0x07, 0x00, 0x00, 0x00 }; 
    
     // ANSWERS
     unsigned char ciphertext[114];

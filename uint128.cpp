@@ -6,6 +6,11 @@
 #include "ChaCha20-Poly1305.hpp"
 #endif
 
+// #define DEVMODE
+#ifdef DEVMODE
+#include "ChaCha20-Poly1305.hpp"
+#endif
+
 uint128::uint128() {
     data = NULL;
 }

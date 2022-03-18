@@ -25,6 +25,26 @@ The [dsi] bullet points might possiblly be an inaccurate or incorrect descriptio
 
 -----
 
+## How to Use
+
+There are two ways to compile your program with this library, Either Using the **header only mode** or you can **build** it statically and install it in your system.
+
+1. **Static Build with makefiles**
+
+    ```shell
+    make -f staticlib
+    make -f staticlib cleanup
+    sudo make -f staticlib install
+    ```
+
+    - You can also run static tests first to check if the program is producing the correct results before installing it with ```sudo make -f staticlib install```.
+
+        ```shell
+        make -f staticlib static_test
+        ```
+
+    - Then you can now use it in your programs.
+
 make -f staticlib
 make -f staticlib static_test
 make -f staticlib clean_tests

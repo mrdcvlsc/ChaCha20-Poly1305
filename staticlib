@@ -76,9 +76,11 @@ $(SRC)/%.out: $(SRC)/%.cpp
 	@$(CC) $(CXXFLAGS) -o $@ $< $(CPPFLAGS)
 
 install:
-	@cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/build/lib/libchacha.a $(INSTALL_PREFIX)lib
-	@cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/build/lib/ChaCha20-Poly1305.hpp $(INSTALL_PREFIX)include
+	@cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))build/lib/libchacha20.a $(INSTALL_PREFIX)lib
+	@cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))build/include/ChaCha20-Poly1305.hpp $(INSTALL_PREFIX)include
+	@echo "libchacha20.a now installed to $(INSTALL_PREFIX)lib"
+	@echo "ChaCha20-Poly1305.hpp now installed to $(INSTALL_PREFIX)include"
 
 uninstall:
-	@rm $(INSTALL_PREFIX)lib/libchacha.a
+	@rm $(INSTALL_PREFIX)lib/libchacha20.a
 	@rm $(INSTALL_PREFIX)include/ChaCha20-Poly1305.hpp

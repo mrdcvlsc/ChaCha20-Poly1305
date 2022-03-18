@@ -21,4 +21,7 @@ jobs:
       run: make -f staticlib static_test
 
     - name: cleanup
-      run: make -f staticlib clean
+      run: make -f staticlib cleanup
+
+    - name: clean test executables
+      run: make clean

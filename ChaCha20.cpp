@@ -6,6 +6,11 @@
 #include "ChaCha20-Poly1305.hpp"
 #endif
 
+// #define DEVMODE
+#ifdef DEVMODE
+#include "ChaCha20-Poly1305.hpp"
+#endif
+
 namespace __internal_chacha20
 {
     inline unsigned int bit_left_roll(unsigned int num, size_t n) {
@@ -35,9 +40,9 @@ namespace __internal_chacha20
     * @param nonce a 12-bytes/96-bits number only once, in some crypto scheme, this is called an IV.*/
     void init_state( // function parameters
         unsigned int *output,
-        unsigned int *key,
+        const unsigned int *key,
         unsigned int counter,
-        unsigned int *nonce) { // function body
+        const unsigned int *nonce) { // function body
         
         // indecies 0-3 : constants
         output[0] = 0x61707865;
@@ -72,7 +77,7 @@ namespace __internal_chacha20
      * @param input this is the initial ChaCha state.*/
     void apply_20rounds( // function parameters
         unsigned int *output,
-        unsigned int *input) { // function body
+        const unsigned int *input) { // function body
         
         // copy initial state to state
         for(size_t i=0; i<__CHAx220_STATE_DWORDS__; ++i)
@@ -125,7 +130,7 @@ namespace __internal_poly1305 {
      * @param msg an `unsigned char` array, this is the message.
      * @param msg_len the length of the `msg` array.
     */
-    void mac(unsigned char *output, unsigned char *key, unsigned char* msg, size_t msg_len) {
+    void mac(unsigned char *output, const unsigned char *key, const unsigned char* msg, size_t msg_len) {
         
         unsigned char *unclamped_r = new unsigned char[HALF_KEY_BYTES];
         memcpy(unclamped_r,key,HALF_KEY_BYTES);
@@ -185,7 +190,7 @@ namespace __internal_poly1305 {
      * other methods, such as a Linear Feedback Shift Register (LFSR) are also possible.
      * @param counter optional argument, this defaults to 0
     */
-    void key_gen(unsigned char *output, unsigned char *key, unsigned int *nonce, unsigned int counter) {
+    void key_gen(unsigned char *output, const unsigned char *key, const unsigned int *nonce, unsigned int counter) {
         
         unsigned int *initial_state = new unsigned int[__CHAx220_STATE_DWORDS__];
         unsigned int *transformed_state = new unsigned int[__CHAx220_STATE_DWORDS__];
@@ -221,10 +226,10 @@ namespace ChaCha20_Poly1305
      * SHOULD BE FREED USING THE delete [] KEYWORD!.
     */
     unsigned char *encrypt( // function parameters
-        unsigned char *key,
+        const unsigned char *key,
         unsigned int counter,
-        unsigned char *nonce,
-        unsigned char *plaintext,
+        const unsigned char *nonce,
+        const unsigned char *plaintext,
         size_t len
     ) { // function body
 
@@ -314,10 +319,10 @@ namespace ChaCha20_Poly1305
      * */
     void encrypt( // function parameters
         unsigned char *cipher_text,
-        unsigned char *key,
+        const unsigned char *key,
         unsigned int counter,
-        unsigned char *nonce,
-        unsigned char *plaintext,
+        const unsigned char *nonce,
+        const unsigned char *plaintext,
         size_t len
     ) { // function body
 
@@ -418,9 +423,9 @@ namespace ChaCha20_Poly1305
     */
     void aead_encrypt(
         unsigned char *ciphertext, unsigned char *tag,
-        unsigned char *plaintext, size_t text_len,
-        unsigned char *aad, size_t aad_len, unsigned char *key,
-        unsigned char *iv, unsigned char *constant
+        const unsigned char *plaintext, size_t text_len,
+        const unsigned char *aad, size_t aad_len, const unsigned char *key,
+        const unsigned char *iv, const unsigned char *constant
     ) {
         // nonce = constant | iv
         unsigned int *nonce = new unsigned int[3];
@@ -461,9 +466,9 @@ namespace ChaCha20_Poly1305
 
     void aead_decrypt(
         unsigned char *plaintext, unsigned char *tag,
-        unsigned char *ciphertext, size_t text_len,
-        unsigned char *aad, size_t aad_len, unsigned char *key,
-        unsigned char *iv, unsigned char *constant
+        const unsigned char *ciphertext, size_t text_len,
+        const unsigned char *aad, size_t aad_len, const unsigned char *key,
+        const unsigned char *iv, const unsigned char *constant
     ) {
         // nonce = constant | iv
         unsigned int *nonce = new unsigned int[3];
