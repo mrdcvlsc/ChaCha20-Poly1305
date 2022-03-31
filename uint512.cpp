@@ -307,18 +307,6 @@ uint512 uint512::operator-(const uint512& sub) const {
     uint512 dif = *this;
 
     unsigned long carry = 0, prev;
-    // for(size_t i=0; i<UINT512LIMBS; ++i) {
-    //     prev = dif.limbs[i];
-    //     dif.limbs[i] -= carry;
-    //     dif.limbs[i] -= sub.limbs[i];
-
-    //     if(dif.limbs[i]>prev || (carry && (prev==0 && sub.limbs[i]==__UINT64_MAX__))) {
-    //         carry = 1;
-    //     }
-    //     else {
-    //         carry = 0;
-    //     }
-    // }
 
     if(dif.limbs[0]<sub.limbs[0])
         carry = 1;
@@ -340,9 +328,6 @@ uint512 uint512::operator-(const uint512& sub) const {
             carry = 0;
         }
     }
-    // 4 009a7441b5216731 88cfea5ba36bac39
-    // 3 ffffffffffffffff fffffffffffffffb
-    // 1 009a7441b5216731 88cfea5ba36bac3e
 
     return dif;
 }
@@ -692,7 +677,6 @@ uint512& uint512::operator*=(const uint512& mul) {
 /** long division using bits, shifts and subtract */
 uint512 uint512::ss_div(const uint512& divisor) const {
     
-    std::cout << "\nss_div()\n";
     uint512
         quotient(0),
         pdvn(0),
@@ -709,23 +693,10 @@ uint512 uint512::ss_div(const uint512& divisor) const {
         pdvn.limbs[UINT512_LS_LIMB] |= bit.limbs[UINT512_LS_LIMB];
 
         if(pdvn>=divisor) {
-            if(i<320) {
-                std::cout << "\npdvn = "; pdvn.printHex();
-                std::cout << "dvsr = "; divisor.printHex();
-            }
-            
-            pdvn = pdvn - divisor;
-
-            if(i<320) {
-                std::cout << "subA = "; pdvn.printHex();
-                std::cout << "\n";
-            }
-            
+            pdvn = pdvn - divisor;            
             quotient.limbs[UINT512_LS_LIMB] |= 1;
         }
     }
-
-    // pdvn is the remainder
 
     return quotient;
 }
