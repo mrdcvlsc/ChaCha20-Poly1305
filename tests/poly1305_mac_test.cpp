@@ -11,7 +11,6 @@
 // #define PRINT_FAILED_OUTPUTS
 std::vector<bool> TEST_RESULTS;
 const static std::string TEST_NAME = "poly1305 mac";
-void ASSERT_UINT256(const uint256& A, const uint256& B, const std::string& TEST_MESSAGE);
 
 template<typename T>
 void ASSERT_ARRAY(T* A, T* B, size_t length, std::string TEST_MESSAGE, std::vector<bool>& RESULTS);
@@ -23,9 +22,11 @@ void print16bytes(unsigned char* bytearray16) {
     std::cout << "\n";
 }
 
+
 int main() {
     std::cout << "\n---------------------------------\n";
     std::cout << TEST_NAME << "\n=================================\n";
+
 
     // TEST VARIABLES
     unsigned char key[32] = {
@@ -38,6 +39,7 @@ int main() {
         0x72, 0x75, 0x6d, 0x20, 0x52, 0x65, 0x73, 0x65, 0x61, 0x72, 0x63, 0x68, 0x20, 0x47, 0x72, 0x6f,
         0x75, 0x70, 
     };
+
 
     // ANSWERS 
     unsigned char tag[16];     
@@ -53,6 +55,7 @@ int main() {
     ASSERT_ARRAY<unsigned char>(tag,correct_tag,16,"output tag correctness 1",TEST_RESULTS);
 
     // SUMMARY OF RESULTS 
+
 
     size_t failed_cnt = 0;
     for(auto e : TEST_RESULTS) {
@@ -71,24 +74,6 @@ int main() {
         std::cout << "---------------------------------\n";
         return 1;
     } 
-}
-
-
-void ASSERT_UINT256(const uint256& A, const uint256& B, const std::string& TEST_MESSAGE) {
-    std::cout << TEST_NAME << ":" << TEST_MESSAGE << " : ";
-    if(A!=B) {
-        std::cout << "FAILED\n";
-        TEST_RESULTS.push_back(false);
-        #ifdef PRINT_FAILED_OUTPUTS
-        A.printHex();
-        B.printHex();
-        std::cout << "\n";
-        #endif
-    }
-    else {
-        std::cout << "PASSED\n";
-        TEST_RESULTS.push_back(true);
-    }
 }
 
 template<typename T>

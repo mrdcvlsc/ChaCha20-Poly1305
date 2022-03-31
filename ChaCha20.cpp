@@ -107,10 +107,10 @@ namespace __internal_chacha20
 
 namespace __internal_poly1305 {
 
-    static const uint256
-        PLY_CNSTNT_1(uint128(0,0),uint128(0,1)),
-        PLY_CNSTNT_5(uint128(0,0),uint128(0,5)),
-        PLY_CNSTNT_2POWER128(uint128(0,0x1), uint128(0x0000000000000000, 0x0000000000000000));
+    // static const uint512
+    //     PLY_CNSTNT_1(1),
+    //     PLY_CNSTNT_5(5),
+    //     PLY_CNSTNT_2POWER128(0,0,0,0,0,1,0,0);
 
     void clamp(unsigned char r[HALF_KEY_BYTES]) {
         r[3] &= 15;
@@ -136,25 +136,41 @@ namespace __internal_poly1305 {
         memcpy(unclamped_r,key,HALF_KEY_BYTES);
         clamp(unclamped_r);
         
-        uint256 r(unclamped_r);
-        uint256 s(key+HALF_KEY_BYTES);
-        uint256 a(uint128(0,0),uint128(0,0));
-        uint256 p = (PLY_CNSTNT_1 << 130)-PLY_CNSTNT_5;
+        uint512 r(unclamped_r,HALF_KEY_BYTES);
+        uint512 s(key+HALF_KEY_BYTES,HALF_KEY_BYTES);
+        uint512 a(0);
+        // uint512 p = (PLY_CNSTNT_1 << 130)-PLY_CNSTNT_5;
+        uint512 p(0,0,0,0,0,0x3, 0xffffffffffffffff, 0xfffffffffffffffb);
 
         size_t blocks = msg_len/HALF_KEY_BYTES;
         size_t remain = msg_len%HALF_KEY_BYTES;
 
-        r.lsdq().swapHighLow();
-        s.lsdq().swapHighLow();
+        std::cout << "s     = "; s.printHex();
+        std::cout << "r     = "; r.printHex();
+        std::cout << "\n";
 
         // 16 byte blocks
         for(size_t i=0; i<blocks; ++i) {
-            uint256 n(msg+(i*HALF_KEY_BYTES));
-            n.lsdq().swapHighLow();
+            std::cout << "accum = "; a.printHex();
 
-            n += PLY_CNSTNT_2POWER128;
-            a += n;
-            a = (r * a) % p;
+            uint512 n(msg+(i*HALF_KEY_BYTES),HALF_KEY_BYTES);
+            // unsigned char* n_view = (unsigned char*)n.limbs;
+            std::cout << "block = "; n.printHex();
+
+            // n += PLY_CNSTNT_2POWER128;
+            n.limbs[2] |= 0x01;
+            std::cout << "blocB = "; n.printHex();
+
+            a = (a + n) * r;
+            std::cout << "a+b*r = "; a.printHex();
+
+            uint512 quotient_test = a / p;
+            a = a % p;
+
+            std::cout << "p     = "; p.printHex();
+            std::cout << "quotn = "; quotient_test.printHex();
+            std::cout << "amodp = "; a.printHex();
+            std::cout << "\n";
         }
 
         // remaining bytes
@@ -164,8 +180,7 @@ namespace __internal_poly1305 {
             memset(last_block+remain+1,0x00,(HALF_KEY_BYTES-remain)-1);
             last_block[remain] = 0x01;
 
-            uint256 n(last_block);
-            n.lsdq().swapHighLow();
+            uint512 n(last_block,HALF_KEY_BYTES);
 
             a += n;
             a = (r * a) % p;
@@ -174,9 +189,8 @@ namespace __internal_poly1305 {
         }
 
         a+=s;
-        a.lsdq().swapHighLow();
 
-        memcpy(output,(unsigned char*)a.lsdq().data,UINT128BYTES);
+        memcpy(output,(unsigned char*)a.limbs,UINT128BYTES);
         delete [] unclamped_r;
     }
 

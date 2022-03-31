@@ -1,5 +1,5 @@
 CC := g++
-CPPFLAGS := -g -Og
+CPPFLAGS := -g -Og -D_HIDE_WARNING
 CXXFLAGS := -std=c++11 -Wall -Wextra
 
 OS := $(shell uname)
@@ -18,21 +18,14 @@ header_test: $(OBJ)
 	@./$(SRC)/QuarterRound_test.out
 	@./$(SRC)/BlockFunction_test.out
 	@./$(SRC)/Encryption_test.out
-	@./$(SRC)/uint128_shifts_test.out
-	@./$(SRC)/uint128_comparisons_test.out
-	@./$(SRC)/uint128_add_test.out
-	@./$(SRC)/uint128_mul_test.out
-	@./$(SRC)/uint128_sub_test.out
-	@./$(SRC)/uint128_div_test.out
-	@./$(SRC)/uint128_assign_add_test.out
-	@./$(SRC)/uint128_assign_mul_test.out
-	@./$(SRC)/uint128_assign_sub_test.out
-	@./$(SRC)/uint128_div_ope_assign_test.out
-	@./$(SRC)/uint128_div_operator_test.out
-	@./$(SRC)/uint256_mul_test.out
-	@./$(SRC)/uint256_shifts_test.out
-	@./$(SRC)/uint256_div_test.out
-	@./$(SRC)/uint256_mod_test.out
+	@./$(SRC)/constructor.out
+	@./$(SRC)/comparison.out
+	@./$(SRC)/leftshifts.out
+	@./$(SRC)/rightshifts.out
+	@./$(SRC)/addition.out
+	@./$(SRC)/subtraction.out
+	@./$(SRC)/multiplication.out
+	@./$(SRC)/division.out
 	@./$(SRC)/poly1305_mac_test.out
 	@./$(SRC)/poly1305_keygen.out
 	@./$(SRC)/chacha20_aead_enc_dec.out

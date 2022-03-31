@@ -11,7 +11,7 @@
 // #define PRINT_FAILED_OUTPUTS
 std::vector<bool> TEST_RESULTS;
 const static std::string TEST_NAME = "ChaCha20_aead_encrypt";
-void ASSERT_UINT256(const uint256& A, const uint256& B, const std::string& TEST_MESSAGE);
+void ASSERT_UINT512(const uint512& A, const uint512& B, const std::string& TEST_MESSAGE);
 
 template<typename T>
 void ASSERT_ARRAY(T* A, T* B, size_t length, std::string TEST_MESSAGE, std::vector<bool>& RESULTS);
@@ -102,16 +102,11 @@ int main() {
 }
 
 
-void ASSERT_UINT256(const uint256& A, const uint256& B, const std::string& TEST_MESSAGE) {
+void ASSERT_UINT512(const uint512& A, const uint512& B, const std::string& TEST_MESSAGE) {
     std::cout << TEST_NAME << ":" << TEST_MESSAGE << " : ";
     if(A!=B) {
         std::cout << "FAILED\n";
         TEST_RESULTS.push_back(false);
-        #ifdef PRINT_FAILED_OUTPUTS
-        A.printHex();
-        B.printHex();
-        std::cout << "\n";
-        #endif
     }
     else {
         std::cout << "PASSED\n";

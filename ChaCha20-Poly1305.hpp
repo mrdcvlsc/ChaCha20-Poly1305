@@ -7,8 +7,7 @@
 #include <bitset>
 #include <utility>
 
-#define HALF_KEY_BYTES 16
-#define __CHACHA_STATE_COUNTER_INDEX__ 12
+//============================== uint512 ==============================
 
 #define UINT128BITS 128
 #define UINT128BITS_2x 256
@@ -23,332 +22,177 @@
 #define ULONGBITS_2x 64
 #endif
 
-/// Number of bytes(unsigned char) inside a ChaCha20 State
+// -----------------------------
+
+#define UINT64BYTES 8
+#define UINT64BITS 64
+
+#define UINT512LIMBS 8
+#define UINT512BYTES 64
+#define UINT511BITS 511
+#define UINT512BITS 512
+#define UINT512BITS_x2 1024
+
+/// uint512 least significant limb index
+#define UINT512_LS_LIMB 0
+
+/// uint512 most significant limb index
+#define UINT512_MS_LIMB 7
+
+#define LESS -1
+#define EQUAL 0
+#define GREAT 1
+
+/// for intel & amd x86_64 & x64 architectures only
+class uint512 {
+    public:
+
+    /**least significant quadword starting from index 0
+     * up to index 7 the most significant quadword.*/
+    unsigned long *limbs;
+
+    uint512();
+
+    uint512(unsigned long num);
+    
+    uint512(const unsigned char *input_bytes, size_t bytes);
+
+    uint512(
+        unsigned long n7, unsigned long n6, unsigned long n5, unsigned long n4,
+        unsigned long n3, unsigned long n2, unsigned long n1, unsigned long n0
+    );
+
+    /// copy constructor
+    uint512(const uint512& src);
+
+    /// move constructor
+    uint512(uint512&& src) noexcept;
+
+    /// copy assignment
+    uint512& operator=(const uint512& src);
+
+    /// move assignment
+    uint512& operator=(uint512&& src);
+
+    ~uint512();
+
+    /// @return returns; 0 : if uint512 == 0, 1 : if uint512 == 1, and -1 : if uint512 != to 0 or 1.
+    int one_or_zero() const;
+
+    /// @return returns; -1 : if less than, 0 : if equal, 1 : if greater than.
+    int compare(const uint512& with) const;
+
+    bool operator==(const uint512& with) const;
+
+    bool operator!=(const uint512& with) const;
+
+    bool operator<(const uint512& with) const;
+
+    bool operator>(const uint512& with) const;
+
+    bool operator<=(const uint512& with) const;
+
+    bool operator>=(const uint512& with) const;
+
+    /// @return returns true if the uint512 is not zero
+    bool boolean() const;
+
+    bool operator&&(const uint512& with) const;
+
+    bool operator||(const uint512& with) const;
+
+    bool operator!() const;
+
+    uint512 operator&(const uint512& with) const;
+
+    uint512 operator|(const uint512& with) const;
+
+    uint512 operator^(const uint512& with) const;
+
+    uint512 operator~() const;
+
+    uint512& operator&=(const uint512& with);
+
+    uint512& operator|=(const uint512& with);
+
+    uint512& operator^=(const uint512& with);
+
+    uint512 operator+(const uint512& add) const;
+
+    uint512& operator+=(const uint512& add);
+
+    uint512 operator-(const uint512& sub) const;
+
+    uint512& operator-=(const uint512& sub);
+
+    /// This is the ugly part
+    uint512 operator*(const uint512& mr) const;
+
+    uint512& operator*=(const uint512& mul);
+
+    /** long division using bits, shifts and subtract */
+    uint512 ss_div(const uint512& divisor) const;
+
+    /** long division using bits, shifts and subtract */
+    uint512 ss_mod(const uint512& divisor) const;
+
+    uint512 operator/(const uint512& divisor) const;
+
+    uint512& operator/=(const uint512& divisor);
+
+    uint512 operator%(const uint512& divisor) const;
+
+    uint512& operator%=(const uint512& divisor);
+
+    // LEFT SHIFT
+    
+    uint512 operator<<(size_t lshift) const;
+
+    uint512& operator<<=(size_t lshift);
+
+    // RIGHT SHIFT 
+
+    uint512 operator>>(size_t rshift) const;
+
+    uint512& operator>>=(size_t rshift);
+
+    /// the limb[7] will be printed first then 6,5, ..., the limb[0] will be printed last.
+    void printHex() const;
+
+    /// the limb[7] will be printed first then 6,5, ..., the limb[0] will be printed last.
+    void printBits() const;
+};
+
+//=====================================================================
+
+/// Number of bytes(unsigned char) inside a ChaCha20 State.
 static const int __CHAx220_STATE_BYTES__ = 64;
 
-/// Number of dwords(unsigned int) inside a ChaCha20 State
+/// Number of dwords(unsigned int) inside a ChaCha20 State.
 static const int __CHAx220_STATE_DWORDS__ = 16;
 
-/// Number of bytes(unsigned char) inside a ChaCha20 key
+/// Number of bytes(unsigned char) inside a ChaCha20 key.
 static const int __CHAx220_KEY_BYTES__ = 32;
-/// Number of dwords(unsigned int) inside a ChaCha20 key
+
+/// Number of dwords(unsigned int) inside a ChaCha20 key.
 static const int __CHAx220_KEY_DWORDS__ = 8;
 
-/// Number of bytes(unsigned char) inside a ChaCha20 nonce
+/// Number of bytes(unsigned char) inside a ChaCha20 nonce.
 static const int __CHAx220_NONCE_BYTES__ = 12;
-/// Number of dwords(unsigned int) inside a ChaCha20 nonce
+
+/// Number of dwords(unsigned int) inside a ChaCha20 nonce.
 static const int __CHAx220_NONCE_DWORDS__ = 3;
 
-/// Number of bytes(unsigned char) inside a ChaCha20 block function output
+/// Number of bytes(unsigned char) inside a ChaCha20 block function output.
 static const int __CHAx220_BLK_FUNC_OUTPUT_BYTES__ = 64;
-/// Number of dwords(unsigned int) inside a ChaCha20 block function output
+
+/// Number of dwords(unsigned int) inside a ChaCha20 block function output.
 static const int __CHAx220_BLK_FUNC_OUTPUT_DWORDS__ = 16;
 
-class uint128 {
-    public:
+#define HALF_KEY_BYTES 16
+#define __CHACHA_STATE_COUNTER_INDEX__ 12
 
-    unsigned long *data;
-
-    uint128();
-    uint128(unsigned long msq, unsigned long lsq);
-
-    // copy constructor
-    uint128(const uint128& src);
-
-    // move constructor
-    uint128(uint128&& src) noexcept;
-
-    // copy assignment
-    uint128& operator=(const uint128& src);
-
-    // move assignment
-    uint128& operator=(uint128&& src);
-
-    ~uint128();
-
-    /// returns the most significant QUADWORD, or the upper uint64 halve of the uint128.
-    unsigned long& msq();
-
-    /// returns the least significant QUADWORD, or the lower uint64 halve of the uint128.
-    unsigned long& lsq();
-
-    /// returns the most significant QUADWORD, or the upper uint64 halve of the uint128.
-    const unsigned long& msq() const;
-
-    /// returns the least significant QUADWORD, or the lower uint64 halve of the uint128.
-    const unsigned long& lsq() const;
-
-    bool operator==(const uint128& roperand) const;
-    bool operator!=(const uint128& roperand) const;
-    bool operator<(const uint128& right) const;
-    bool operator<=(const uint128& right) const;
-    bool operator>(const uint128& right) const;
-    bool operator>=(const uint128& right) const;
-    bool operator&&(const uint128& right) const;
-    bool operator||(const uint128& right) const;
-    bool operator!() const;
-
-    uint128 operator~() const;
-    uint128 operator^(const uint128& right) const;
-    uint128& operator^=(const uint128& right);
-    uint128 operator|(const uint128& right) const;
-    uint128& operator|=(const uint128& right);
-    uint128 operator&(const uint128& right) const;
-    uint128& operator&=(const uint128& right);
-    uint128 operator+(const uint128& add) const;
-    uint128& operator+=(const uint128& add);
-    uint128& operator++();
-    uint128& operator++(int);
-    uint128 operator-(const uint128& sub) const;
-    uint128& operator-=(const uint128& sub);
-    uint128& operator--();
-    uint128& operator--(int);
-
-    /** 
-     * Multiplication of two 128-bit int using 4-bit unsigned int's.
-     * 
-     * this function is taking advantage of the "rdx:rax" registers
-     * and the "mul" assembly instruction to get the "rdx" or the
-     * upper quad-word when multiplying two unsigned 64-bit integers
-     * 
-     * mc = multiplicand
-     * mr = multiplier
-     * pd = product
-     * 
-     * This is the normal multiplication used to get the 256-bit product
-     * 
-     *                     | mc0 | mc1 |
-     *      x              | mr0 | mr1 |
-     *      -------------------------------
-     *         | pd0 | pd1 | pd2 | pd3 |
-     * 
-     * but here we omit the operations to get the pd0, and pd1 since
-     * we only need the 128-bit low part of the product [pd2:pd3]
-    */
-    uint128 operator*(const uint128& mul) const;
-
-    // add with carry
-    std::pair<uint128,uint128> __fadd(const uint128& add) const;
-    
-    /** 
-     * Full Product of Multiplication of two 128-bit int using 4-bit unsigned int's.
-     * 
-     * this function is taking advantage of the "rdx:rax" registers
-     * and the "mul" assembly instruction to get the "rdx" or the
-     * upper quad-word when multiplying two unsigned 64-bit integers.
-     * 
-     * mc = multiplicand.
-     * mr = multiplier.
-     * pd = product.
-     * 
-     * This is the normal multiplication used to get the 256-bit product.
-     * 
-     *                     | mc0 | mc1 |
-     *      x              | mr0 | mr1 |
-     *      -------------------------------
-     *         | pd0 | pd1 | pd2 | pd3 |
-    */
-    std::pair<uint128,uint128> __fmull(const uint128& mul) const;
-
-    /** 
-     * Multiplication of two 128-bit int using 4-bit unsigned int's.
-     * 
-     * this function is taking advantage of the "rdx:rax" registers
-     * and the "mul" assembly instruction to get the "rdx" or the
-     * upper quad-word when multiplying two unsigned 64-bit integers
-     * 
-     * mc = multiplicand
-     * mr = multiplier
-     * pd = product
-     * 
-     * This is the normal multiplication used to get the 256-bit product
-     * 
-     *                     | mc0 | mc1 |
-     *      x              | mr0 | mr1 |
-     *      -------------------------------
-     *         | pd0 | pd1 | pd2 | pd3 |
-     * 
-     * but here we omit the operations to get the pd0, and pd1 since
-     * we only need the 128-bit low part of the product [pd2:pd3]
-    */
-    uint128& operator*=(const uint128& mul);
-
-    // UNFINISHED
-    /** this is only for dividing uint128 to a uint64,
-     * this takes advantage of the "div" assembly instruction*/
-    uint128 ep_div(unsigned int divisor)  const;
-
-    /** long division using bits, shifts and subtract */
-    uint128 ss_div(const uint128& divisor) const;
-
-    uint128 operator/(const uint128& divisor) const;
-    uint128& operator/=(const uint128& divisor);
-
-    uint128 operator<<(size_t lshift) const;
-    uint128 operator>>(size_t rshift) const;
-    uint128& operator<<=(size_t lshift);
-    uint128& operator>>=(size_t rshift);
-
-    /// swaps the values of msq() and lsq()
-    void swapHighLow();
-
-    void printHex() const;
-    void printHex_separated() const;
-    void printBits() const;
-    void printBits_separated() const;
-};
-
-#define U256BITS 256
-#define U255BITS 255
-#define U256BITS_2x 512
-
-#define POLY1305_KEYBYTES 32
-
-const static uint128 __UINT128_CONSTANT_ZERO(0,0);
-const static uint128 __UINT128_CONSTANT_ONE(0,1);
-const static uint128 __UINT128_CONSTANT_TWO(0,2);
-
-class uint256 {
-    public:
-
-    uint128 *dqdata;
-
-    /**This is a special constructor for the poly1305 algorithm.
-     * 
-     * This stores the 16 byte part of a key into the lower 128-bit
-     * half of the uin256 and set the higher part to zero.
-    */
-    uint256(const unsigned char *input_byte);
-
-    uint256(const uint128& msdq, const uint128& lsdq);
-
-    // copy constructor
-    uint256(const uint256& src);
-
-    // move constructor
-    uint256(uint256&& src) noexcept;
-
-    // copy assignment
-    uint256& operator=(const uint256& src);
-
-    // move assignment
-    uint256& operator=(uint256&& src);
-
-    ~uint256();
-
-    /// returns the most significant QUADWORD, or the upper uint64 halve of the uint256.
-    uint128& msdq();
-    
-    /// returns the least significant QUADWORD, or the lower uint64 halve of the uint256.
-    uint128& lsdq();
-
-    /// returns the most significant QUADWORD, or the upper uint64 halve of the uint256.
-    const uint128& msdq() const;
-
-    /// returns the least significant QUADWORD, or the lower uint64 halve of the uint256.
-    const uint128& lsdq() const;
-
-    /// @return returns true if the uin256 value is equal to 1
-    bool isOne() const;
-
-    bool operator==(const uint256& roperand) const;
-    bool operator!=(const uint256& roperand) const;
-    bool operator<(const uint256& right) const;
-    bool operator<=(const uint256& right) const;
-    bool operator>(const uint256& right) const;
-    bool operator>=(const uint256& right) const;
-    bool operator&&(const uint256& right) const;
-    bool operator||(const uint256& right) const;
-    bool operator!() const;
-
-    uint256 operator~() const;
-    uint256 operator^(const uint256& right) const;
-    uint256& operator^=(const uint256& right);
-    uint256 operator|(const uint256& right) const;
-    uint256& operator|=(const uint256& right);
-    uint256 operator&(const uint256& right) const;
-    uint256& operator&=(const uint256& right);
-    uint256 operator+(const uint256& add) const;
-    uint256& operator+=(const uint256& add);
-    uint256 operator-(const uint256& sub) const;
-    uint256& operator-=(const uint256& sub);
-
-    /** 
-     * Multiplication of two 256-bit.
-     * 
-     * this function is taking advantage of the "rdx:rax" registers
-     * and the "mul" assembly instruction to get the "rdx" or the
-     * upper quad-word when multiplying two unsigned 64-bit integers.
-     * 
-     * mc = multiplicand.
-     * mr = multiplier.
-     * pd = product.
-     * 
-     * This is the normal multiplication used to get the 256-bit product.
-     *
-     * [0 - most] - [3 - least].
-     * 
-     *         | mc0 | mc1 | mc2 | mc3 |.
-     *      x  | mr0 | mr1 | mr2 | mr3 |.
-     *      -------------------------------.
-     *         | pd4 | pd5 | pd6 | pd7 | .
-     * 
-     * here we omit the operations to get the pd0, pd1, pd2 and pd3 since
-     * we only need the 256-bit low part of the product [pd4:pd5:pd6:pd7].
-    */
-    uint256 operator*(const uint256& mul) const;
-
-    /** 
-     * Multiplication of two 256-bit.
-     * 
-     * this function is taking advantage of the "rdx:rax" registers
-     * and the "mul" assembly instruction to get the "rdx" or the
-     * upper quad-word when multiplying two unsigned 64-bit integers.
-     * 
-     * mc = multiplicand.
-     * mr = multiplier.
-     * pd = product.
-     * 
-     * This is the normal multiplication used to get the 256-bit product.
-     *
-     * [0 - most] - [3 - least].
-     * 
-     *         | mc0 | mc1 | mc2 | mc3 |.
-     *      x  | mr0 | mr1 | mr2 | mr3 |.
-     *      -------------------------------.
-     *         | pd4 | pd5 | pd6 | pd7 | .
-     * 
-     * here we omit the operations to get the pd0, pd1, pd2 and pd3 since
-     * we only need the 256-bit low part of the product [pd4:pd5:pd6:pd7].
-    */
-    uint256& operator*=(const uint256& mul);
-
-    // UNFINISHED - FOR OPTIMIZATION IN FUTURE
-    /** this is only for dividing uint256 to a uint64,
-     * this takes advantage of the "div" assembly instruction*/
-    uint256 ep_div(const uint128& divisor)  const;
-
-    /** long division using bits, shifts and subtract */
-    uint256 ss_div(const uint256& divisor) const;
-
-    /** long division using bits, shifts and subtract */
-    uint256 ss_mod(const uint256& divisor) const;
-
-    uint256 operator/(const uint256& divisor) const;
-    uint256 operator%(const uint256& divisor) const;
-    uint256& operator/=(const uint256& divisor);
-    uint256& operator%=(const uint256& divisor);
-
-    uint256 operator<<(size_t lshift) const;
-    uint256 operator>>(size_t rshift) const;
-    uint256& operator<<=(size_t lshift);
-    uint256& operator>>=(size_t rshift);
-
-    void printHex() const;
-    void printHex_separated() const;
-    void printBits() const;
-    void printBits_separated() const;
-};
+#define HALF_KEY_BYTES 16
 
 namespace __internal_chacha20
 {
