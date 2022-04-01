@@ -68,6 +68,11 @@ int main() {
             break;
         }
     }
+
+    delete [] cipher_text;
+    delete [] encrypt_mac;
+    delete [] recover_text;
+    delete [] decrypt_mac;
     
     if(correct) {
         std::cout << "The Decrypted Message is Correct\n";

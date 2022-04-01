@@ -1,13 +1,13 @@
 ## ChaCha20 & Poly1305
 
+A from scratch C++ (with slight inline assembyl) implementation of ```ChaCha20 & Poly1305``` stream cipher described in [RFC - 8439](https://www.rfc-editor.org/info/rfc8439).
+
 **tests:**
 
 ![gcc-gnu](https://github.com/mrdcvlsc/ChaCha20-Poly1305/actions/workflows/gcc-gnu.yml/badge.svg)
 ![clang](https://github.com/mrdcvlsc/ChaCha20-Poly1305/actions/workflows/clang.yml/badge.svg)
 ![mingw32](https://github.com/mrdcvlsc/ChaCha20-Poly1305/actions/workflows/mingw32.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-
-A from scratch C++ (with slight inline assembyl) implementation of ```ChaCha20 & Poly1305``` stream cipher described in [RFC - 8439](https://www.rfc-editor.org/info/rfc8439).
 
 -----
 
@@ -18,7 +18,7 @@ A from scratch C++ (with slight inline assembyl) implementation of ```ChaCha20 &
 - x86_64 architecture
 - little endian system
 
-If your system does not have these requirements, it might produce wrong results or might not even compile (32-bit computer/compilers are not supported).
+If your system does not have these requirements, it might produce wrong results or might not even compile.
 
 -----
 
