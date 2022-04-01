@@ -45,6 +45,13 @@ header_test: $(OBJ)
 	@./$(SRC)/Poly1305_mac_t2.out
 	@./$(SRC)/Poly1305_mac_t3.out
 	@./$(SRC)/Poly1305_mac_t4.out
+	@./$(SRC)/Poly1305_mac_t5.out
+	@./$(SRC)/Poly1305_mac_t6.out
+	@./$(SRC)/Poly1305_mac_t7.out
+	@./$(SRC)/Poly1305_mac_t8.out
+	@./$(SRC)/Poly1305_mac_t9.out
+	@./$(SRC)/Poly1305_mac_t10.out
+	@./$(SRC)/Poly1305_mac_t11.out
 
 # test: $(OBJ) # not working for some reasons
 # 	@echo "running test programs"
