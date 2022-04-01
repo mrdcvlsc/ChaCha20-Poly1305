@@ -15,6 +15,8 @@ OBJ := $(patsubst $(SRC)/%.cpp,$(SRC)/%.out,$(SRC_FILES))
 # -------------------------- run test programs ---------------------------
 
 header_test: $(OBJ)
+	@echo "----------------------------------------------------"
+	@echo "Running Initial Tests..."
 	@./$(SRC)/QuarterRound_test.out
 	@./$(SRC)/BlockFunction_test.out
 	@./$(SRC)/Encryption_test.out
@@ -29,6 +31,16 @@ header_test: $(OBJ)
 	@./$(SRC)/poly1305_mac_test.out
 	@./$(SRC)/poly1305_keygen.out
 	@./$(SRC)/chacha20_aead_enc_dec.out
+	@echo "----------------------------------------------------"
+	@echo "Running Additional Tests..."
+	@./$(SRC)/BlockFunction_test1.out
+	@./$(SRC)/BlockFunction_test2.out
+	@./$(SRC)/BlockFunction_test3.out
+	@./$(SRC)/BlockFunction_test4.out
+	@./$(SRC)/BlockFunction_test5.out
+	@./$(SRC)/ChaCha20Encryption_t1.out
+	@./$(SRC)/ChaCha20Encryption_t2.out
+	@./$(SRC)/ChaCha20Encryption_t3.out
 
 # test: $(OBJ) # not working for some reasons
 # 	@echo "running test programs"

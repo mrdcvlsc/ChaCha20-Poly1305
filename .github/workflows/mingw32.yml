@@ -14,4 +14,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: compile and run tests in header mode
-      run: make test
+      run: make header_test
