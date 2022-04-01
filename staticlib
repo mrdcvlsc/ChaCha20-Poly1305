@@ -15,11 +15,11 @@ default:
 	@mkdir build/lib
 	@echo "creating static lib"
 	@echo "compiling uint512..."
-	@$(CC) -c uint512.cpp -O2 -DMAKE_LIB
+	@$(CC) -c uint512.cpp -O2 -DMAKE_LIB -D_HIDE_WARNINGS
 	@echo "compiling ChaCha20..."
 	@$(CC) -c ChaCha20.cpp -O2 -DMAKE_LIB
 	@echo "compiling libchacha20.a..."
-	@ar -r libchacha20.a uint128.o uint512.o ChaCha20.o
+	@ar -r libchacha20.a uint512.o ChaCha20.o
 	@echo "build done : output -> libchacha20.a"
 	@echo "moving files to build folder"
 	@mv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))libchacha20.a ./build/lib/
