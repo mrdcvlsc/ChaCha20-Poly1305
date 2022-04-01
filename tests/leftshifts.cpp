@@ -28,7 +28,7 @@ int main() {
     std::cout << TEST_NAME << "\n=================================\n";
 
     // TEST VARIABLES
-    unsigned long max = 0xffffffffffffffff;
+    ulongint max = 0xffffffffffffffff;
     uint512 MAX(max,max,max,max,max,max,max,max);
     uint512 ZERO(0,0,0,0,0,0,0,0);
     uint512 CLS032(max,max,max,max,max,max,max,0xffffffff00000000);

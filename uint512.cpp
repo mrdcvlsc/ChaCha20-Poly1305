@@ -14,11 +14,11 @@
 #endif
 
 uint512::uint512() {
-    limbs = new unsigned long[UINT512LIMBS];
+    limbs = new ulongint[UINT512LIMBS];
 }
 
-uint512::uint512(unsigned long num) {
-    limbs = new unsigned long[UINT512LIMBS];
+uint512::uint512(ulongint num) {
+    limbs = new ulongint[UINT512LIMBS];
     limbs[0] = num;
     limbs[1] = 0UL;
     limbs[2] = 0UL;
@@ -31,7 +31,7 @@ uint512::uint512(unsigned long num) {
 
 uint512::uint512(const unsigned char *input_bytes, size_t bytes) {
 
-    limbs = new unsigned long[UINT512LIMBS];
+    limbs = new ulongint[UINT512LIMBS];
 
     if(bytes>UINT512BYTES)
         throw std::overflow_error("There should be only <= 64 bytes of data when initializing a uint512");
@@ -45,11 +45,11 @@ uint512::uint512(const unsigned char *input_bytes, size_t bytes) {
 }
 
 uint512::uint512(
-    unsigned long n7, unsigned long n6, unsigned long n5, unsigned long n4,
-    unsigned long n3, unsigned long n2, unsigned long n1, unsigned long n0
+    ulongint n7, ulongint n6, ulongint n5, ulongint n4,
+    ulongint n3, ulongint n2, ulongint n1, ulongint n0
 ) {
 
-    limbs = new unsigned long[UINT512LIMBS];
+    limbs = new ulongint[UINT512LIMBS];
     limbs[0] = n0;
     limbs[1] = n1;
     limbs[2] = n2;
@@ -63,7 +63,7 @@ uint512::uint512(
 /// copy constructor
 uint512::uint512(const uint512& src) {
 
-    limbs = new unsigned long[UINT512LIMBS];
+    limbs = new ulongint[UINT512LIMBS];
     memcpy(limbs, src.limbs, UINT512BYTES);
 }
 
@@ -78,7 +78,7 @@ uint512::uint512(uint512&& src) noexcept {
 uint512& uint512::operator=(const uint512& src) {
 
     if(limbs == NULL)
-        limbs = new unsigned long[UINT512LIMBS];
+        limbs = new ulongint[UINT512LIMBS];
 
     memcpy(limbs, src.limbs, UINT512BYTES);
     return *this;
@@ -242,7 +242,7 @@ uint512 uint512::operator+(const uint512& add) const {
 
 #if(__x86_64 || __x86_64__ || __amd64 || __amd64__)
 #if(_MSC_VER || _PURE_CPP)
-    unsigned long carry = 0, prev;
+    ulongint carry = 0, prev;
 
     for(size_t i=0; i<UINT512LIMBS; ++i) {
         prev = sum.limbs[i];
@@ -260,14 +260,14 @@ uint512 uint512::operator+(const uint512& add) const {
 #warning using GCC inline asm, please enable optimization flag, recomended : -O2, to enable use C++ implementation instead, enable the -D_PURE_CPP flag.
 #endif
     asm (
-        "add %[adn0], %[sum0]\n\t"
-        "adc %[adn1], %[sum1]\n\t"
-        "adc %[adn2], %[sum2]\n\t"
-        "adc %[adn3], %[sum3]\n\t"
-        "adc %[adn4], %[sum4]\n\t"
-        "adc %[adn5], %[sum5]\n\t"
-        "adc %[adn6], %[sum6]\n\t"
-        "adc %[adn7], %[sum7]"
+        "addq %[adn0], %[sum0]\n\t"
+        "adcq %[adn1], %[sum1]\n\t"
+        "adcq %[adn2], %[sum2]\n\t"
+        "adcq %[adn3], %[sum3]\n\t"
+        "adcq %[adn4], %[sum4]\n\t"
+        "adcq %[adn5], %[sum5]\n\t"
+        "adcq %[adn6], %[sum6]\n\t"
+        "adcq %[adn7], %[sum7]"
         :
         [sum0]"+r"(sum.limbs[0]),
         [sum1]"+r"(sum.limbs[1]),
@@ -306,7 +306,7 @@ uint512 uint512::operator-(const uint512& sub) const {
     
     uint512 dif = *this;
 
-    unsigned long carry = 0, prev;
+    ulongint carry = 0, prev;
 
     if(dif.limbs[0]<sub.limbs[0])
         carry = 1;
@@ -343,7 +343,7 @@ uint512 uint512::operator*(const uint512& mr) const {
 
 #if(__x86_64 || __x86_64__ || __amd64 || __amd64__)
 #if(_MSC_VER || _PURE_CPP)
-    unsigned long carry = 0, prev;
+    ulongint carry = 0, prev;
 
     for(size_t i=0; i<UINT512LIMBS; ++i) {
         prev = pd.limbs[i];
@@ -362,242 +362,242 @@ uint512 uint512::operator*(const uint512& mr) const {
 #endif
     asm volatile (
         // ------------------- 1
-        "mov %[mc0], %%rax\n\t"
-        "mov %[mr0], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "mov %%rax, %[pd0]\n\t"
-        "mov %%rdx, %[pd1]\n\t"
+        "movq %[mc0], %%rax\n\t"
+        "movq %[mr0], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "movq %%rax, %[pd0]\n\t"
+        "movq %%rdx, %[pd1]\n\t"
 
-        "mov %[mc1], %%rax\n\t"
-        "mov %[mr0], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd1]\n\t"
-        "adc %%rdx, %[pd2]\n\t"
+        "movq %[mc1], %%rax\n\t"
+        "movq %[mr0], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd1]\n\t"
+        "adcq %%rdx, %[pd2]\n\t"
 
-        "mov %[mc2], %%rax\n\t"
-        "mov %[mr0], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd2]\n\t"
-        "adc %%rdx, %[pd3]\n\t"
+        "movq %[mc2], %%rax\n\t"
+        "movq %[mr0], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd2]\n\t"
+        "adcq %%rdx, %[pd3]\n\t"
 
-        "mov %[mc3], %%rax\n\t"
-        "mov %[mr0], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd3]\n\t"
-        "adc %%rdx, %[pd4]\n\t"
+        "movq %[mc3], %%rax\n\t"
+        "movq %[mr0], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd3]\n\t"
+        "adcq %%rdx, %[pd4]\n\t"
 
-        "mov %[mc4], %%rax\n\t"
-        "mov %[mr0], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd4]\n\t"
-        "adc %%rdx, %[pd5]\n\t"
+        "movq %[mc4], %%rax\n\t"
+        "movq %[mr0], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd4]\n\t"
+        "adcq %%rdx, %[pd5]\n\t"
 
-        "mov %[mc5], %%rax\n\t"
-        "mov %[mr0], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd5]\n\t"
-        "adc %%rdx, %[pd6]\n\t"
+        "movq %[mc5], %%rax\n\t"
+        "movq %[mr0], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd5]\n\t"
+        "adcq %%rdx, %[pd6]\n\t"
 
-        "mov %[mc6], %%rax\n\t"
-        "mov %[mr0], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd6]\n\t"
-        "adc %%rdx, %[pd7]\n\t"
+        "movq %[mc6], %%rax\n\t"
+        "movq %[mr0], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd6]\n\t"
+        "adcq %%rdx, %[pd7]\n\t"
 
-        "mov %[mc7], %%rax\n\t"
-        "mov %[mr0], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd7]\n\t"
+        "movq %[mc7], %%rax\n\t"
+        "movq %[mr0], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd7]\n\t"
 
         // ------------------- 2
 
-        "mov %[mc0], %%rax\n\t"
-        "mov %[mr1], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd1]\n\t"
-        "adc %%rdx, %[pd2]\n\t"
-        "adc $0, %[pd3]\n\t"
-        "adc $0, %[pd4]\n\t"
-        "adc $0, %[pd5]\n\t"
-        "adc $0, %[pd6]\n\t"
-        "adc $0, %[pd7]\n\t"
+        "movq %[mc0], %%rax\n\t"
+        "movq %[mr1], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd1]\n\t"
+        "adcq %%rdx, %[pd2]\n\t"
+        "adcq $0, %[pd3]\n\t"
+        "adcq $0, %[pd4]\n\t"
+        "adcq $0, %[pd5]\n\t"
+        "adcq $0, %[pd6]\n\t"
+        "adcq $0, %[pd7]\n\t"
 
-        "mov %[mc1], %%rax\n\t"
-        "mov %[mr1], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd2]\n\t"
-        "adc %%rdx, %[pd3]\n\t"
-        "adc $0, %[pd4]\n\t"
-        "adc $0, %[pd5]\n\t"
-        "adc $0, %[pd6]\n\t"
-        "adc $0, %[pd7]\n\t"
+        "movq %[mc1], %%rax\n\t"
+        "movq %[mr1], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd2]\n\t"
+        "adcq %%rdx, %[pd3]\n\t"
+        "adcq $0, %[pd4]\n\t"
+        "adcq $0, %[pd5]\n\t"
+        "adcq $0, %[pd6]\n\t"
+        "adcq $0, %[pd7]\n\t"
 
-        "mov %[mc2], %%rax\n\t"
-        "mov %[mr1], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd3]\n\t"
-        "adc %%rdx, %[pd4]\n\t"
-        "adc $0, %[pd5]\n\t"
-        "adc $0, %[pd6]\n\t"
-        "adc $0, %[pd7]\n\t"
+        "movq %[mc2], %%rax\n\t"
+        "movq %[mr1], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd3]\n\t"
+        "adcq %%rdx, %[pd4]\n\t"
+        "adcq $0, %[pd5]\n\t"
+        "adcq $0, %[pd6]\n\t"
+        "adcq $0, %[pd7]\n\t"
 
-        "mov %[mc3], %%rax\n\t"
-        "mov %[mr1], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd4]\n\t"
-        "adc %%rdx, %[pd5]\n\t"
-        "adc $0, %[pd6]\n\t"
-        "adc $0, %[pd7]\n\t"
+        "movq %[mc3], %%rax\n\t"
+        "movq %[mr1], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd4]\n\t"
+        "adcq %%rdx, %[pd5]\n\t"
+        "adcq $0, %[pd6]\n\t"
+        "adcq $0, %[pd7]\n\t"
 
-        "mov %[mc4], %%rax\n\t"
-        "mov %[mr1], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd5]\n\t"
-        "adc %%rdx, %[pd6]\n\t"
-        "adc $0, %[pd7]\n\t"
+        "movq %[mc4], %%rax\n\t"
+        "movq %[mr1], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd5]\n\t"
+        "adcq %%rdx, %[pd6]\n\t"
+        "adcq $0, %[pd7]\n\t"
 
-        "mov %[mc5], %%rax\n\t"
-        "mov %[mr1], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd6]\n\t"
-        "adc %%rdx, %[pd7]\n\t"
+        "movq %[mc5], %%rax\n\t"
+        "movq %[mr1], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd6]\n\t"
+        "adcq %%rdx, %[pd7]\n\t"
 
-        "mov %[mc6], %%rax\n\t"
-        "mov %[mr1], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd7]\n\t"
+        "movq %[mc6], %%rax\n\t"
+        "movq %[mr1], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd7]\n\t"
 
         // -------------------- 3
 
-        "mov %[mc0], %%rax\n\t"
-        "mov %[mr2], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd2]\n\t"
-        "adc %%rdx, %[pd3]\n\t"
-        "adc $0, %[pd4]\n\t"
-        "adc $0, %[pd5]\n\t"
-        "adc $0, %[pd6]\n\t"
-        "adc $0, %[pd7]\n\t"
+        "movq %[mc0], %%rax\n\t"
+        "movq %[mr2], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd2]\n\t"
+        "adcq %%rdx, %[pd3]\n\t"
+        "adcq $0, %[pd4]\n\t"
+        "adcq $0, %[pd5]\n\t"
+        "adcq $0, %[pd6]\n\t"
+        "adcq $0, %[pd7]\n\t"
 
-        "mov %[mc1], %%rax\n\t"
-        "mov %[mr2], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd3]\n\t"
-        "adc %%rdx, %[pd4]\n\t"
-        "adc $0, %[pd5]\n\t"
-        "adc $0, %[pd6]\n\t"
-        "adc $0, %[pd7]\n\t"
+        "movq %[mc1], %%rax\n\t"
+        "movq %[mr2], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd3]\n\t"
+        "adcq %%rdx, %[pd4]\n\t"
+        "adcq $0, %[pd5]\n\t"
+        "adcq $0, %[pd6]\n\t"
+        "adcq $0, %[pd7]\n\t"
 
-        "mov %[mc2], %%rax\n\t"
-        "mov %[mr2], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd4]\n\t"
-        "adc %%rdx, %[pd5]\n\t"
-        "adc $0, %[pd6]\n\t"
-        "adc $0, %[pd7]\n\t"
+        "movq %[mc2], %%rax\n\t"
+        "movq %[mr2], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd4]\n\t"
+        "adcq %%rdx, %[pd5]\n\t"
+        "adcq $0, %[pd6]\n\t"
+        "adcq $0, %[pd7]\n\t"
 
-        "mov %[mc3], %%rax\n\t"
-        "mov %[mr2], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd5]\n\t"
-        "adc %%rdx, %[pd6]\n\t"
-        "adc $0, %[pd7]\n\t"
+        "movq %[mc3], %%rax\n\t"
+        "movq %[mr2], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd5]\n\t"
+        "adcq %%rdx, %[pd6]\n\t"
+        "adcq $0, %[pd7]\n\t"
 
-        "mov %[mc4], %%rax\n\t"
-        "mov %[mr2], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd6]\n\t"
-        "adc %%rdx, %[pd7]\n\t"
+        "movq %[mc4], %%rax\n\t"
+        "movq %[mr2], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd6]\n\t"
+        "adcq %%rdx, %[pd7]\n\t"
 
-        "mov %[mc5], %%rax\n\t"
-        "mov %[mr2], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd7]\n\t"
+        "movq %[mc5], %%rax\n\t"
+        "movq %[mr2], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd7]\n\t"
 
         // -------------------- 4
 
-        "mov %[mc0], %%rax\n\t"
-        "mov %[mr3], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd3]\n\t"
-        "adc %%rdx, %[pd4]\n\t"
-        "adc $0, %[pd5]\n\t"
-        "adc $0, %[pd6]\n\t"
-        "adc $0, %[pd7]\n\t"
+        "movq %[mc0], %%rax\n\t"
+        "movq %[mr3], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd3]\n\t"
+        "adcq %%rdx, %[pd4]\n\t"
+        "adcq $0, %[pd5]\n\t"
+        "adcq $0, %[pd6]\n\t"
+        "adcq $0, %[pd7]\n\t"
 
-        "mov %[mc1], %%rax\n\t"
-        "mov %[mr3], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd4]\n\t"
-        "adc %%rdx, %[pd5]\n\t"
-        "adc $0, %[pd6]\n\t"
-        "adc $0, %[pd7]\n\t"
+        "movq %[mc1], %%rax\n\t"
+        "movq %[mr3], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd4]\n\t"
+        "adcq %%rdx, %[pd5]\n\t"
+        "adcq $0, %[pd6]\n\t"
+        "adcq $0, %[pd7]\n\t"
 
-        "mov %[mc2], %%rax\n\t"
-        "mov %[mr3], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd5]\n\t"
-        "adc %%rdx, %[pd6]\n\t"
-        "adc $0, %[pd7]\n\t"
+        "movq %[mc2], %%rax\n\t"
+        "movq %[mr3], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd5]\n\t"
+        "adcq %%rdx, %[pd6]\n\t"
+        "adcq $0, %[pd7]\n\t"
 
-        "mov %[mc3], %%rax\n\t"
-        "mov %[mr3], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd6]\n\t"
-        "adc %%rdx, %[pd7]\n\t"
+        "movq %[mc3], %%rax\n\t"
+        "movq %[mr3], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd6]\n\t"
+        "adcq %%rdx, %[pd7]\n\t"
 
-        "mov %[mc4], %%rax\n\t"
-        "mov %[mr3], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd7]\n\t"
+        "movq %[mc4], %%rax\n\t"
+        "movq %[mr3], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd7]\n\t"
 
         // ------------------- 5
 
-        "mov %[mc0], %%rax\n\t"
-        "mov %[mr4], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd4]\n\t"
-        "adc %%rdx, %[pd5]\n\t"
-        "adc $0, %[pd6]\n\t"
-        "adc $0, %[pd7]\n\t"
+        "movq %[mc0], %%rax\n\t"
+        "movq %[mr4], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd4]\n\t"
+        "adcq %%rdx, %[pd5]\n\t"
+        "adcq $0, %[pd6]\n\t"
+        "adcq $0, %[pd7]\n\t"
 
-        "mov %[mc1], %%rax\n\t"
-        "mov %[mr4], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd5]\n\t"
-        "adc %%rdx, %[pd6]\n\t"
-        "adc $0, %[pd7]\n\t"
+        "movq %[mc1], %%rax\n\t"
+        "movq %[mr4], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd5]\n\t"
+        "adcq %%rdx, %[pd6]\n\t"
+        "adcq $0, %[pd7]\n\t"
 
-        "mov %[mc2], %%rax\n\t"
-        "mov %[mr4], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd6]\n\t"
-        "adc %%rdx, %[pd7]\n\t"
+        "movq %[mc2], %%rax\n\t"
+        "movq %[mr4], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd6]\n\t"
+        "adcq %%rdx, %[pd7]\n\t"
 
-        "mov %[mc3], %%rax\n\t"
-        "mov %[mr4], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd7]\n\t"
+        "movq %[mc3], %%rax\n\t"
+        "movq %[mr4], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd7]\n\t"
 
         // ------------------- 6
 
-        "mov %[mc0], %%rax\n\t"
-        "mov %[mr5], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd5]\n\t"
-        "adc %%rdx, %[pd6]\n\t"
-        "adc $0, %[pd7]\n\t"
+        "movq %[mc0], %%rax\n\t"
+        "movq %[mr5], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd5]\n\t"
+        "adcq %%rdx, %[pd6]\n\t"
+        "adcq $0, %[pd7]\n\t"
 
-        "mov %[mc1], %%rax\n\t"
-        "mov %[mr5], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd6]\n\t"
-        "adc %%rdx, %[pd7]\n\t"
+        "movq %[mc1], %%rax\n\t"
+        "movq %[mr5], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd6]\n\t"
+        "adcq %%rdx, %[pd7]\n\t"
 
-        "mov %[mc2], %%rax\n\t"
-        "mov %[mr5], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd7]\n\t"
+        "movq %[mc2], %%rax\n\t"
+        "movq %[mr5], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd7]\n\t"
 
         :
         [pd0]"+r"(pd.limbs[0]),
@@ -630,23 +630,23 @@ uint512 uint512::operator*(const uint512& mr) const {
     asm volatile (
         // -------------------- 7
 
-        "mov %[mc0], %%rax\n\t"
-        "mov %[mr6], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd6]\n\t"
-        "adc %%rdx, %[pd7]\n\t"
+        "movq %[mc0], %%rax\n\t"
+        "movq %[mr6], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd6]\n\t"
+        "adcq %%rdx, %[pd7]\n\t"
 
-        "mov %[mc1], %%rax\n\t"
-        "mov %[mr6], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd7]\n\t"
+        "movq %[mc1], %%rax\n\t"
+        "movq %[mr6], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd7]\n\t"
 
         // -------------------- 8
 
-        "mov %[mc0], %%rax\n\t"
-        "mov %[mr7], %%rbx\n\t"
-        "mul %%rbx\n\t"
-        "add %%rax, %[pd7]\n\t"
+        "movq %[mc0], %%rax\n\t"
+        "movq %[mr7], %%rbx\n\t"
+        "mulq %%rbx\n\t"
+        "addq %%rax, %[pd7]\n\t"
 
         :
         [pd6]"+r"(pd.limbs[6]),
@@ -804,7 +804,7 @@ uint512 uint512::operator<<(size_t lshift) const {
 
     if(bit_shifts) {
         // compute carries.
-        unsigned long carries[UINT512LIMBS-1];
+        ulongint carries[UINT512LIMBS-1];
         for(size_t i=0; i<UINT512LIMBS-1; ++i) {
             carries[i] = result.limbs[i] >> (UINT64BITS-bit_shifts);
         }
@@ -850,7 +850,7 @@ uint512 uint512::operator>>(size_t rshift) const {
 
     if(bit_shifts) {
         // compute carries.
-        unsigned long carries[UINT512LIMBS-1];
+        ulongint carries[UINT512LIMBS-1];
         for(size_t i=0; i<UINT512LIMBS-1; ++i) {
             carries[i] = result.limbs[i+1] << (UINT64BITS-bit_shifts);
         }
@@ -876,7 +876,7 @@ uint512& uint512::operator>>=(size_t rshift) {
 void uint512::printHex() const {
     std::cout << "0x";
     for(size_t i=0; i<UINT512LIMBS; ++i)
-        printf("%016lx",limbs[UINT512LIMBS-1-i]);
+        printf(PRINT_LIMBHEX,limbs[UINT512LIMBS-1-i]);
     std::cout << "\n";
 }
 

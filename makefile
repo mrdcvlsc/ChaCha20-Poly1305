@@ -68,8 +68,13 @@ $(SRC)/%.out: $(SRC)/%.cpp
 	@$(CC) $(CPPFLAGS) $(CXXFLAGS) -o $@ $<
 
 clean:
+ifeq ($(OS), Linux)
 	@echo "deleting compiled test programs"
 	@rm ./$(SRC)/*.out
+else
+	@echo "deleting compiled test programs"
+	del tests\*.out
+endif
 
 # install:
 # 	@ln -s $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/chacha20 /usr/local/include/

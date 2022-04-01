@@ -43,23 +43,33 @@
 #define EQUAL 0
 #define GREAT 1
 
+#if (__MINGW64__ || __MINGW64)
+typedef unsigned long long ulongint;
+#define PRINT_LIMBHEX "%016llx "
+#elif (__clang__ || __GNUC__ || __GNUG__)
+typedef unsigned long ulongint;
+#define PRINT_LIMBHEX "%016lx "
+else
+#error not supported
+#endif
+
 /// for intel & amd x86_64 & x64 architectures only
 class uint512 {
     public:
 
     /**least significant quadword starting from index 0
      * up to index 7 the most significant quadword.*/
-    unsigned long *limbs;
+    ulongint *limbs;
 
     uint512();
 
-    uint512(unsigned long num);
+    uint512(ulongint num);
     
     uint512(const unsigned char *input_bytes, size_t bytes);
 
     uint512(
-        unsigned long n7, unsigned long n6, unsigned long n5, unsigned long n4,
-        unsigned long n3, unsigned long n2, unsigned long n1, unsigned long n0
+        ulongint n7, ulongint n6, ulongint n5, ulongint n4,
+        ulongint n3, ulongint n2, ulongint n1, ulongint n0
     );
 
     /// copy constructor

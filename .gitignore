@@ -10,3 +10,4 @@ a.cpp
 a.c
 build/*
 build
+*.exe

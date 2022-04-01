@@ -15,7 +15,7 @@ int main() {
     for(size_t i=0; i<TEST_CASES; ++i)
         Tests[i] = false;
 
-    unsigned long max = 0xffffffffffffffff;
+    ulongint max = 0xffffffffffffffff;
     uint512 ZERO(0,0,0,0,0,0,0,0), ONE(0,0,0,0,0,0,0,1), MAX(max,max,max,max,max,max,max,max);
     uint512 A(0,0,0,0,0,0,7879234,93);
     uint512 B(0,0,0,0,0,0,7879234,94);

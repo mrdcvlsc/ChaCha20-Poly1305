@@ -39,7 +39,7 @@ int main() {
     std::cout << TEST_NAME << "\n=================================\n";
 
     // TEST VARIABLES
-    unsigned long max = 0xffffffffffffffff;
+    ulongint max = 0xffffffffffffffff;
 
 
     uint512 MAX(max,max,max,max,max,max,max,max);
@@ -63,13 +63,13 @@ int main() {
 
     // ANSWERS           
     uint512 MAXZERO = MAX - ZERO,
-            MAXONE = MAX - ONE, 
+            MAXONE = MAX - ONE,
             MAXTWO = MAX - TWO,
             MAXMAX = MAX - MAX,
             NUM1NUM2 = NUM1 - NUM2,
             ZEROMAX = ZERO - MAX,
             ONEMAX = ONE - MAX,
-            TWOMAX = TWO - MAX;
+            TWOMAX = TWO - MAX;  
 
     // TESTING ANSWER 
     ASSERT_UINT512(MAXZERO,CMAXZERO,"MAX - 0");
