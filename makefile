@@ -57,9 +57,7 @@ header_test: $(OBJ)
 	@./$(SRC)/Poly1305_keygen_t3.out
 	@./$(SRC)/ChaCha20Poly1305_decrypt.out
 
-# test: $(OBJ) # not working for some reasons
-# 	@echo "running test programs"
-# 	@for o in $(SRC)/*.out; do ./$$o; done
+	@./$(SRC)/ChaCha20Poly1305_decrypt_nonceV.out
 
 # -------------------------- test program compilation ---------------------------
 

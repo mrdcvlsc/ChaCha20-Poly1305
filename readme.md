@@ -22,7 +22,11 @@ If your system does not have these requirements, it might produce wrong results 
 
 -----
 
-## How to Use
+## Usage
+
+
+
+## Compilation
 
 1. **Using header**
 

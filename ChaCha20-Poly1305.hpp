@@ -33,10 +33,10 @@
 #define UINT512BITS 512
 #define UINT512BITS_x2 1024
 
-/// uint512 least significant limb index
+/// uint512 least significant limb index.
 #define UINT512_LS_LIMB 0
 
-/// uint512 most significant limb index
+/// uint512 most significant limb index.
 #define UINT512_MS_LIMB 7
 
 #define LESS -1
@@ -53,7 +53,7 @@ typedef unsigned long ulongint;
 #error not supported
 #endif
 
-/// for intel & amd x86_64 & x64 architectures only
+/// for intel & amd x86_64 & x64 architectures only.
 class uint512 {
     public:
 
@@ -62,26 +62,23 @@ class uint512 {
     ulongint *limbs;
 
     uint512();
-
     uint512(ulongint num);
-    
     uint512(const unsigned char *input_bytes, size_t bytes);
-
     uint512(
         ulongint n7, ulongint n6, ulongint n5, ulongint n4,
         ulongint n3, ulongint n2, ulongint n1, ulongint n0
     );
 
-    /// copy constructor
+    /// copy constructor.
     uint512(const uint512& src);
 
-    /// move constructor
+    /// move constructor.
     uint512(uint512&& src) noexcept;
 
-    /// copy assignment
+    /// copy assignment.
     uint512& operator=(const uint512& src);
 
-    /// move assignment
+    /// move assignment.
     uint512& operator=(uint512&& src);
 
     ~uint512();
@@ -93,77 +90,58 @@ class uint512 {
     int compare(const uint512& with) const;
 
     bool operator==(const uint512& with) const;
-
     bool operator!=(const uint512& with) const;
-
     bool operator<(const uint512& with) const;
-
     bool operator>(const uint512& with) const;
-
     bool operator<=(const uint512& with) const;
-
     bool operator>=(const uint512& with) const;
 
-    /// @return returns true if the uint512 is not zero
+    /// @return returns true if the uint512 is not zero.
     bool boolean() const;
 
     bool operator&&(const uint512& with) const;
-
     bool operator||(const uint512& with) const;
-
     bool operator!() const;
 
     uint512 operator&(const uint512& with) const;
-
     uint512 operator|(const uint512& with) const;
-
     uint512 operator^(const uint512& with) const;
-
     uint512 operator~() const;
 
     uint512& operator&=(const uint512& with);
-
     uint512& operator|=(const uint512& with);
-
     uint512& operator^=(const uint512& with);
 
     uint512 operator+(const uint512& add) const;
-
     uint512& operator+=(const uint512& add);
 
     uint512 operator-(const uint512& sub) const;
-
     uint512& operator-=(const uint512& sub);
 
-    /// This is the ugly part
+    /// This is the ugly part.
     uint512 operator*(const uint512& mr) const;
-
     uint512& operator*=(const uint512& mul);
 
-    /** long division using bits, shifts and subtract */
+    /** long division using bits, shifts and subtract. */
     uint512 ss_div(const uint512& divisor) const;
 
-    /** long division using bits, shifts and subtract */
+    /** long division using bits, shifts and subtract. */
     uint512 ss_mod(const uint512& divisor) const;
 
     uint512 operator/(const uint512& divisor) const;
-
     uint512& operator/=(const uint512& divisor);
 
     uint512 operator%(const uint512& divisor) const;
-
     uint512& operator%=(const uint512& divisor);
 
     // LEFT SHIFT
     
     uint512 operator<<(size_t lshift) const;
-
     uint512& operator<<=(size_t lshift);
 
     // RIGHT SHIFT 
 
     uint512 operator>>(size_t rshift) const;
-
     uint512& operator>>=(size_t rshift);
 
     /// the limb[7] will be printed first then 6,5, ..., the limb[0] will be printed last.
@@ -224,9 +202,9 @@ namespace __internal_chacha20
     * initializing ChaCha states for different ChaCha blocks, It creates uniqueness for different blocks.
     * @param nonce a 12-bytes/96-bits number only once, in some crypto scheme, this is called an IV.*/
     void init_state( // function parameters
-        unsigned int *output,
+        unsigned int       *output,
         const unsigned int *key,
-        unsigned int counter,
+        unsigned int        counter,
         const unsigned int *nonce);
 
     /**Transforms an initial ChaCha state.
@@ -235,9 +213,7 @@ namespace __internal_chacha20
      * 
      * @param output this is where the result of the transformed ChaCha state will go.
      * @param input this is the initial ChaCha state.*/
-    void apply_20rounds( // function parameters
-        unsigned int *output,
-        const unsigned int *input);
+    void apply_20rounds(unsigned int *output, const unsigned int *input);
 }
 
 namespace __internal_poly1305 {
@@ -262,7 +238,7 @@ namespace __internal_poly1305 {
      * so it MUST NOT be randomly generated (because random number generation might produce
      * the same value). Instead a counter is a good way to get the value for the nonce instead.
      * other methods, such as a Linear Feedback Shift Register (LFSR) are also possible.
-     * @param counter optional argument, this defaults to 0
+     * @param counter optional argument, this defaults to 0.
     */
     void key_gen(unsigned char *output, const unsigned char *key, const unsigned int *nonce, unsigned int counter=0);
 }
@@ -286,10 +262,10 @@ namespace ChaCha20_Poly1305
     */
     unsigned char *encrypt( // function parameters
         const unsigned char *key,
-        unsigned int counter,
+        unsigned int         counter,
         const unsigned char *nonce,
         const unsigned char *plaintext,
-        size_t len
+        size_t               len
     );
 
     /**The ChaCha20 Block Encryption.
@@ -304,12 +280,12 @@ namespace ChaCha20_Poly1305
      * @param len this is the size of the message in bytes.
      * */
     void encrypt( // function parameters
-        unsigned char *cipher_text,
+        unsigned char       *cipher_text,
         const unsigned char *key,
-        unsigned int counter,
+        unsigned int         counter,
         const unsigned char *nonce,
         const unsigned char *plaintext,
-        size_t len
+        size_t               len
     );
 
     /**This function gets the next multiple of 16 from a given number.
@@ -334,10 +310,15 @@ namespace ChaCha20_Poly1305
      * @param constant a 32-bit unsigned integer.
     */
     void aead_encrypt(
-        unsigned char *ciphertext, unsigned char *tag,
-        const unsigned char *plaintext, size_t text_len,
-        const unsigned char *aad, size_t aad_len, const unsigned char *key,
-        const unsigned char *iv, const unsigned char *constant
+        unsigned char       *ciphertext,
+        unsigned char       *tag,
+        const unsigned char *plaintext,
+        size_t               text_len,
+        const unsigned char *aad,
+        size_t               aad_len,
+        const unsigned char *key,
+        const unsigned char *iv,
+        const unsigned char *constant
     );
 
     /**AEAD_CHACHA20_POLY1305 authenticated decryption.
@@ -357,10 +338,71 @@ namespace ChaCha20_Poly1305
      * @param constant a 32-bit unsigned integer.
     */
     void aead_decrypt(
-        unsigned char *plaintext, unsigned char *tag,
-        const unsigned char *ciphertext, size_t text_len,
-        const unsigned char *aad, size_t aad_len, const unsigned char *key,
-        const unsigned char *iv, const unsigned char *constant
+        unsigned char       *plaintext,
+        unsigned char       *tag,
+        const unsigned char *ciphertext,
+        size_t               text_len,
+        const unsigned char *aad,
+        size_t               aad_len,
+        const unsigned char *key,
+        const unsigned char *iv,
+        const unsigned char *constant
+    );
+
+    // ----------------------------------
+
+    /**AEAD_CHACHA20_POLY1305 is an authenticated encryption.
+     * 
+     * Note: the nonce is produced inside this function by concatenating
+     * the constant and iv; (constant|iv).
+     * 
+     * @param ciphertext this is the resulting cipher text output.
+     * @param tag this is the resulting 128-bit/16-bytes of unsigned
+     * char array output, GENERATED after ENCRYPTION, compare this to the decryption tag to check authenticity.
+     * @param plaintext this is the input plain text that will be ENCRYPTED.
+     * @param text_len this is the size of the input plaintext and the output ciphertext in bytes.
+     * @param aad Arbitrary length additional authenticated data (AAD).
+     * @param aad_len this is the size of the input add in bytes.
+     * @param key a 256-bit key or 32 byte unsigned char array.
+     * @param iv initialization vector or IV.
+     * @param constant a 32-bit unsigned integer.
+    */
+    void aead_encrypt(
+        unsigned char       *ciphertext,
+        unsigned char       *tag,
+        const unsigned char *plaintext,
+        size_t               text_len,
+        const unsigned char *aad,
+        size_t               aad_len,
+        const unsigned char *key,
+        const unsigned char *nonce
+    );
+
+    /**AEAD_CHACHA20_POLY1305 authenticated decryption.
+     * 
+     * Note: the nonce is produced inside this function by concatenating
+     * the constant and iv; (constant|iv).
+     * 
+     * @param plaintext this is the resulting recovered plain text output.
+     * @param tag this is the resulting 128-bit/16-bytes of unsigned
+     * char array output, GENERATED after DECRYPTION, compare this to the encryption tag to check authenticity.
+     * @param ciphertext this is the input cipher text that will be DECRYPTED.
+     * @param text_len this is the size of the input plaintext and the output ciphertext in bytes.
+     * @param aad Arbitrary length additional authenticated data (AAD).
+     * @param aad_len this is the size of the input add in bytes.
+     * @param key a 256-bit key or 32 byte unsigned char array.
+     * @param iv initialization vector or IV.
+     * @param constant a 32-bit unsigned integer.
+    */
+    void aead_decrypt(
+        unsigned char       *plaintext,
+        unsigned char       *tag,
+        const unsigned char *ciphertext,
+        size_t               text_len,
+        const unsigned char *aad,
+        size_t               aad_len,
+        const unsigned char *key,
+        const unsigned char *nonce
     );
 }
 
