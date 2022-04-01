@@ -41,6 +41,10 @@ header_test: $(OBJ)
 	@./$(SRC)/ChaCha20Encryption_t1.out
 	@./$(SRC)/ChaCha20Encryption_t2.out
 	@./$(SRC)/ChaCha20Encryption_t3.out
+	@./$(SRC)/Poly1305_mac_t1.out
+	@./$(SRC)/Poly1305_mac_t2.out
+	@./$(SRC)/Poly1305_mac_t3.out
+	@./$(SRC)/Poly1305_mac_t4.out
 
 # test: $(OBJ) # not working for some reasons
 # 	@echo "running test programs"

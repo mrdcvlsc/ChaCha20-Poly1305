@@ -730,8 +730,11 @@ uint512 uint512::ss_mod(const uint512& divisor) const {
 
 uint512 uint512::operator/(const uint512& divisor) const {
 
-    int value = one_or_zero();
+    int value = divisor.one_or_zero();
     if(value == 0) {
+        std::cout << "\nError!!!\nuint512 operands:\n";
+        std::cout << "Dividen = "; printHex();
+        std::cout << "Divisor = "; divisor.printHex();
         throw std::domain_error("division by zero is not possible");
     }
     else if(*this == divisor) {
@@ -753,8 +756,11 @@ uint512& uint512::operator/=(const uint512& divisor) {
 
 uint512 uint512::operator%(const uint512& divisor) const {
 
-    int value = one_or_zero();
+    int value = divisor.one_or_zero();
     if(value == 0) {
+        std::cout << "\nError!!!\nuint512 operands:\n";
+        std::cout << "Dividen = "; printHex();
+        std::cout << "Divisor = "; divisor.printHex();
         throw std::domain_error("% mod:division by zero is not possible");
     }
     else if(*this == divisor) {
