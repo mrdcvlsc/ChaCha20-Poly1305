@@ -9,11 +9,14 @@
 
 -----
 
+**To Be Improved Later**
+- implement and use a uint320 instead of using uint512 to reduce operations in the poly1305 tag generation.
+
 **Environment Requirements:**
 - x86_64 architecture
 - little endian system
 
-If you system does not have these requirements, it might produce wrong results or might not even compile.
+If your system does not have these requirements, it might produce wrong results or might not even compile.
 
 -----
 

@@ -421,7 +421,7 @@ namespace ChaCha20_Poly1305
         size_t curr_pos = 0;
         memcpy(mac_data,aad,aad_len);
         memset(mac_data+(curr_pos+=aad_len),0x00,padding1);
-        memcpy(mac_data+(curr_pos+=padding1),plaintext,text_len);
+        memcpy(mac_data+(curr_pos+=padding1),ciphertext,text_len);
         memset(mac_data+(curr_pos+=text_len),0x00,padding2);
         memcpy(mac_data+(curr_pos+=padding2), &aad_len,8);
         memcpy(mac_data+(curr_pos+=8), &text_len,8);
