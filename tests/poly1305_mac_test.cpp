@@ -78,7 +78,7 @@ int main() {
 
 template<typename T>
 void ASSERT_ARRAY(T* A, T* B, size_t length, std::string TEST_MESSAGE, std::vector<bool>& RESULTS) {
-    std::cout << TEST_NAME << ":" << TEST_MESSAGE << " : ";
+    std::cout << ":" << TEST_MESSAGE << " : ";
     bool result_passed = true;
     for(size_t i=0; i<length; ++i) {
         if(A[i]!=B[i]) {

@@ -10,7 +10,7 @@
 
 // #define PRINT_FAILED_OUTPUTS
 std::vector<bool> TEST_RESULTS;
-const static std::string TEST_NAME = "ChaCha20_aead_encrypt";
+const static std::string TEST_NAME = "Initial ChaCha20Poly1305 encrypt, decrypt, authenticate test ";
 void ASSERT_UINT512(const uint512& A, const uint512& B, const std::string& TEST_MESSAGE);
 
 template<typename T>
@@ -77,9 +77,10 @@ int main() {
         0x1a, 0xe1, 0x0b, 0x59, 0x4f, 0x09, 0xe2, 0x6a, 0x7e, 0x90, 0x2e, 0xcb, 0xd0, 0x60, 0x06, 0x91
     };
 
-    ASSERT_ARRAY<unsigned char>(ciphertext,correct_cipher,114,"ChaCha20 cipher text",TEST_RESULTS);
-    ASSERT_ARRAY<unsigned char>(tag,correct_tag,16,"Poly1305 tag",TEST_RESULTS);
-    ASSERT_ARRAY<unsigned char>(recovered,plaintext,16,"Poly1305 recovered text",TEST_RESULTS);
+    ASSERT_ARRAY<unsigned char>(ciphertext,correct_cipher,sizeof(plaintext),"ChaCha20 cipher    text",TEST_RESULTS);
+    ASSERT_ARRAY<unsigned char>(recovered,plaintext,sizeof(plaintext),      "ChaCha20 recovered text",TEST_RESULTS);
+    ASSERT_ARRAY<unsigned char>(tag,correct_tag,sizeof(correct_tag),        "Poly1305 encryption tag",TEST_RESULTS);
+    ASSERT_ARRAY<unsigned char>(tag,recovered_tag,sizeof(recovered_tag),    "Poly1305 decryption tag",TEST_RESULTS);
     
     // SUMMARY OF RESULTS
     size_t failed_cnt = 0;
@@ -116,7 +117,7 @@ void ASSERT_UINT512(const uint512& A, const uint512& B, const std::string& TEST_
 
 template<typename T>
 void ASSERT_ARRAY(T* A, T* B, size_t length, std::string TEST_MESSAGE, std::vector<bool>& RESULTS) {
-    std::cout << TEST_NAME << ":" << TEST_MESSAGE << " : ";
+    std::cout << ":" << TEST_MESSAGE << " : ";
     bool result_passed = true;
     for(size_t i=0; i<length; ++i) {
         if(A[i]!=B[i]) {
