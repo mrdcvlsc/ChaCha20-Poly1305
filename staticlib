@@ -26,7 +26,7 @@ ifeq ($(OS), Linux)
 	@echo "compiling ChaCha20..."
 	@$(CC) -c ChaCha20-Poly1305.cpp -O2 -DMAKE_LIB
 	@echo "compiling libchacha20.a..."
-	@ar -r libchacha20.a uint512.o ChaCha20.o
+	@ar -r libchacha20.a uint512.o ChaCha20-Poly1305.o
 	@echo "build done : output -> libchacha20.a"
 	@echo "moving files to build folder"
 	@mv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))libchacha20.a ./build/lib/
