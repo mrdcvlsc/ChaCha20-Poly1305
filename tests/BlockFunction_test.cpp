@@ -1,5 +1,10 @@
 #include <iostream>
-#include "../ChaCha20.hpp"
+
+#ifndef MAKE_LIB
+#include "../Header-Mode-ChaCha20-Poly1305.hpp"
+#else
+#include <ChaCha20-Poly1305.hpp>
+#endif
 
 // ChaCha State Comparison
 bool CompareState(unsigned int *A, unsigned int *B){
@@ -23,7 +28,7 @@ int main()
         0x00,0x4a,0x00,0x00,0x00,0x00
     };
 
-    unsigned int correct_output_state[32] = {
+    unsigned int correct_output_state[16] = {
         0xe4e7f110, 0x15593bd1, 0x1fdd0f50, 0xc47120a3,
         0xc7f4d1c7, 0x0368c033, 0x9aaa2204, 0x4e6cd4c3,
         0x466482d2, 0x09aa9f07, 0x05d7c214, 0xa2028bd9,

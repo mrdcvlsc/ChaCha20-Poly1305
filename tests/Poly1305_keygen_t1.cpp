@@ -10,7 +10,8 @@
 
 // #define PRINT_FAILED_OUTPUTS
 std::vector<bool> TEST_RESULTS;
-const static std::string TEST_NAME = "poly1305 keygen";
+const static std::string TEST_NAME = "Poly1305 keygen using ChaCha20 test 1 ";
+void ASSERT_UINT512(const uint512& A, const uint512& B, const std::string& TEST_MESSAGE);
 
 template<typename T>
 void ASSERT_ARRAY(T* A, T* B, size_t length, std::string TEST_MESSAGE, std::vector<bool>& RESULTS);
@@ -27,31 +28,33 @@ int main() {
     std::cout << TEST_NAME << "\n=================================\n";
 
     // TEST VARIABLES
-    unsigned char key[32] = {
-        0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8a, 0x8b, 0x8c, 0x8d, 0x8e, 0x8f,
-        0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9a, 0x9b, 0x9c, 0x9d, 0x9e, 0x9f
+    unsigned char chacha20key[32] = {
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    unsigned char nonce[12] = {
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07
+    unsigned char nonce[] = {
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-
-    unsigned char poly1305_key_correct[32] = {
-        0x8a, 0xd5, 0xa0, 0x8b, 0x90, 0x5f, 0x81, 0xcc, 0x81, 0x50, 0x40, 0x27, 0x4a, 0xb2, 0x94, 0x71, 
-        0xa8, 0x33, 0xb6, 0x37, 0xe3, 0xfd, 0x0d, 0xa5, 0x08, 0xdb, 0xb8, 0xe2, 0xfd, 0xd1, 0xa6, 0x46
+    unsigned char polykey[] = {
+        0x76, 0xb8, 0xe0, 0xad, 0xa0, 0xf1, 0x3d, 0x90, 0x40, 0x5d, 0x6a, 0xe5, 0x53, 0x86, 0xbd, 0x28,
+        0xbd, 0xd2, 0x19, 0xb8, 0xa0, 0x8d, 0xed, 0x1a, 0xa8, 0x36, 0xef, 0xcc, 0x8b, 0x77, 0x0d, 0xc7
     };
 
-    // ANSWERS 
-    unsigned char poly1305_key[32];
-    __internal_poly1305::key_gen(poly1305_key,key,(unsigned int*)nonce);  
+    // ANSWERS
 
-    // TESTING ANSWER
-    ASSERT_ARRAY<unsigned char>(poly1305_key,poly1305_key_correct,32,"generated key matching",TEST_RESULTS);
+    unsigned char *genkey = new unsigned char[32];
+    __internal_poly1305::key_gen(genkey,chacha20key,(unsigned int*)nonce);
 
+    // TESTING ANSWER 
+    ASSERT_ARRAY<unsigned char>(genkey,polykey,sizeof(polykey),"Poly1305 key generation test ",TEST_RESULTS);
+    
+    delete [] genkey;
+    
     // SUMMARY OF RESULTS
     size_t failed_cnt = 0;
-    for(auto e : TEST_RESULTS) {
+    for(auto e : TEST_RESULTS) {     
         if(!e) failed_cnt++;
     }
 
@@ -66,7 +69,20 @@ int main() {
         std::cout << "\tSOME test FAILED\n";
         std::cout << "---------------------------------\n";
         return 1;
-    } 
+    }  
+}
+
+
+void ASSERT_UINT512(const uint512& A, const uint512& B, const std::string& TEST_MESSAGE) {
+    std::cout << TEST_NAME << ":" << TEST_MESSAGE << " : ";
+    if(A!=B) {
+        std::cout << "FAILED\n";
+        TEST_RESULTS.push_back(false);
+    }
+    else {
+        std::cout << "PASSED\n";
+        TEST_RESULTS.push_back(true);
+    }
 }
 
 template<typename T>

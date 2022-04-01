@@ -1,6 +1,11 @@
 #include <iostream>
 #include <cstring>
-#include "../ChaCha20.hpp"
+
+#ifndef MAKE_LIB
+#include "../Header-Mode-ChaCha20-Poly1305.hpp"
+#else
+#include <ChaCha20-Poly1305.hpp>
+#endif
 
 using namespace std;
 

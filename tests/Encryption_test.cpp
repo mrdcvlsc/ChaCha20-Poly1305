@@ -1,5 +1,10 @@
 #include <iostream>
-#include "../ChaCha20.hpp"
+
+#ifndef MAKE_LIB
+#include "../Header-Mode-ChaCha20-Poly1305.hpp"
+#else
+#include <ChaCha20-Poly1305.hpp>
+#endif
 
 void printBytes(unsigned char* bytearray, size_t len) {
     for(size_t i=0; i<len; ++i) {
@@ -45,7 +50,7 @@ int main()
         0x87, 0x4d
     };
 
-    unsigned char *cipher = ChaCha20::encrypt(key,initial_counter,nonce,plaintext,114);
+    unsigned char *cipher = ChaCha20_Poly1305::encrypt(key,initial_counter,nonce,plaintext,114);
 
     bool passed = true;
     for(size_t i=0; i<114; ++i) {

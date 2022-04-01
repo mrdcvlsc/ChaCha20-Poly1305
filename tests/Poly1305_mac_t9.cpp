@@ -10,55 +10,50 @@
 
 // #define PRINT_FAILED_OUTPUTS
 std::vector<bool> TEST_RESULTS;
-const static std::string TEST_NAME = "poly1305 mac";
+const static std::string TEST_NAME = "Poly1305 mac test 9 ";
+void ASSERT_UINT512(const uint512& A, const uint512& B, const std::string& TEST_MESSAGE);
 
 template<typename T>
 void ASSERT_ARRAY(T* A, T* B, size_t length, std::string TEST_MESSAGE, std::vector<bool>& RESULTS);
 
-void print16bytes(unsigned char* bytearray16) {
-    for(size_t i=0; i<16; ++i) {
-        printf("%02x ", bytearray16[i]);
+void printBytes(unsigned char* bytearray, size_t len) {
+    for(size_t i=0; i<len; ++i) {
+        printf("%02x ", bytearray[i]);
     }
     std::cout << "\n";
 }
-
 
 int main() {
     std::cout << "\n---------------------------------\n";
     std::cout << TEST_NAME << "\n=================================\n";
 
-
     // TEST VARIABLES
-    unsigned char key[32] = {
-        0x85, 0xd6, 0xbe, 0x78, 0x57, 0x55, 0x6d, 0x33, 0x7f, 0x44, 0x52, 0xfe, 0x42, 0xd5, 0x06, 0xa8,
-        0x01, 0x03, 0x80, 0x8a, 0xfb, 0x0d, 0xb2, 0xfd, 0x4a, 0xbf, 0xf6, 0xaf, 0x41, 0x49, 0xf5, 0x1b
+    unsigned char polykey[32] = {
+        0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    unsigned char msg[34] = {
-        0x43, 0x72, 0x79, 0x70, 0x74, 0x6f, 0x67, 0x72, 0x61, 0x70, 0x68, 0x69, 0x63, 0x20, 0x46, 0x6f,
-        0x72, 0x75, 0x6d, 0x20, 0x52, 0x65, 0x73, 0x65, 0x61, 0x72, 0x63, 0x68, 0x20, 0x47, 0x72, 0x6f,
-        0x75, 0x70, 
+    unsigned char text[] = {
+        0xFD, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
     };
 
-
-    // ANSWERS 
-    unsigned char tag[16];     
-
-    __internal_poly1305::mac(tag,key,msg,34); //
-
-    // TEST CORRECT ANSWER
-    unsigned char correct_tag[16] = {
-        0xa8, 0x06, 0x1d, 0xc1, 0x30, 0x51, 0x36, 0xc6, 0xc2, 0x2b, 0x8b, 0xaf, 0x0c, 0x01, 0x27, 0xa9
+    unsigned char tag[16] = {
+        0xFA, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
     };
 
-    // TESTING ANSWER  
-    ASSERT_ARRAY<unsigned char>(tag,correct_tag,16,"output tag correctness 1",TEST_RESULTS);
+    // ANSWERS
 
-    // SUMMARY OF RESULTS 
+    unsigned char *out_tag = new unsigned char[16];
+    __internal_poly1305::mac(out_tag,polykey,text,sizeof(text));
 
-
+    // TESTING ANSWER 
+    ASSERT_ARRAY<unsigned char>(out_tag,tag,16,"Poly1305 tag/mac test ",TEST_RESULTS);
+    
+    delete [] out_tag;
+    
+    // SUMMARY OF RESULTS
     size_t failed_cnt = 0;
-    for(auto e : TEST_RESULTS) {
+    for(auto e : TEST_RESULTS) {     
         if(!e) failed_cnt++;
     }
 
@@ -73,7 +68,20 @@ int main() {
         std::cout << "\tSOME test FAILED\n";
         std::cout << "---------------------------------\n";
         return 1;
-    } 
+    }  
+}
+
+
+void ASSERT_UINT512(const uint512& A, const uint512& B, const std::string& TEST_MESSAGE) {
+    std::cout << TEST_NAME << ":" << TEST_MESSAGE << " : ";
+    if(A!=B) {
+        std::cout << "FAILED\n";
+        TEST_RESULTS.push_back(false);
+    }
+    else {
+        std::cout << "PASSED\n";
+        TEST_RESULTS.push_back(true);
+    }
 }
 
 template<typename T>

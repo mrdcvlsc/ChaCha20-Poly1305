@@ -1,5 +1,6 @@
 .vscode
 *.out
+*.o
 main.cpp
 main.c
 test.c
@@ -7,3 +8,6 @@ test.cpp
 a.out
 a.cpp
 a.c
+build/*
+build
+*.exe
