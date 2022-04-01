@@ -22,8 +22,73 @@ If your system does not have these requirements, it might produce wrong results 
 
 -----
 
-## Usage
+## Main Functions
 
+Note: one **byte** is equivalent to one ```unsigned char```, If we have an array with a size of **5 bytes**, that is an array of ```unsigned char``` with **5 elements**.
+
+```c++
+/**Encryption.
+ * 
+ * @param outputCipher resulting cipher text output, 
+ * The size of outputCipher in bytes is equivalent to textLen.
+ * 
+ * @param outputTag resulting 128bit / 16 byte array,
+ * GENERATED after ENCRYPTION.
+ * 
+ * @param inputText plain text to be ENCRYPTED.
+ * 
+ * @param textLen size of the inputText in bytes.
+ * 
+ * @param AAD Arbitrary length additional authenticated data.
+ * 
+ * @param AAD_len size of the AAD in bytes.
+ * 
+ * @param key a 256-bit key or 32 byte unsigned char array.
+ * 
+ * @param nonce number only once.
+*/
+ChaCha20_Poly1305::aead_encrypt(
+    unsigned char       *outputCipher,
+    unsigned char       *outputTag,
+    const unsigned char *inputText,
+    size_t               textLen,
+    const unsigned char *AAD,
+    size_t               AAD_len,
+    const unsigned char *key,
+    const unsigned char *nonce
+);
+
+/**Decryption.
+ * 
+ * @param outputText recovered plain text output, 
+ * The size of outputText in bytes is equivalent to cipherLen.
+ * 
+ * @param outputTag resulting 128bit / 16 byte array,
+ * GENERATED after DECRYPTION.
+ * 
+ * @param inputCipher cipher text to be DECRYPTED.
+ * 
+ * @param cipherLen size of the input inputCipher in bytes.
+ * 
+ * @param AAD Arbitrary length additional authenticated data.
+ * 
+ * @param AAD_len size of the AAD in bytes.
+ * 
+ * @param key a 256-bit key or 32 byte unsigned char array.
+ * 
+ * @param nonce number only once.
+*/
+ChaCha20_Poly1305::aead_decrypt(
+    unsigned char       *outputText,
+    unsigned char       *outputTag,
+    const unsigned char *inputCipher,
+    size_t               cipherLen,
+    const unsigned char *AAD,
+    size_t               AAD_len,
+    const unsigned char *key,
+    const unsigned char *nonce
+);
+```
 
 
 ## Compilation

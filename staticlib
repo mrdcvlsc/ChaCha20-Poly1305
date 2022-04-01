@@ -24,7 +24,7 @@ ifeq ($(OS), Linux)
 	@echo "compiling uint512..."
 	@$(CC) -c uint512.cpp -O2 -DMAKE_LIB -D_HIDE_WARNING
 	@echo "compiling ChaCha20..."
-	@$(CC) -c ChaCha20.cpp -O2 -DMAKE_LIB
+	@$(CC) -c ChaCha20-Poly1305.cpp -O2 -DMAKE_LIB
 	@echo "compiling libchacha20.a..."
 	@ar -r libchacha20.a uint512.o ChaCha20.o
 	@echo "build done : output -> libchacha20.a"
@@ -40,7 +40,7 @@ else
 	@echo "compiling uint512..."
 	@$(CC) -c uint512.cpp -O2 -DMAKE_LIB -D_HIDE_WARNING
 	@echo "compiling ChaCha20..."
-	@$(CC) -c ChaCha20.cpp -O2 -DMAKE_LIB
+	@$(CC) -c ChaCha20-Poly1305.cpp -O2 -DMAKE_LIB
 	@echo "compiling libchacha20.a..."
 	@ar -r libchacha20.a uint512.o ChaCha20.o
 	@echo "build done : output -> libchacha20.a"

@@ -14,14 +14,26 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     
-    - name: compile the static library
+    - name: build and compile the static library.
       run: make -f staticlib
 
-    - name: run the tests for the static library
+    - name: run the tests for the static library.
       run: make -f staticlib static_test
-
-    - name: cleanup
-      run: make -f staticlib cleanup
 
     - name: clean test executables
       run: make clean
+
+    - name: install the static library.
+      run: sudo make -f staticlib install
+
+    - name: compile the static sample program for the library.
+      run: g++ static-build.cpp -o static-build.out -lchacha20 -fsanitizer=address
+
+    - name: run the sample program for the library.
+      run: ./static-build.out
+
+    - name: uninstall the static library.
+      run: sudo make -f staticlib uninstall
+
+    - name: cleanup
+      run: make -f staticlib cleanup

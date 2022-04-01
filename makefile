@@ -73,9 +73,3 @@ else
 	@echo "deleting compiled test programs"
 	del tests\*.out
 endif
-
-# install:
-# 	@ln -s $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/chacha20 /usr/local/include/
-
-# uninstall:
-# 	@unlink /usr/local/include/chacha20

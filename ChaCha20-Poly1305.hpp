@@ -293,57 +293,57 @@ namespace ChaCha20_Poly1305
      * @return returns the needed padding size in bytes.*/
     size_t pad16_size(size_t len);
     
-    /**AEAD_CHACHA20_POLY1305 is an authenticated encryption.
+    /**Encryption.
      * 
      * Note: the nonce is produced inside this function by concatenating
      * the constant and iv; (constant|iv).
      * 
-     * @param ciphertext this is the resulting cipher text output.
-     * @param tag this is the resulting 128-bit/16-bytes of unsigned
-     * char array output, GENERATED after ENCRYPTION, compare this to the decryption tag to check authenticity.
-     * @param plaintext this is the input plain text that will be ENCRYPTED.
-     * @param text_len this is the size of the input plaintext and the output ciphertext in bytes.
-     * @param aad Arbitrary length additional authenticated data (AAD).
-     * @param aad_len this is the size of the input add in bytes.
+     * @param outputCipher resulting cipher text output.
+     * @param outputTag resulting 128-bit/16-bytes of unsigned
+     * char array output, GENERATED after ENCRYPTION.
+     * @param inputText plain text to be ENCRYPTED.
+     * @param textLen size of the inputText in bytes.
+     * @param AAD Arbitrary length additional authenticated data.
+     * @param AAD_len size of the input AAD in bytes.
      * @param key a 256-bit key or 32 byte unsigned char array.
      * @param iv initialization vector or IV.
      * @param constant a 32-bit unsigned integer.
     */
     void aead_encrypt(
-        unsigned char       *ciphertext,
-        unsigned char       *tag,
-        const unsigned char *plaintext,
-        size_t               text_len,
-        const unsigned char *aad,
-        size_t               aad_len,
+        unsigned char       *outputCipher,
+        unsigned char       *outputTag,
+        const unsigned char *inputText,
+        size_t               textLen,
+        const unsigned char *AAD,
+        size_t               AAD_len,
         const unsigned char *key,
         const unsigned char *iv,
         const unsigned char *constant
     );
 
-    /**AEAD_CHACHA20_POLY1305 authenticated decryption.
+    /**Decryption.
      * 
      * Note: the nonce is produced inside this function by concatenating
      * the constant and iv; (constant|iv).
      * 
-     * @param plaintext this is the resulting recovered plain text output.
-     * @param tag this is the resulting 128-bit/16-bytes of unsigned
-     * char array output, GENERATED after DECRYPTION, compare this to the encryption tag to check authenticity.
-     * @param ciphertext this is the input cipher text that will be DECRYPTED.
-     * @param text_len this is the size of the input plaintext and the output ciphertext in bytes.
-     * @param aad Arbitrary length additional authenticated data (AAD).
-     * @param aad_len this is the size of the input add in bytes.
+     * @param outputText recovered plain text output.
+     * @param outputTag this is the resulting 128-bit/16-bytes of unsigned
+     * char array output, GENERATED after DECRYPTION.
+     * @param inputCipher cipher text to be DECRYPTED.
+     * @param cipherLen size of the inputCipher in bytes.
+     * @param AAD Arbitrary length additional authenticated data.
+     * @param AAD_len size of the input add in bytes.
      * @param key a 256-bit key or 32 byte unsigned char array.
      * @param iv initialization vector or IV.
      * @param constant a 32-bit unsigned integer.
     */
     void aead_decrypt(
-        unsigned char       *plaintext,
-        unsigned char       *tag,
-        const unsigned char *ciphertext,
-        size_t               text_len,
-        const unsigned char *aad,
-        size_t               aad_len,
+        unsigned char       *outputText,
+        unsigned char       *outputTag,
+        const unsigned char *inputCipher,
+        size_t               cipherLen,
+        const unsigned char *AAD,
+        size_t               AAD_len,
         const unsigned char *key,
         const unsigned char *iv,
         const unsigned char *constant
@@ -351,56 +351,48 @@ namespace ChaCha20_Poly1305
 
     // ----------------------------------
 
-    /**AEAD_CHACHA20_POLY1305 is an authenticated encryption.
+    /**Encryption.
      * 
-     * Note: the nonce is produced inside this function by concatenating
-     * the constant and iv; (constant|iv).
-     * 
-     * @param ciphertext this is the resulting cipher text output.
-     * @param tag this is the resulting 128-bit/16-bytes of unsigned
-     * char array output, GENERATED after ENCRYPTION, compare this to the decryption tag to check authenticity.
-     * @param plaintext this is the input plain text that will be ENCRYPTED.
-     * @param text_len this is the size of the input plaintext and the output ciphertext in bytes.
-     * @param aad Arbitrary length additional authenticated data (AAD).
-     * @param aad_len this is the size of the input add in bytes.
+     * @param outputCipher resulting cipher text output.
+     * @param outputTag resulting 128-bit/16-bytes of unsigned
+     * char array output, GENERATED after ENCRYPTION.
+     * @param inputText plain text to be ENCRYPTED.
+     * @param textLen size of the inputText in bytes.
+     * @param AAD Arbitrary length additional authenticated data.
+     * @param AAD_len size of the AAD in bytes.
      * @param key a 256-bit key or 32 byte unsigned char array.
-     * @param iv initialization vector or IV.
-     * @param constant a 32-bit unsigned integer.
+     * @param nonce number only once.
     */
     void aead_encrypt(
-        unsigned char       *ciphertext,
-        unsigned char       *tag,
-        const unsigned char *plaintext,
-        size_t               text_len,
-        const unsigned char *aad,
-        size_t               aad_len,
+        unsigned char       *outputCipher,
+        unsigned char       *outputTag,
+        const unsigned char *inputText,
+        size_t               textLen,
+        const unsigned char *AAD,
+        size_t               AAD_len,
         const unsigned char *key,
         const unsigned char *nonce
     );
 
-    /**AEAD_CHACHA20_POLY1305 authenticated decryption.
+    /**Decryption.
      * 
-     * Note: the nonce is produced inside this function by concatenating
-     * the constant and iv; (constant|iv).
-     * 
-     * @param plaintext this is the resulting recovered plain text output.
-     * @param tag this is the resulting 128-bit/16-bytes of unsigned
-     * char array output, GENERATED after DECRYPTION, compare this to the encryption tag to check authenticity.
-     * @param ciphertext this is the input cipher text that will be DECRYPTED.
-     * @param text_len this is the size of the input plaintext and the output ciphertext in bytes.
-     * @param aad Arbitrary length additional authenticated data (AAD).
-     * @param aad_len this is the size of the input add in bytes.
+     * @param outputText recovered plain text output.
+     * @param outputTag resulting 128-bit/16-bytes of unsigned
+     * char array output, GENERATED after DECRYPTION.
+     * @param inputCipher cipher text to be DECRYPTED.
+     * @param cipherLen size of the input inputCipher in bytes.
+     * @param AAD Arbitrary length additional authenticated data.
+     * @param AAD_len size of the AAD in bytes.
      * @param key a 256-bit key or 32 byte unsigned char array.
-     * @param iv initialization vector or IV.
-     * @param constant a 32-bit unsigned integer.
+     * @param nonce number only once.
     */
     void aead_decrypt(
-        unsigned char       *plaintext,
-        unsigned char       *tag,
-        const unsigned char *ciphertext,
-        size_t               text_len,
-        const unsigned char *aad,
-        size_t               aad_len,
+        unsigned char       *outputText,
+        unsigned char       *outputTag,
+        const unsigned char *inputCipher,
+        size_t               cipherLen,
+        const unsigned char *AAD,
+        size_t               AAD_len,
         const unsigned char *key,
         const unsigned char *nonce
     );

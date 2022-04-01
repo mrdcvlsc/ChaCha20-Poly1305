@@ -262,12 +262,12 @@ namespace ChaCha20_Poly1305
     }
   
     void aead_encrypt(
-        unsigned char       *ciphertext,
-        unsigned char       *tag,
-        const unsigned char *plaintext,
-        size_t               text_len,
-        const unsigned char *aad,
-        size_t               aad_len,
+        unsigned char       *outputCipher,
+        unsigned char       *outputTag,
+        const unsigned char *inputText,
+        size_t               textLen,
+        const unsigned char *AAD,
+        size_t               AAD_len,
         const unsigned char *key,
         const unsigned char *iv,
         const unsigned char *constant
@@ -281,25 +281,25 @@ namespace ChaCha20_Poly1305
         unsigned char *poly1305_key = new unsigned char[32];
         __internal_poly1305::key_gen(poly1305_key,key,(unsigned int*)nonce);
 
-        encrypt(ciphertext,key,1,(unsigned char*)nonce,plaintext,text_len);
+        encrypt(outputCipher,key,1,(unsigned char*)nonce,inputText,textLen);
 
-        size_t padding1 = pad16_size(aad_len);
-        size_t padding2 = pad16_size(text_len);
+        size_t padding1 = pad16_size(AAD_len);
+        size_t padding2 = pad16_size(textLen);
 
-        size_t mac_len = aad_len+padding1;
-        mac_len += (text_len+padding2);
+        size_t mac_len = AAD_len+padding1;
+        mac_len += (textLen+padding2);
         mac_len += 16;
         unsigned char *mac_data = new unsigned char[mac_len];
 
         size_t curr_pos = 0;
-        memcpy(mac_data,aad,aad_len);
-        memset(mac_data+(curr_pos+=aad_len),0x00,padding1);
-        memcpy(mac_data+(curr_pos+=padding1),ciphertext,text_len);
-        memset(mac_data+(curr_pos+=text_len),0x00,padding2);
-        memcpy(mac_data+(curr_pos+=padding2), &aad_len,8);
-        memcpy(mac_data+(curr_pos+=8), &text_len,8);
+        memcpy(mac_data,AAD,AAD_len);
+        memset(mac_data+(curr_pos+=AAD_len),0x00,padding1);
+        memcpy(mac_data+(curr_pos+=padding1),outputCipher,textLen);
+        memset(mac_data+(curr_pos+=textLen),0x00,padding2);
+        memcpy(mac_data+(curr_pos+=padding2), &AAD_len,8);
+        memcpy(mac_data+(curr_pos+=8), &textLen,8);
 
-        __internal_poly1305::mac(tag,poly1305_key,mac_data,mac_len);
+        __internal_poly1305::mac(outputTag,poly1305_key,mac_data,mac_len);
 
         delete [] mac_data;
         delete [] poly1305_key;
@@ -307,12 +307,12 @@ namespace ChaCha20_Poly1305
     }
 
     void aead_decrypt(
-        unsigned char       *plaintext,
-        unsigned char       *tag,
-        const unsigned char *ciphertext,
-        size_t               text_len,
-        const unsigned char *aad,
-        size_t               aad_len,
+        unsigned char       *outputText,
+        unsigned char       *outputTag,
+        const unsigned char *inputCipher,
+        size_t               textLen,
+        const unsigned char *AAD,
+        size_t               AAD_len,
         const unsigned char *key,
         const unsigned char *iv,
         const unsigned char *constant
@@ -326,25 +326,25 @@ namespace ChaCha20_Poly1305
         unsigned char *poly1305_key = new unsigned char[32];
         __internal_poly1305::key_gen(poly1305_key,key,(unsigned int*)nonce);
 
-        encrypt(plaintext,key,1,(unsigned char*)nonce,ciphertext,text_len);
+        encrypt(outputText,key,1,(unsigned char*)nonce,inputCipher,textLen);
 
-        size_t padding1 = pad16_size(aad_len);
-        size_t padding2 = pad16_size(text_len);
+        size_t padding1 = pad16_size(AAD_len);
+        size_t padding2 = pad16_size(textLen);
 
-        size_t mac_len = aad_len+padding1;
-        mac_len += (text_len+padding2);
+        size_t mac_len = AAD_len+padding1;
+        mac_len += (textLen+padding2);
         mac_len += 16;
         unsigned char *mac_data = new unsigned char[mac_len];
 
         size_t curr_pos = 0;
-        memcpy(mac_data,aad,aad_len);
-        memset(mac_data+(curr_pos+=aad_len),0x00,padding1);
-        memcpy(mac_data+(curr_pos+=padding1),ciphertext,text_len);
-        memset(mac_data+(curr_pos+=text_len),0x00,padding2);
-        memcpy(mac_data+(curr_pos+=padding2), &aad_len,8);
-        memcpy(mac_data+(curr_pos+=8), &text_len,8);
+        memcpy(mac_data,AAD,AAD_len);
+        memset(mac_data+(curr_pos+=AAD_len),0x00,padding1);
+        memcpy(mac_data+(curr_pos+=padding1),inputCipher,textLen);
+        memset(mac_data+(curr_pos+=textLen),0x00,padding2);
+        memcpy(mac_data+(curr_pos+=padding2), &AAD_len,8);
+        memcpy(mac_data+(curr_pos+=8), &textLen,8);
 
-        __internal_poly1305::mac(tag,poly1305_key,mac_data,mac_len);
+        __internal_poly1305::mac(outputTag,poly1305_key,mac_data,mac_len);
 
         delete [] mac_data;
         delete [] poly1305_key;
@@ -354,12 +354,12 @@ namespace ChaCha20_Poly1305
     // nonce version
 
     void aead_encrypt(
-        unsigned char       *ciphertext,
-        unsigned char       *tag,
-        const unsigned char *plaintext,
-        size_t               text_len,
-        const unsigned char *aad,
-        size_t               aad_len,
+        unsigned char       *outputCipher,
+        unsigned char       *outputTag,
+        const unsigned char *inputText,
+        size_t               textLen,
+        const unsigned char *AAD,
+        size_t               AAD_len,
         const unsigned char *key,
         const unsigned char *nonce
     ) {
@@ -367,37 +367,37 @@ namespace ChaCha20_Poly1305
         unsigned char *poly1305_key = new unsigned char[32];
         __internal_poly1305::key_gen(poly1305_key,key,(unsigned int*)nonce);
 
-        encrypt(ciphertext,key,1,(unsigned char*)nonce,plaintext,text_len);
+        encrypt(outputCipher,key,1,(unsigned char*)nonce,inputText,textLen);
 
-        size_t padding1 = pad16_size(aad_len);
-        size_t padding2 = pad16_size(text_len);
+        size_t padding1 = pad16_size(AAD_len);
+        size_t padding2 = pad16_size(textLen);
 
-        size_t mac_len = aad_len+padding1;
-        mac_len += (text_len+padding2);
+        size_t mac_len = AAD_len+padding1;
+        mac_len += (textLen+padding2);
         mac_len += 16;
         unsigned char *mac_data = new unsigned char[mac_len];
 
         size_t curr_pos = 0;
-        memcpy(mac_data,aad,aad_len);
-        memset(mac_data+(curr_pos+=aad_len),0x00,padding1);
-        memcpy(mac_data+(curr_pos+=padding1),ciphertext,text_len);
-        memset(mac_data+(curr_pos+=text_len),0x00,padding2);
-        memcpy(mac_data+(curr_pos+=padding2), &aad_len,8);
-        memcpy(mac_data+(curr_pos+=8), &text_len,8);
+        memcpy(mac_data,AAD,AAD_len);
+        memset(mac_data+(curr_pos+=AAD_len),0x00,padding1);
+        memcpy(mac_data+(curr_pos+=padding1),outputCipher,textLen);
+        memset(mac_data+(curr_pos+=textLen),0x00,padding2);
+        memcpy(mac_data+(curr_pos+=padding2), &AAD_len,8);
+        memcpy(mac_data+(curr_pos+=8), &textLen,8);
 
-        __internal_poly1305::mac(tag,poly1305_key,mac_data,mac_len);
+        __internal_poly1305::mac(outputTag,poly1305_key,mac_data,mac_len);
 
         delete [] mac_data;
         delete [] poly1305_key;
     }
 
     void aead_decrypt(
-        unsigned char       *plaintext,
-        unsigned char       *tag,
-        const unsigned char *ciphertext,
-        size_t               text_len,
-        const unsigned char *aad,
-        size_t               aad_len,
+        unsigned char       *outputText,
+        unsigned char       *outputTag,
+        const unsigned char *inputCipher,
+        size_t               cipherLen,
+        const unsigned char *AAD,
+        size_t               AAD_len,
         const unsigned char *key,
         const unsigned char *nonce
     ) {
@@ -405,25 +405,25 @@ namespace ChaCha20_Poly1305
         unsigned char *poly1305_key = new unsigned char[32];
         __internal_poly1305::key_gen(poly1305_key,key,(unsigned int*)nonce);
 
-        encrypt(plaintext,key,1,(unsigned char*)nonce,ciphertext,text_len);
+        encrypt(outputText,key,1,(unsigned char*)nonce,inputCipher,cipherLen);
 
-        size_t padding1 = pad16_size(aad_len);
-        size_t padding2 = pad16_size(text_len);
+        size_t padding1 = pad16_size(AAD_len);
+        size_t padding2 = pad16_size(cipherLen);
 
-        size_t mac_len = aad_len+padding1;
-        mac_len += (text_len+padding2);
+        size_t mac_len = AAD_len+padding1;
+        mac_len += (cipherLen+padding2);
         mac_len += 16;
         unsigned char *mac_data = new unsigned char[mac_len];
 
         size_t curr_pos = 0;
-        memcpy(mac_data,aad,aad_len);
-        memset(mac_data+(curr_pos+=aad_len),0x00,padding1);
-        memcpy(mac_data+(curr_pos+=padding1),ciphertext,text_len);
-        memset(mac_data+(curr_pos+=text_len),0x00,padding2);
-        memcpy(mac_data+(curr_pos+=padding2), &aad_len,8);
-        memcpy(mac_data+(curr_pos+=8), &text_len,8);
+        memcpy(mac_data,AAD,AAD_len);
+        memset(mac_data+(curr_pos+=AAD_len),0x00,padding1);
+        memcpy(mac_data+(curr_pos+=padding1),inputCipher,cipherLen);
+        memset(mac_data+(curr_pos+=cipherLen),0x00,padding2);
+        memcpy(mac_data+(curr_pos+=padding2), &AAD_len,8);
+        memcpy(mac_data+(curr_pos+=8), &cipherLen,8);
 
-        __internal_poly1305::mac(tag,poly1305_key,mac_data,mac_len);
+        __internal_poly1305::mac(outputTag,poly1305_key,mac_data,mac_len);
 
         delete [] mac_data;
         delete [] poly1305_key;
