@@ -7,6 +7,8 @@
 ![mingw32](https://github.com/mrdcvlsc/ChaCha20-Poly1305/actions/workflows/mingw32.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
+A from scratch C++ (with slight inline assembyl) implementation of ```ChaCha20 & Poly1305``` stream cipher described in [RFC - 8439](https://www.rfc-editor.org/info/rfc8439).
+
 -----
 
 **To Be Improved Later**
@@ -22,7 +24,19 @@ If your system does not have these requirements, it might produce wrong results 
 
 ## How to Use
 
-There are two ways to compile your program with this library, Either Using the **header only mode** or you can **build** it statically and install it in your system.
+1. **Using header**
+
+    Directly include the **Header-Mode-Chaha20-Poly1395.hpp** in you source code, and you can directly compile it without building the static library.
+
+    ```c++
+    #include "Header-Mode-Chaha20-Poly1395.hpp"
+    ```
+
+    But you always need to enable the optimization flags for this method to work.
+
+    ```shell
+    g++ main.cpp main.out -O2
+    ```
 
 1. **Static Build with GNU-GCC Linux makefiles**
 
@@ -53,7 +67,7 @@ There are two ways to compile your program with this library, Either Using the *
     make -f staticlib cleanup
     ```
 
-2. **Static Build with Mingw64 windows makefiles**
+2. **Static Build with Mingw64 Windows makefiles**
     
     Build & install static library
     ```shell
@@ -80,9 +94,4 @@ There are two ways to compile your program with this library, Either Using the *
     Clean Up compiled objects
     ```
     mingw32-make -f staticlib cleanup
-    ```
-
-    - If compiling with mingw64 you need to specify INSTALL_PREFIX with the path your mingw64 is located example
-    ```
-    mingw32-make -f staticlib install INSTALL_PREFIX="C:/User/Mingw64"
     ```

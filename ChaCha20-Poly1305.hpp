@@ -49,7 +49,7 @@ typedef unsigned long long ulongint;
 #elif (__clang__ || __GNUC__ || __GNUG__)
 typedef unsigned long ulongint;
 #define PRINT_LIMBHEX "%016lx "
-else
+#else
 #error not supported
 #endif
 
