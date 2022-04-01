@@ -1,3 +1,8 @@
+/* Compile with:
+
+    g++ static-build.cpp -o static-build.out -lchacha20
+*/
+
 #include <ChaCha20-Poly1305.hpp>
 
 void printChar(const std::string& name, unsigned char* arr, size_t len) {

@@ -1,3 +1,8 @@
+/* Compile with:
+
+    g++ header-build.cpp -o header-build.out -O2
+*/
+
 #include "Header-Mode-ChaCha20-Poly1305.hpp"
 
 void printChar(const std::string& name, unsigned char* arr, size_t len) {
