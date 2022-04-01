@@ -27,7 +27,7 @@ jobs:
       run: sudo make -f staticlib install
 
     - name: compile the static sample program for the library.
-      run: g++ static-build.cpp -o static-build.out -lchacha20 -fsanitizer=address
+      run: g++ static-build.cpp -o static-build.out -lchacha20 -fsanitize=address
 
     - name: run the sample program for the library.
       run: ./static-build.out
