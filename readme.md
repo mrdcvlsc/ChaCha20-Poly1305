@@ -90,6 +90,18 @@ ChaCha20_Poly1305::aead_decrypt(
 );
 ```
 
+**To know if the message is authentic:**
+
+1. The **outputTag** of encryption should match the **outputTag** of decryption.
+
+2. The sender will **send** the encrypted **cipher text** along with the **encrypted tag**.
+
+3. Then the receiver will decrypt the cipher text, the decryption function will produce the output **recovered plain text** and the output **decryption tag**.
+
+4. The receiver then compares the **senders tag** to his output **decryption tag**, if both tag matched / is-equal then the message was authentic / not altered.
+
+-----
+
 
 ## Compilation
 
