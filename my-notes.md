@@ -4,13 +4,13 @@
 
 This is a from scratch, C++ (with slight inline assembyl) implementation of ```ChaCha20 & Poly1305``` stream cipher described in [RFC - 8439](https://www.rfc-editor.org/info/rfc8439).
 
-All information and content in this _readme.md_'s **Dev Notes** section about ```ChaCha20 & Poly1305``` came from or a pharaphrase of a certain sentence/paragraph/section in [RFC - 8439](https://www.rfc-editor.org/info/rfc8439)... except those bullets that has a **[dsi]** tag at the start which are _(me)developer's self interpretation_.
+All information and content in this _readme.md_'s **My Notes** section about ```ChaCha20 & Poly1305``` came from or a pharaphrase of a certain sentence/paragraph/section in [RFC - 8439](https://www.rfc-editor.org/info/rfc8439)... except those bullets that has a **[dsi]** tag at the start which are _(me)developer's self interpretation_.
 
 The [dsi] bullet points might possiblly be an inaccurate or incorrect description.
 
 -----
 
-## Dev Notes
+## My Notes
 - **ChaCha state** - The description of the ChaCha algorithm will at various time refer to the **ChaCha state** as a **"vector"** of 16 elements represented as a 4x4 **"matrix"**. The matrix notation is more _visually convenient_ and gives a better notion as to _why some rounds_ are called **"column rounds"** while others are called **"diagonal rounds"**.
     ```
     +-----------+

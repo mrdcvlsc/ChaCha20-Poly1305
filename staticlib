@@ -1,33 +1,5 @@
-# target : g++ test.cpp -o test2.out -DMAKE_LIB -I./ -L./ -static -lchacha20
-# target new :
-# 		g++ -I./ -c uint128.cpp
-#		ar -r libchacha20.a uint128.o
-# 		g++ uint128t.cpp -o test3.out -I ./ -L./ -
-#		./test3.out
-
 CC := g++
 INSTALL_PREFIX=/usr/local/
-
-default:
-	@echo "creating build directory"
-	@mkdir build
-	@mkdir build/include
-	@mkdir build/lib
-	@echo "creating static lib"
-	@echo "compiling uint512..."
-	@$(CC) -c uint512.cpp -O2 -DMAKE_LIB -D_HIDE_WARNINGS
-	@echo "compiling ChaCha20..."
-	@$(CC) -c ChaCha20.cpp -O2 -DMAKE_LIB
-	@echo "compiling libchacha20.a..."
-	@ar -r libchacha20.a uint512.o ChaCha20.o
-	@echo "build done : output -> libchacha20.a"
-	@echo "moving files to build folder"
-	@mv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))libchacha20.a ./build/lib/
-	@cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))ChaCha20-Poly1305.hpp ./build/include/
-
-cleanup:
-	@echo "removing objects..."
-	@rm *.o
 
 CPPFLAGS := -g -Og -I./build/include -L./build/lib -lchacha20 -DMAKE_LIB
 CXXFLAGS := -std=c++11 -Wall -Wextra
@@ -42,9 +14,41 @@ SRC := tests
 SRC_FILES := $(wildcard $(SRC)/*.cpp)
 OBJ := $(patsubst $(SRC)/%.cpp,$(SRC)/%.out,$(SRC_FILES))
 
+default:
+	@echo "creating build directory"
+	@mkdir build
+	@mkdir build/include
+	@mkdir build/lib
+	@echo "creating static lib"
+	@echo "compiling uint512..."
+	@$(CC) -c uint512.cpp -O2 -DMAKE_LIB -D_HIDE_WARNING
+	@echo "compiling ChaCha20..."
+	@$(CC) -c ChaCha20.cpp -O2 -DMAKE_LIB
+	@echo "compiling libchacha20.a..."
+	@ar -r libchacha20.a uint512.o ChaCha20.o
+	@echo "build done : output -> libchacha20.a"
+	@echo "moving files to build folder"
+	@mv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))libchacha20.a ./build/lib/
+	@cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))ChaCha20-Poly1305.hpp ./build/include/
+
+cleanup:
+	@echo "removing objects..."
+	@rm *.o
+	@rm -rf build
+
+build_test:
+	@echo "==============================="
+	@echo ""
+	@echo "running build test"
+	@cp static-build.cpp  build
+	@$(CC) build/static-build.cpp -o build/static-build.out -I./build/include/ -L./build/lib -lchacha20
+	@./build/static-build.out
+
 # -------------------------- run test programs ---------------------------
 
 static_test: $(OBJ)
+	@echo "----------------------------------------------------"
+	@echo "Running Initial Tests..."
 	@./$(SRC)/QuarterRound_test.out
 	@./$(SRC)/BlockFunction_test.out
 	@./$(SRC)/Encryption_test.out
@@ -59,6 +63,31 @@ static_test: $(OBJ)
 	@./$(SRC)/poly1305_mac_test.out
 	@./$(SRC)/poly1305_keygen.out
 	@./$(SRC)/chacha20_aead_enc_dec.out
+	@echo "----------------------------------------------------"
+	@echo "Running Additional Tests..."
+	@./$(SRC)/BlockFunction_test1.out
+	@./$(SRC)/BlockFunction_test2.out
+	@./$(SRC)/BlockFunction_test3.out
+	@./$(SRC)/BlockFunction_test4.out
+	@./$(SRC)/BlockFunction_test5.out
+	@./$(SRC)/ChaCha20Encryption_t1.out
+	@./$(SRC)/ChaCha20Encryption_t2.out
+	@./$(SRC)/ChaCha20Encryption_t3.out
+	@./$(SRC)/Poly1305_mac_t1.out
+	@./$(SRC)/Poly1305_mac_t2.out
+	@./$(SRC)/Poly1305_mac_t3.out
+	@./$(SRC)/Poly1305_mac_t4.out
+	@./$(SRC)/Poly1305_mac_t5.out
+	@./$(SRC)/Poly1305_mac_t6.out
+	@./$(SRC)/Poly1305_mac_t7.out
+	@./$(SRC)/Poly1305_mac_t8.out
+	@./$(SRC)/Poly1305_mac_t9.out
+	@./$(SRC)/Poly1305_mac_t10.out
+	@./$(SRC)/Poly1305_mac_t11.out
+	@./$(SRC)/Poly1305_keygen_t1.out
+	@./$(SRC)/Poly1305_keygen_t2.out
+	@./$(SRC)/Poly1305_keygen_t3.out
+	@./$(SRC)/ChaCha20Poly1305_decrypt.out
 
 # -------------------------- test program compilation ---------------------------
 

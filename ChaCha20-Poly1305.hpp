@@ -189,6 +189,10 @@ static const int __CHAx220_BLK_FUNC_OUTPUT_BYTES__ = 64;
 /// Number of dwords(unsigned int) inside a ChaCha20 block function output.
 static const int __CHAx220_BLK_FUNC_OUTPUT_DWORDS__ = 16;
 
+
+/// Number of bytes(unsigned char) inside a Poly1305 tag/mac output.
+static const int __POLY1305_MAC_BYTES__ = 16;
+
 #define HALF_KEY_BYTES 16
 #define __CHACHA_STATE_COUNTER_INDEX__ 12
 

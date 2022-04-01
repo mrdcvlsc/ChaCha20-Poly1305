@@ -28,19 +28,23 @@ There are two ways to compile your program with this library, Either Using the *
 
     ```shell
     make -f staticlib
-    make -f staticlib cleanup
+    make -f staticlib build_test
     sudo make -f staticlib install
+    make -f staticlib cleanup
     ```
-
-    - You can also run static tests first to check if the program is producing the correct results before installing it with ```sudo make -f staticlib install```.
-
-        ```shell
-        make -f staticlib static_test
-        ```
 
     - Then you can now use it in your programs.
 
-make -f staticlib
-make -f staticlib static_test
-make -f staticlib clean_tests
-make -f staticlib clean
+    ```
+    g++ main.cpp -o main.out -lchacha20
+    ```
+
+    - To unsintall
+    ```
+    sudo make -f staticlib uninstall
+    ```
+
+    - If compiling with mingw64 you need to specify INSTALL_PREFIX with the path your mingw64 is located example
+    ```
+    make -f staticlib install INSTALL_PREFIX="C:/User/Mingw64"
+    ```
