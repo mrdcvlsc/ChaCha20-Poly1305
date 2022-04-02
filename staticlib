@@ -1,8 +1,8 @@
 CC := g++
 INSTALL_PREFIX=/usr/local/
 
-CPPFLAGS := -g -Og -I./build/include -L./build/lib -lchacha20 -DMAKE_LIB
-CXXFLAGS := -std=c++11 -Wall -Wextra
+CPPFLAGS := -g -Og -lchacha20
+CXXFLAGS := -std=c++11 -DMAKE_LIB -I./build/include -L./build/lib -Wall -Wextra
 
 OS := $(shell uname)
 
