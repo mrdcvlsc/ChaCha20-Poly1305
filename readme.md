@@ -9,10 +9,9 @@ A from scratch C++ (with slight inline assembly) implementation of ```ChaCha20 &
 ![mingw32](https://github.com/mrdcvlsc/ChaCha20-Poly1305/actions/workflows/mingw32.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
------
+All test from RFC-8439 is implemented here and is inside the ```tests``` folder.
 
-**To Be Improved Later**
-- implement and use a uint320 instead of using uint512 to reduce operations in the poly1305 tag generation.
+-----
 
 **Environment Requirements:**
 - x86_64 architecture
