@@ -1,11 +1,11 @@
 CC := g++
-CPPFLAGS := -g -Og -D_HIDE_WARNING
+TESTFLAGS := -g -Og -D_HIDE_WARNING
 CXXFLAGS := -std=c++11 -Wall -Wextra
 
 OS := $(shell uname)
 
 ifeq ($(OS), Linux)
-CPPFLAGS += -fsanitize=address
+TESTFLAGS += -fsanitize=address
 endif
 
 SRC := tests
@@ -56,14 +56,13 @@ header_test: $(OBJ)
 	@./$(SRC)/Poly1305_keygen_t2.out
 	@./$(SRC)/Poly1305_keygen_t3.out
 	@./$(SRC)/ChaCha20Poly1305_decrypt.out
-
 	@./$(SRC)/ChaCha20Poly1305_decrypt_nonceV.out
 
 # -------------------------- test program compilation ---------------------------
 
 $(SRC)/%.out: $(SRC)/%.cpp
 	@echo "compiling test program - compiler : $(CC)"
-	@$(CC) $(CPPFLAGS) $(CXXFLAGS) -o $@ $<
+	@$(CC) $(TESTFLAGS) $(CXXFLAGS) -o $@ $<
 
 clean:
 ifeq ($(OS), Linux)
