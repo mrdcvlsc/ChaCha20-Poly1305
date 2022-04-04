@@ -1,6 +1,6 @@
 #include <iostream>
 
-#ifndef MAKE_LIB
+#ifndef _MAKE_LIB
 #include "../Header-Mode-ChaCha20-Poly1305.hpp"
 #else
 #include <ChaCha20-Poly1305.hpp>

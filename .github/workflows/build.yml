@@ -7,7 +7,43 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+
+  build-clang:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+
+    - name: install clang
+      run: sudo apt install clang
+
+    - uses: actions/checkout@v2
+    
+    - name: build and compile the static library.
+      run: make -f staticlib CC=clang++
+
+    - name: run the tests for the static library.
+      run: make -f staticlib static_test CC=clang++
+
+    - name: clean test executables
+      run: make clean
+
+    - name: install the static library.
+      run: sudo make -f staticlib install CC=clang++
+
+    - name: compile the static sample program for the library.
+      run: clang++ static-build.cpp -o static-build.out -lchacha20 -fsanitize=address
+
+    - name: run the sample program for the library.
+      run: ./static-build.out
+
+    - name: uninstall the static library.
+      run: sudo make -f staticlib uninstall
+
+    - name: cleanup
+      run: make -f staticlib cleanup
+
+  build-gcc:
 
     runs-on: ubuntu-latest
     
