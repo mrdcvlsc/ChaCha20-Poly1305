@@ -4,7 +4,7 @@
 #include <cstring>
 #include <bitset>
 
-#ifdef MAKE_LIB
+#ifdef _MAKE_LIB
 #include "ChaCha20-Poly1305.hpp"
 #endif
 

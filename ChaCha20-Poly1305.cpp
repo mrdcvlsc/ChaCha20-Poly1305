@@ -2,7 +2,7 @@
 #define _CHACHA20_CPP_mrdcvlsc_
 #include <iostream>
 
-#ifdef MAKE_LIB
+#ifdef _MAKE_LIB
 #include "ChaCha20-Poly1305.hpp"
 #endif
 
