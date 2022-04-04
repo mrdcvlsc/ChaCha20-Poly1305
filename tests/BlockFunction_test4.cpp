@@ -57,11 +57,11 @@ int main() {
     unsigned int counter = 2;
    
     // ANSWERS
-    unsigned int *initial_state = new unsigned int[__CHAx220_STATE_DWORDS__];
-    unsigned int* output_state = new unsigned int[__CHAx220_BLK_FUNC_OUTPUT_DWORDS__];
+    unsigned int *initial_state = new unsigned int[CHACHA20_STATE_DWORDS];
+    unsigned int* output_state = new unsigned int[CHACHA20_BLK_FUNC_OUTPUT_DWORDS];
 
-    __internal_chacha20::init_state(initial_state,(unsigned int*)key,counter,(unsigned int*)nonce);
-    __internal_chacha20::apply_20rounds(output_state,initial_state);
+    chacha20::init_state(initial_state,(unsigned int*)key,counter,(unsigned int*)nonce);
+    chacha20::apply_20rounds(output_state,initial_state);
     
     unsigned char* serialize = (unsigned char*) output_state;
 

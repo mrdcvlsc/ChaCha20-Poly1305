@@ -44,7 +44,7 @@ int main() {
     // ANSWERS 
     unsigned char tag[16];     
 
-    __internal_poly1305::mac(tag,key,msg,34); //
+    poly1305::mac(tag,key,msg,34); //
 
     // TEST CORRECT ANSWER
     unsigned char correct_tag[16] = {

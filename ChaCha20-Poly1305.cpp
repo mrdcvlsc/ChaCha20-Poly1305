@@ -1,5 +1,5 @@
-#ifndef _CHACHA20_CPP_mrdcvlsc_
-#define _CHACHA20_CPP_mrdcvlsc_
+#ifndef CHACHA20_CPP_mrdcvlsc
+#define CHACHA20_CPP_mrdcvlsc
 #include <iostream>
 
 #ifdef _MAKE_LIB
@@ -11,7 +11,7 @@
 #include "ChaCha20-Poly1305.hpp"
 #endif
 
-namespace __internal_chacha20
+namespace chacha20
 {
     inline unsigned int bit_left_roll(unsigned int num, size_t n) {
 
@@ -63,7 +63,7 @@ namespace __internal_chacha20
     void apply_20rounds(unsigned int *output, const unsigned int *input) {
         
         // copy initial state to state
-        for(size_t i=0; i<__CHAx220_STATE_DWORDS__; ++i)
+        for(size_t i=0; i<CHACHA20_STATE_DWORDS; ++i)
             output[i] = input[i];
 
         // chacha 20 rounds
@@ -83,7 +83,7 @@ namespace __internal_chacha20
         }
 
         // add initialized state to the output state
-        for(size_t i=0; i<__CHAx220_STATE_DWORDS__; ++i)
+        for(size_t i=0; i<CHACHA20_STATE_DWORDS; ++i)
             output[i] += input[i];
     }
 
@@ -113,14 +113,14 @@ namespace __internal_chacha20
 
         unsigned int *cipher_blocked = (unsigned int*) outputCipher;
 
-        size_t blocks = textLen/__CHAx220_BLK_FUNC_OUTPUT_BYTES__;
-        size_t lastblock_bytes = (textLen%__CHAx220_BLK_FUNC_OUTPUT_BYTES__);
+        size_t blocks = textLen/CHACHA20_BLK_FUNC_OUTPUT_BYTES;
+        size_t lastblock_bytes = (textLen%CHACHA20_BLK_FUNC_OUTPUT_BYTES);
 
-        unsigned int *chacha_state = new unsigned int[__CHAx220_STATE_DWORDS__];
-        unsigned int *key_stream = new unsigned int[__CHAx220_STATE_DWORDS__];
+        unsigned int *chacha_state = new unsigned int[CHACHA20_STATE_DWORDS];
+        unsigned int *key_stream = new unsigned int[CHACHA20_STATE_DWORDS];
 
         // initialize ChaCha20 state
-        __internal_chacha20::init_state(
+        chacha20::init_state(
             chacha_state,
             (unsigned int*)key,
             counter,
@@ -130,18 +130,18 @@ namespace __internal_chacha20
         for(size_t i=0; i<blocks; ++i) {
 
             // perform ChaCha20 Block Function and get the key_stream output
-            __internal_chacha20::apply_20rounds(
+            chacha20::apply_20rounds(
                 key_stream,
                 chacha_state
             );
 
             // increment the chacha state's counter index
-            ++chacha_state[__CHACHA_STATE_COUNTER_INDEX__];
+            ++chacha_state[CHACHA_STATE_COUNTER_INDEX];
 
             if(blocks) {
                 for( // loop condition
-                    size_t j=(__CHAx220_BLK_FUNC_OUTPUT_DWORDS__*i), k=0;
-                    j<((__CHAx220_BLK_FUNC_OUTPUT_DWORDS__*i)+__CHAx220_BLK_FUNC_OUTPUT_DWORDS__);
+                    size_t j=(CHACHA20_BLK_FUNC_OUTPUT_DWORDS*i), k=0;
+                    j<((CHACHA20_BLK_FUNC_OUTPUT_DWORDS*i)+CHACHA20_BLK_FUNC_OUTPUT_DWORDS);
                     ++j) {
 
                     cipher_blocked[j] = plaintext_blocked[j] ^ key_stream[k++];
@@ -152,25 +152,25 @@ namespace __internal_chacha20
         // XOR remaining key_stream bytes and plaintext bytes
         if(lastblock_bytes) {
 
-            unsigned char *padded_last_bytes = new unsigned char[__CHAx220_BLK_FUNC_OUTPUT_BYTES__];
+            unsigned char *padded_last_bytes = new unsigned char[CHACHA20_BLK_FUNC_OUTPUT_BYTES];
             unsigned int *padded_last_block = (unsigned int*) padded_last_bytes;
-            memcpy(padded_last_bytes,inputText+(__CHAx220_BLK_FUNC_OUTPUT_BYTES__*blocks),lastblock_bytes);
+            memcpy(padded_last_bytes,inputText+(CHACHA20_BLK_FUNC_OUTPUT_BYTES*blocks),lastblock_bytes);
 
             // perform ChaCha20 Block Function and get the key_stream output
-            __internal_chacha20::apply_20rounds(
+            chacha20::apply_20rounds(
                 key_stream,
                 chacha_state
             );
             
             for( // loop condition
-                size_t j=(__CHAx220_BLK_FUNC_OUTPUT_DWORDS__*blocks), k=0;
-                j<((__CHAx220_BLK_FUNC_OUTPUT_DWORDS__*blocks)+__CHAx220_BLK_FUNC_OUTPUT_DWORDS__);
+                size_t j=(CHACHA20_BLK_FUNC_OUTPUT_DWORDS*blocks), k=0;
+                j<((CHACHA20_BLK_FUNC_OUTPUT_DWORDS*blocks)+CHACHA20_BLK_FUNC_OUTPUT_DWORDS);
                 ++j, ++k) {
 
                 padded_last_block[k] ^= key_stream[k];
             }
 
-            memcpy(outputCipher+(__CHAx220_BLK_FUNC_OUTPUT_BYTES__*blocks),padded_last_bytes,lastblock_bytes);
+            memcpy(outputCipher+(CHACHA20_BLK_FUNC_OUTPUT_BYTES*blocks),padded_last_bytes,lastblock_bytes);
 
             delete [] padded_last_bytes;
         }
@@ -180,7 +180,7 @@ namespace __internal_chacha20
     }
 }
 
-namespace __internal_poly1305 {
+namespace poly1305 {
 
     void clamp(unsigned char r[HALF_KEY_BYTES]) {
         r[3] &= 15;
@@ -238,11 +238,11 @@ namespace __internal_poly1305 {
 
     void key_gen(unsigned char *output, const unsigned char *key, const unsigned int *nonce, unsigned int counter) {
         
-        unsigned int *initial_state = new unsigned int[__CHAx220_STATE_DWORDS__];
-        unsigned int *transformed_state = new unsigned int[__CHAx220_STATE_DWORDS__];
+        unsigned int *initial_state = new unsigned int[CHACHA20_STATE_DWORDS];
+        unsigned int *transformed_state = new unsigned int[CHACHA20_STATE_DWORDS];
         
-        __internal_chacha20::init_state(initial_state,(unsigned int*)key,counter,nonce);
-        __internal_chacha20::apply_20rounds((unsigned int*)transformed_state,initial_state);
+        chacha20::init_state(initial_state,(unsigned int*)key,counter,nonce);
+        chacha20::apply_20rounds((unsigned int*)transformed_state,initial_state);
         
         // We take the first 256 bits of the serialized state, and use those as the
         // one-time Poly1305 key:
@@ -313,9 +313,9 @@ namespace ChaCha20_Poly1305
     ) {
 
         unsigned char *poly1305_key = new unsigned char[32];
-        __internal_poly1305::key_gen(poly1305_key,key,(unsigned int*)nonce);
+        poly1305::key_gen(poly1305_key,key,(unsigned int*)nonce);
 
-        __internal_chacha20::encrypt(outputCipher,key,1,(unsigned char*)nonce,inputText,textLen);
+        chacha20::encrypt(outputCipher,key,1,(unsigned char*)nonce,inputText,textLen);
 
         size_t padding1 = PADDING16(AAD_len);
         size_t padding2 = PADDING16(textLen);
@@ -333,7 +333,7 @@ namespace ChaCha20_Poly1305
         memcpy(mac_data+(curr_pos+=padding2), &AAD_len,8);
         memcpy(mac_data+(curr_pos+=8), &textLen,8);
 
-        __internal_poly1305::mac(outputTag,poly1305_key,mac_data,mac_len);
+        poly1305::mac(outputTag,poly1305_key,mac_data,mac_len);
 
         delete [] mac_data;
         delete [] poly1305_key;
@@ -351,9 +351,9 @@ namespace ChaCha20_Poly1305
     ) {
 
         unsigned char *poly1305_key = new unsigned char[32];
-        __internal_poly1305::key_gen(poly1305_key,key,(unsigned int*)nonce);
+        poly1305::key_gen(poly1305_key,key,(unsigned int*)nonce);
 
-        __internal_chacha20::encrypt(outputText,key,1,(unsigned char*)nonce,inputCipher,cipherLen);
+        chacha20::encrypt(outputText,key,1,(unsigned char*)nonce,inputCipher,cipherLen);
 
         size_t padding1 = PADDING16(AAD_len);
         size_t padding2 = PADDING16(cipherLen);
@@ -371,7 +371,7 @@ namespace ChaCha20_Poly1305
         memcpy(mac_data+(curr_pos+=padding2), &AAD_len,8);
         memcpy(mac_data+(curr_pos+=8), &cipherLen,8);
 
-        __internal_poly1305::mac(outputTag,poly1305_key,mac_data,mac_len);
+        poly1305::mac(outputTag,poly1305_key,mac_data,mac_len);
 
         delete [] mac_data;
         delete [] poly1305_key;

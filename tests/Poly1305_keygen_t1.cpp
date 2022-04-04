@@ -45,7 +45,7 @@ int main() {
     // ANSWERS
 
     unsigned char *genkey = new unsigned char[32];
-    __internal_poly1305::key_gen(genkey,chacha20key,(unsigned int*)nonce);
+    poly1305::key_gen(genkey,chacha20key,(unsigned int*)nonce);
 
     // TESTING ANSWER 
     ASSERT_ARRAY<unsigned char>(genkey,polykey,sizeof(polykey),"Poly1305 key generation test ",TEST_RESULTS);

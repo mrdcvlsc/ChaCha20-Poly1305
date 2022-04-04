@@ -42,16 +42,16 @@ int main()
         0xb5, 0x12, 0x9c, 0xd1, 0xde, 0x16, 0x4e, 0xb9, 0xcb, 0xd0, 0x83, 0xe8, 0xa2, 0x50, 0x3c, 0x4e
     };
 
-    unsigned int *initial_state = new unsigned int[__CHAx220_STATE_DWORDS__];
-    unsigned int* output_state = new unsigned int[__CHAx220_BLK_FUNC_OUTPUT_DWORDS__];
+    unsigned int *initial_state = new unsigned int[CHACHA20_STATE_DWORDS];
+    unsigned int* output_state = new unsigned int[CHACHA20_BLK_FUNC_OUTPUT_DWORDS];
 
-    __internal_chacha20::init_state(initial_state,(unsigned int*)key,1,(unsigned int*)nonce);
-    __internal_chacha20::apply_20rounds(output_state,initial_state);
+    chacha20::init_state(initial_state,(unsigned int*)key,1,(unsigned int*)nonce);
+    chacha20::apply_20rounds(output_state,initial_state);
     
     unsigned char* serialize = (unsigned char*) output_state;
 
     bool serial_passed = true;
-    for(size_t i=0; i<__CHAx220_BLK_FUNC_OUTPUT_BYTES__; ++i) {
+    for(size_t i=0; i<CHACHA20_BLK_FUNC_OUTPUT_BYTES; ++i) {
         if(serialize[i] != correct_serial[i]) {
             serial_passed = false;
             break;

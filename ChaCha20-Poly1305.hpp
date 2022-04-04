@@ -1,5 +1,5 @@
-#ifndef uidMRDCVLSC_ChaCha20_POLY1305_HPP
-#define uidMRDCVLSC_ChaCha20_POLY1305_HPP
+#ifndef idMRDCVLSC_ChaCha20_POLY1305_HP
+#define idMRDCVLSC_ChaCha20_POLY1305_HP
 
 #include <iostream>
 #include <cstring>
@@ -154,41 +154,43 @@ class uint512 {
 //=====================================================================
 
 /// Number of bytes(unsigned char) inside a ChaCha20 State.
-static const int __CHAx220_STATE_BYTES__ = 64;
+#define CHACHA20_STATE_BYTES 64
 
 /// Number of dwords(unsigned int) inside a ChaCha20 State.
-static const int __CHAx220_STATE_DWORDS__ = 16;
+#define CHACHA20_STATE_DWORDS 16
 
 /// Number of bytes(unsigned char) inside a ChaCha20 key.
-static const int __CHAx220_KEY_BYTES__ = 32;
+#define CHACHA20_KEY_BYTES 32
 
 /// Number of dwords(unsigned int) inside a ChaCha20 key.
-static const int __CHAx220_KEY_DWORDS__ = 8;
+#define CHACHA20_KEY_DWORDS 8
 
 /// Number of bytes(unsigned char) inside a ChaCha20 nonce.
-static const int __CHAx220_NONCE_BYTES__ = 12;
+#define CHACHA20_NONCE_BYTES 12
 
 /// Number of dwords(unsigned int) inside a ChaCha20 nonce.
-static const int __CHAx220_NONCE_DWORDS__ = 3;
+#define CHACHA20_NONCE_DWORDS 3
 
 /// Number of bytes(unsigned char) inside a ChaCha20 block function output.
-static const int __CHAx220_BLK_FUNC_OUTPUT_BYTES__ = 64;
+#define CHACHA20_BLK_FUNC_OUTPUT_BYTES 64
 
 /// Number of dwords(unsigned int) inside a ChaCha20 block function output.
-static const int __CHAx220_BLK_FUNC_OUTPUT_DWORDS__ = 16;
-
+#define CHACHA20_BLK_FUNC_OUTPUT_DWORDS 16
 
 /// Number of bytes(unsigned char) inside a Poly1305 tag/mac output.
-static const int __POLY1305_MAC_BYTES__ = 16;
+#define POLY1305_MAC_BYTES 16
 
+/// Index of the counter in the chacha state.
+#define CHACHA_STATE_COUNTER_INDEX 12
+
+/// Half of the size of the key in bytes.
 #define HALF_KEY_BYTES 16
-#define __CHACHA_STATE_COUNTER_INDEX__ 12
 
-#define HALF_KEY_BYTES 16
-
+/// get the padding needed for the textLen to become a multiple of 16
 #define PADDING16(textLen) (textLen%16==0) ? 0 : (16-(textLen%16))
 
-namespace __internal_chacha20
+/// internal namespace containing functions for chacha20 in aead encryption.
+namespace chacha20
 {
     inline unsigned int bit_left_roll(unsigned int num, size_t n);
 
@@ -258,7 +260,8 @@ namespace __internal_chacha20
     );
 }
 
-namespace __internal_poly1305 {
+/// internal namespace containing functions for poly1305 in aead encryption.
+namespace poly1305 {
 
     void clamp(unsigned char r[HALF_KEY_BYTES]);
 
