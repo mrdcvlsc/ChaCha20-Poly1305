@@ -186,6 +186,8 @@ static const int __POLY1305_MAC_BYTES__ = 16;
 
 #define HALF_KEY_BYTES 16
 
+#define PADDING16(textLen) (textLen%16==0) ? 0 : (16-(textLen%16))
+
 namespace __internal_chacha20
 {
     inline unsigned int bit_left_roll(unsigned int num, size_t n);
@@ -214,6 +216,46 @@ namespace __internal_chacha20
      * @param output this is where the result of the transformed ChaCha state will go.
      * @param input this is the initial ChaCha state.*/
     void apply_20rounds(unsigned int *output, const unsigned int *input);
+
+    /**The ChaCha20 Block Encryption.
+     * @param key A 256-bit key, treated as a concatenation of eight 32-bit little-endian integers.
+     * @param counter a 32 bit unsigned integer block counter, this is essential when
+     * initializing ChaCha states for different ChaCha blocks, It creates uniqueness for different blocks.
+     * @param nonce a number only once.
+     * @param inputText plain text message to be encrypted.
+     * @param textLen size of the message in bytes.
+     * @return returns an unsigned char* (pointer) that contains the cipher text (heap size should be equal to inputText's textLen).
+     * 
+     * WARNING!!! - THE POINTER ASSIGNED TO THIS FUNCTION SHOULD NOT BE ALLOCATED YET, THE ALLOCATION
+     * WILL HAPPED INSIDE THIS FUNCTION, AND AFTER THE ASSIGNED POINTER IS USED, IT
+     * SHOULD BE FREED USING THE delete [] KEYWORD!.
+    */
+    unsigned char *encrypt( // function parameters
+        const unsigned char *key,
+        unsigned int         counter,
+        const unsigned char *nonce,
+        const unsigned char *inputText,
+        size_t               textLen
+    );
+
+    /**The ChaCha20 Block Encryption.
+     * @param outputCipher encrypted plaintext message,
+     * heap size should be equal to the inputText's textLen.
+     * @param key A 256-bit key, treated as a concatenation of eight 32-bit little-endian integers.
+     * @param counter a 32 bit unsigned integer block counter, this is essential when
+     * initializing ChaCha states for different ChaCha blocks, It creates uniqueness for different blocks.
+     * @param nonce a number only once.
+     * @param inputText plain text message to be encrypted.
+     * @param textLen size of the message in bytes.
+     * */
+    void encrypt( // function parameters
+        unsigned char       *outputCipher,
+        const unsigned char *key,
+        unsigned int         counter,
+        const unsigned char *nonce,
+        const unsigned char *inputText,
+        size_t               textLen
+    );
 }
 
 namespace __internal_poly1305 {
@@ -244,55 +286,7 @@ namespace __internal_poly1305 {
 }
 
 namespace ChaCha20_Poly1305
-{
-    /**The ChaCha20 Block Encryption.
-     * @param key A 256-bit key, treated as a concatenation of eight 32-bit little-endian integers.
-     * @param counter a 32 bit unsigned integer block counter, this is essential when
-     * initializing ChaCha states for different ChaCha blocks, It creates uniqueness for different blocks.
-     * @param nonce a number only once.
-     * @param plaintext this is the message to be encrypted.
-     * @param len this is the size of the message in bytes.
-     * @return cipher_text this is the encrypted plaintext message,
-     * the return value is an unsigned char pointer, the allocated heap size
-     * is the as the plaintext length or the size of the message.
-     * 
-     * WARNING!!! - THE POINTER ASSIGNED TO THIS FUNCTION SHOULD NOT BE ALLOCATED YET, THE ALLOCATION
-     * WILL HAPPED INSIDE THIS FUNCTION, AND AFTER THE ASSIGNED POINTER IS USED, IT
-     * SHOULD BE FREED USING THE delete [] KEYWORD!.
-    */
-    unsigned char *encrypt( // function parameters
-        const unsigned char *key,
-        unsigned int         counter,
-        const unsigned char *nonce,
-        const unsigned char *plaintext,
-        size_t               len
-    );
-
-    /**The ChaCha20 Block Encryption.
-     * @param cipher_text this is the encrypted plaintext message,
-     * here it is a heap allocated unsigned char array pointer that
-     * has the same length as the plaintext.
-     * @param key A 256-bit key, treated as a concatenation of eight 32-bit little-endian integers.
-     * @param counter a 32 bit unsigned integer block counter, this is essential when
-     * initializing ChaCha states for different ChaCha blocks, It creates uniqueness for different blocks.
-     * @param nonce a number only once.
-     * @param plaintext this is the message to be encrypted.
-     * @param len this is the size of the message in bytes.
-     * */
-    void encrypt( // function parameters
-        unsigned char       *cipher_text,
-        const unsigned char *key,
-        unsigned int         counter,
-        const unsigned char *nonce,
-        const unsigned char *plaintext,
-        size_t               len
-    );
-
-    /**This function gets the next multiple of 16 from a given number.
-     *
-     * @return returns the needed padding size in bytes.*/
-    size_t pad16_size(size_t len);
-    
+{   
     /**Encryption.
      * 
      * Note: the nonce is produced inside this function by concatenating
