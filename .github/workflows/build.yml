@@ -8,7 +8,7 @@ on:
 
 jobs:
 
-  build-clang:
+  static-lib-clang:
 
     runs-on: ubuntu-latest
     
@@ -43,7 +43,7 @@ jobs:
     - name: cleanup
       run: make -f staticlib cleanup
 
-  build-gcc:
+  static-lib-gcc:
 
     runs-on: ubuntu-latest
     
