@@ -162,6 +162,7 @@ There are **TWO WAYS** to use the library, either using the **header only mode**
     Build static library with clang
     ```shell
     make -f staticlib CC=clang++
+    sudo make -f staticlib install
     ```
 
     Run tests with clang (optional)
@@ -173,6 +174,16 @@ There are **TWO WAYS** to use the library, either using the **header only mode**
 
     ```
     clang++ main.cpp -o main.out -lchacha20
+    ```
+
+    To uninstall library
+    ```
+    sudo make -f staticlib uninstall
+    ```
+
+    Clean Up compiled objects
+    ```
+    make -f staticlib cleanup
     ```
 
 <br>
