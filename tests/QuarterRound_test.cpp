@@ -38,8 +38,8 @@ int main(){
         0x5c971061, 0xccc07c79, 0x2098d9d6, 0x91dbd320
     };
 
-    __internal_chacha20::QUARTERROUND(stack_state, 2, 7, 8, 13);
-    __internal_chacha20::QUARTERROUND(heap_state, 2, 7, 8, 13);
+    chacha20::QUARTERROUND(stack_state, 2, 7, 8, 13);
+    chacha20::QUARTERROUND(heap_state, 2, 7, 8, 13);
 
     bool passed = CompareState(stack_state,correct_state) && CompareState(heap_state,correct_state);
 

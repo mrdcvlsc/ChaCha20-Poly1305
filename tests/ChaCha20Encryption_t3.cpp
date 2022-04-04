@@ -63,7 +63,7 @@ int main() {
    
     // ANSWERS
 
-    unsigned char *cipher_out = __internal_chacha20::encrypt(key,counter,nonce,plain_text,sizeof(plain_text));
+    unsigned char *cipher_out = chacha20::encrypt(key,counter,nonce,plain_text,sizeof(plain_text));
 
     // TESTING ANSWER 
     ASSERT_ARRAY<unsigned char>(cipher_out,cipher_text,sizeof(cipher_text),"ChaCha20 encryption ",TEST_RESULTS);

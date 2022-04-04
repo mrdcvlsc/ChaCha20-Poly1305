@@ -55,7 +55,7 @@ int main() {
    
     // ANSWERS
 
-    unsigned char *cipher_out = __internal_chacha20::encrypt(key,counter,nonce,plain_text,64);
+    unsigned char *cipher_out = chacha20::encrypt(key,counter,nonce,plain_text,64);
 
     // TESTING ANSWER
     std::cout << "cipher_text size = " << sizeof(cipher_text) << "\n";

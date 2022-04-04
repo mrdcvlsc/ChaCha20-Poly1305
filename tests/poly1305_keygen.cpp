@@ -44,7 +44,7 @@ int main() {
 
     // ANSWERS 
     unsigned char poly1305_key[32];
-    __internal_poly1305::key_gen(poly1305_key,key,(unsigned int*)nonce);  
+    poly1305::key_gen(poly1305_key,key,(unsigned int*)nonce);  
 
     // TESTING ANSWER
     ASSERT_ARRAY<unsigned char>(poly1305_key,poly1305_key_correct,32,"generated key matching",TEST_RESULTS);

@@ -67,7 +67,7 @@ int main() {
     // ANSWERS
 
     unsigned char *out_tag = new unsigned char[16];
-    __internal_poly1305::mac(out_tag,polykey,text,sizeof(text));
+    poly1305::mac(out_tag,polykey,text,sizeof(text));
 
     // TESTING ANSWER 
     ASSERT_ARRAY<unsigned char>(out_tag,tag,16,"Poly1305 tag/mac test ",TEST_RESULTS);
