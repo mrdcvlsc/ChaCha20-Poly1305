@@ -20,14 +20,14 @@ header_test: $(OBJ)
 	@./$(SRC)/QuarterRound_test.out
 	@./$(SRC)/BlockFunction_test.out
 	@./$(SRC)/Encryption_test.out
-	@./$(SRC)/constructor.out
-	@./$(SRC)/comparison.out
-	@./$(SRC)/leftshifts.out
-	@./$(SRC)/rightshifts.out
-	@./$(SRC)/addition.out
-	@./$(SRC)/subtraction.out
-	@./$(SRC)/multiplication.out
-	@./$(SRC)/division.out
+# @./$(SRC)/constructor.out
+# @./$(SRC)/comparison.out
+# @./$(SRC)/leftshifts.out
+# @./$(SRC)/rightshifts.out
+# @./$(SRC)/addition.out
+# @./$(SRC)/subtraction.out
+# @./$(SRC)/multiplication.out
+# @./$(SRC)/division.out
 	@./$(SRC)/poly1305_mac_test.out
 	@./$(SRC)/poly1305_keygen.out
 	@./$(SRC)/chacha20_aead_enc_dec.out

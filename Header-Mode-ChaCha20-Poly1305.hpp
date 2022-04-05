@@ -3,7 +3,7 @@
 
 #include "ChaCha20-Poly1305.hpp"
 
-#include "uint512.cpp"
+#include "uint320.cpp"
 #include "ChaCha20-Poly1305.cpp"
 
 #endif

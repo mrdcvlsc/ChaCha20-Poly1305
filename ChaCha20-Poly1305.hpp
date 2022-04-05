@@ -7,7 +7,7 @@
 #include <bitset>
 #include <utility>
 
-//============================== uint512 ==============================
+//============================== uint320 ==============================
 
 #define UINT128BITS 128
 #define UINT128BITS_2x 256
@@ -27,17 +27,17 @@
 #define UINT64BYTES 8
 #define UINT64BITS 64
 
-#define UINT512LIMBS 8
-#define UINT512BYTES 64
-#define UINT511BITS 511
-#define UINT512BITS 512
-#define UINT512BITS_x2 1024
+#define UINT320LIMBS 5
+#define UINT320BYTES 40
+#define UINT319BITS 319
+#define UINT320BITS 320
+#define UINT320BITS_x2 640
 
-/// uint512 least significant limb index.
-#define UINT512_LS_LIMB 0
+/// uint320 least significant limb index.
+#define UINT320_LS_LIMB 0
 
-/// uint512 most significant limb index.
-#define UINT512_MS_LIMB 7
+/// uint320 most significant limb index.
+#define UINT320_MS_LIMB 4
 
 #define LESS -1
 #define EQUAL 0
@@ -54,95 +54,94 @@ typedef unsigned long ulongint;
 #endif
 
 /// for intel & amd x86_64 & x64 architectures only.
-class uint512 {
+class uint320 {
     public:
 
     /**least significant quadword starting from index 0
      * up to index 7 the most significant quadword.*/
     ulongint *limbs;
 
-    uint512();
-    uint512(ulongint num);
-    uint512(const unsigned char *input_bytes, size_t bytes);
-    uint512(
-        ulongint n7, ulongint n6, ulongint n5, ulongint n4,
-        ulongint n3, ulongint n2, ulongint n1, ulongint n0
+    uint320();
+    uint320(ulongint num);
+    uint320(const unsigned char *input_bytes, size_t bytes);
+    uint320(
+        ulongint n4, ulongint n3, ulongint n2, ulongint n1, ulongint n0
     );
 
     /// copy constructor.
-    uint512(const uint512& src);
+    uint320(const uint320& src);
 
     /// move constructor.
-    uint512(uint512&& src) noexcept;
+    uint320(uint320&& src) noexcept;
 
     /// copy assignment.
-    uint512& operator=(const uint512& src);
+    uint320& operator=(const uint320& src);
 
     /// move assignment.
-    uint512& operator=(uint512&& src);
+    uint320& operator=(uint320&& src);
 
-    ~uint512();
+    ~uint320();
 
-    /// @return returns; 0 : if uint512 == 0, 1 : if uint512 == 1, and -1 : if uint512 != to 0 or 1.
+    /// @return returns; 0 : if uint320 == 0, 1 : if uint320 == 1, and -1 : if uint320 != to 0 or 1.
     int one_or_zero() const;
 
     /// @return returns; -1 : if less than, 0 : if equal, 1 : if greater than.
-    int compare(const uint512& with) const;
+    int compare(const uint320& with) const;
 
-    bool operator==(const uint512& with) const;
-    bool operator!=(const uint512& with) const;
-    bool operator<(const uint512& with) const;
-    bool operator>(const uint512& with) const;
-    bool operator<=(const uint512& with) const;
-    bool operator>=(const uint512& with) const;
+    bool operator==(const uint320& with) const;
+    bool operator!=(const uint320& with) const;
+    bool operator<(const uint320& with) const;
+    bool operator>(const uint320& with) const;
+    bool operator<=(const uint320& with) const;
+    bool operator>=(const uint320& with) const;
 
-    /// @return returns true if the uint512 is not zero.
+    /// @return returns true if the uint320 is not zero.
     bool boolean() const;
 
-    bool operator&&(const uint512& with) const;
-    bool operator||(const uint512& with) const;
+    bool operator&&(const uint320& with) const;
+    bool operator||(const uint320& with) const;
     bool operator!() const;
 
-    uint512 operator&(const uint512& with) const;
-    uint512 operator|(const uint512& with) const;
-    uint512 operator^(const uint512& with) const;
-    uint512 operator~() const;
+    uint320 operator&(const uint320& with) const;
+    uint320 operator|(const uint320& with) const;
+    uint320 operator^(const uint320& with) const;
+    uint320 operator~() const;
 
-    uint512& operator&=(const uint512& with);
-    uint512& operator|=(const uint512& with);
-    uint512& operator^=(const uint512& with);
+    uint320& operator&=(const uint320& with);
+    uint320& operator|=(const uint320& with);
+    uint320& operator^=(const uint320& with);
 
-    uint512 operator+(const uint512& add) const;
-    uint512& operator+=(const uint512& add);
+    uint320 operator+(const uint320& add) const;
+    uint320& operator+=(const uint320& add);
 
-    uint512 operator-(const uint512& sub) const;
-    uint512& operator-=(const uint512& sub);
+    uint320 operator-(const uint320& sub) const;
+    uint320& operator-=(const uint320& sub);
 
     /// This is the ugly part.
-    uint512 operator*(const uint512& mr) const;
-    uint512& operator*=(const uint512& mul);
+    uint320 operator*(const uint320& mr) const;
+    uint320& operator*=(const uint320& mul);
 
     /** long division using bits, shifts and subtract. */
-    uint512 ss_div(const uint512& divisor) const;
+    uint320 ss_div(const uint320& divisor) const;
 
     /** long division using bits, shifts and subtract. */
-    uint512 ss_mod(const uint512& divisor) const;
+    uint320 ss_mod(const uint320& divisor) const;
 
-    uint512 operator/(const uint512& divisor) const;
-    uint512& operator/=(const uint512& divisor);
+    uint320 operator/(const uint320& divisor) const;
+    uint320& operator/=(const uint320& divisor);
 
-    uint512 operator%(const uint512& divisor) const;
-    uint512& operator%=(const uint512& divisor);
+    uint320 operator%(const uint320& divisor) const;
+    uint320& operator%=(const uint320& divisor);
 
     // LEFT SHIFT
     
-    uint512 operator<<(size_t lshift) const;
-    uint512& operator<<=(size_t lshift);
+    uint320 operator<<(size_t lshift) const;
+    uint320& operator<<=(size_t lshift);
 
     // RIGHT SHIFT 
 
-    uint512 operator>>(size_t rshift) const;
-    uint512& operator>>=(size_t rshift);
+    uint320 operator>>(size_t rshift) const;
+    uint320& operator>>=(size_t rshift);
 
     /// the limb[7] will be printed first then 6,5, ..., the limb[0] will be printed last.
     void printHex() const;
