@@ -8,7 +8,7 @@
 #include "ChaCha20-Poly1305.hpp"
 #endif
 
-// #define DEVMODE
+#define DEVMODE
 #ifdef DEVMODE
 #include "ChaCha20-Poly1305.hpp"
 #endif
@@ -347,100 +347,85 @@ uint320 uint320::operator*(const uint320& mr) const {
     asm volatile (
         // ------------------- 1
         "movq %[mc0], %%rax\n\t"
-        "movq %[mr0], %%rbx\n\t"
-        "mulq %%rbx\n\t"
+        "mulq %[mr0]\n\t"
         "movq %%rax, %[pd0]\n\t"
         "movq %%rdx, %[pd1]\n\t"
 
         "movq %[mc1], %%rax\n\t"
-        "movq %[mr0], %%rbx\n\t"
-        "mulq %%rbx\n\t"
+        "mulq %[mr0]\n\t"
         "addq %%rax, %[pd1]\n\t"
         "adcq %%rdx, %[pd2]\n\t"
 
         "movq %[mc2], %%rax\n\t"
-        "movq %[mr0], %%rbx\n\t"
-        "mulq %%rbx\n\t"
+        "mulq %[mr0]\n\t"
         "addq %%rax, %[pd2]\n\t"
         "adcq %%rdx, %[pd3]\n\t"
 
         "movq %[mc3], %%rax\n\t"
-        "movq %[mr0], %%rbx\n\t"
-        "mulq %%rbx\n\t"
+        "mulq %[mr0]\n\t"
         "addq %%rax, %[pd3]\n\t"
         "adcq %%rdx, %[pd4]\n\t"
 
         "movq %[mc4], %%rax\n\t"
-        "movq %[mr0], %%rbx\n\t"
-        "mulq %%rbx\n\t"
+        "mulq %[mr0]\n\t"
         "addq %%rax, %[pd4]\n\t"
 
         // ------------------- 2
 
         "movq %[mc0], %%rax\n\t"
-        "movq %[mr1], %%rbx\n\t"
-        "mulq %%rbx\n\t"
+        "mulq %[mr1]\n\t"
         "addq %%rax, %[pd1]\n\t"
         "adcq %%rdx, %[pd2]\n\t"
         "adcq $0, %[pd3]\n\t"
         "adcq $0, %[pd4]\n\t"
 
         "movq %[mc1], %%rax\n\t"
-        "movq %[mr1], %%rbx\n\t"
-        "mulq %%rbx\n\t"
+        "mulq %[mr1]\n\t"
         "addq %%rax, %[pd2]\n\t"
         "adcq %%rdx, %[pd3]\n\t"
         "adcq $0, %[pd4]\n\t"
 
         "movq %[mc2], %%rax\n\t"
-        "movq %[mr1], %%rbx\n\t"
-        "mulq %%rbx\n\t"
+        "mulq %[mr1]\n\t"
         "addq %%rax, %[pd3]\n\t"
         "adcq %%rdx, %[pd4]\n\t"
 
         "movq %[mc3], %%rax\n\t"
-        "movq %[mr1], %%rbx\n\t"
-        "mulq %%rbx\n\t"
+        "mulq %[mr1]\n\t"
         "addq %%rax, %[pd4]\n\t"
 
         // -------------------- 3
 
         "movq %[mc0], %%rax\n\t"
-        "movq %[mr2], %%rbx\n\t"
-        "mulq %%rbx\n\t"
+        "mulq %[mr2]\n\t"
         "addq %%rax, %[pd2]\n\t"
         "adcq %%rdx, %[pd3]\n\t"
         "adcq $0, %[pd4]\n\t"
 
         "movq %[mc1], %%rax\n\t"
-        "movq %[mr2], %%rbx\n\t"
-        "mulq %%rbx\n\t"
+        "mulq %[mr2]\n\t"
         "addq %%rax, %[pd3]\n\t"
         "adcq %%rdx, %[pd4]\n\t"
 
         "movq %[mc2], %%rax\n\t"
-        "movq %[mr2], %%rbx\n\t"
-        "mulq %%rbx\n\t"
+        "mulq %[mr2]\n\t"
         "addq %%rax, %[pd4]\n\t"
 
         // -------------------- 4
 
         "movq %[mc0], %%rax\n\t"
-        "movq %[mr3], %%rbx\n\t"
-        "mulq %%rbx\n\t"
+        "mulq %[mr3]\n\t"
         "addq %%rax, %[pd3]\n\t"
         "adcq %%rdx, %[pd4]\n\t"
 
         "movq %[mc1], %%rax\n\t"
-        "movq %[mr3], %%rbx\n\t"
-        "mulq %%rbx\n\t"
+        "mulq %[mr3]\n\t"
         "addq %%rax, %[pd4]\n\t"
 
         // ------------------- 5
 
         "movq %[mc0], %%rax\n\t"
-        "movq %[mr4], %%rbx\n\t"
-        "mulq %%rbx\n\t"
+        "mulq %[mr4]\n\t"
         "addq %%rax, %[pd4]\n\t"
 
         :
@@ -461,7 +446,7 @@ uint320 uint320::operator*(const uint320& mr) const {
         [mc2]"m"(limbs[2]),
         [mc3]"m"(limbs[3]),
         [mc4]"m"(limbs[4])
-        : "rax","rdx", "rbx","cc"
+        : "rax","rdx","cc"
     );
 
 #else
