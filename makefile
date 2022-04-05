@@ -24,9 +24,9 @@ header_test: $(OBJ)
 # @./$(SRC)/comparison.out
 # @./$(SRC)/leftshifts.out
 # @./$(SRC)/rightshifts.out
-# @./$(SRC)/addition.out
+	@./$(SRC)/addition.out
 # @./$(SRC)/subtraction.out
-# @./$(SRC)/multiplication.out
+	@./$(SRC)/multiplication.out
 # @./$(SRC)/division.out
 	@./$(SRC)/poly1305_mac_test.out
 	@./$(SRC)/poly1305_keygen.out
