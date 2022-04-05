@@ -8,7 +8,7 @@
 #include "ChaCha20-Poly1305.hpp"
 #endif
 
-#define DEVMODE
+// #define DEVMODE
 #ifdef DEVMODE
 #include "ChaCha20-Poly1305.hpp"
 #endif
