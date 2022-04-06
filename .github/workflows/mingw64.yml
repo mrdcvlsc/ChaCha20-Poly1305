@@ -1,4 +1,4 @@
-name: mingw32
+name: mingw64
 
 on:
   push:
