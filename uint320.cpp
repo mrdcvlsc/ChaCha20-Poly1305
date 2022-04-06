@@ -297,7 +297,7 @@ uint320 uint320::operator+(const uint320& add) const {
 #else
     #error uint320 is not supported on this compiler
 #endif
-#elif
+#else
 #error uint320 is not supported on 32-bit computers (x86 architectures)
 #endif
 
@@ -373,7 +373,7 @@ uint320 uint320::operator*(const uint320& mr) const {
     for(size_t i=0; i<UINT320LIMBS; ++i) {
         pd.limbs[i] = __uint128_product[i];
     }
-#elif((__clang__ || __GNUC__ || __GNUG__ || __MINGW64__) && (__aarch64__ || __aarch64))
+#elif ((__clang__ || __GNUC__ || __GNUG__ || __MINGW64__) && (__aarch64__ || __aarch64))
 #ifndef _HIDE_WARNING
 #warning using GCC inline asm, please enable optimization flag, recomended : -O2, to enable use C++ implementation instead, enable the -D_PURE_CPP flag.
 #endif
@@ -403,7 +403,7 @@ uint320 uint320::operator*(const uint320& mr) const {
         pd.limbs[i] = __uint128_product[i];
     }
 
-#elif(__clang__ || __GNUC__ || __GNUG__ || __MINGW64__)
+#elif (__clang__ || __GNUC__ || __GNUG__ || __MINGW64__)
 #ifndef _HIDE_WARNING
 #warning using GCC inline asm, please enable optimization flag, recomended : -O2, to enable use C++ implementation instead, enable the -D_PURE_CPP flag.
 #endif
@@ -515,7 +515,7 @@ uint320 uint320::operator*(const uint320& mr) const {
 #else
     #error uint320 is not supported on this compiler
 #endif
-#elif
+#else
 #error uint320 is not supported on 32-bit computers (x86 architectures)
 #endif
 
