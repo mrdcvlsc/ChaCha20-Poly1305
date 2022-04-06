@@ -16,7 +16,7 @@ All test from RFC-8439 is implemented here and is inside the ```tests``` folder.
 -----
 
 # Environment Requirements
-- x86_64 architecture
+- x86_64 or aarch64 architecture
 - little endian system
 
 If your system does not have these requirements, it might produce wrong results or might not even compile.
