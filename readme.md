@@ -1,5 +1,8 @@
 # ChaCha20 & Poly1305
 
+![build](https://github.com/mrdcvlsc/ChaCha20-Poly1305/actions/workflows/build.yml/badge.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+
 A from scratch C++ (with slight inline assembly) implementation of ```ChaCha20 & Poly1305``` stream cipher described in [RFC - 8439](https://www.rfc-editor.org/info/rfc8439).
 
 **tests:**
@@ -7,7 +10,6 @@ A from scratch C++ (with slight inline assembly) implementation of ```ChaCha20 &
 ![gcc-gnu](https://github.com/mrdcvlsc/ChaCha20-Poly1305/actions/workflows/gcc-gnu.yml/badge.svg)
 ![clang](https://github.com/mrdcvlsc/ChaCha20-Poly1305/actions/workflows/clang.yml/badge.svg)
 ![mingw32](https://github.com/mrdcvlsc/ChaCha20-Poly1305/actions/workflows/mingw32.yml/badge.svg)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 All test from RFC-8439 is implemented here and is inside the ```tests``` folder.
 

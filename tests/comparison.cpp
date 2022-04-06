@@ -16,9 +16,9 @@ int main() {
         Tests[i] = false;
 
     ulongint max = 0xffffffffffffffff;
-    uint512 ZERO(0,0,0,0,0,0,0,0), ONE(0,0,0,0,0,0,0,1), MAX(max,max,max,max,max,max,max,max);
-    uint512 A(0,0,0,0,0,0,7879234,93);
-    uint512 B(0,0,0,0,0,0,7879234,94);
+    uint320 ZERO(0), ONE(1), MAX(max,max,max,max,max);
+    uint320 A(0,0,0,7879234,93);
+    uint320 B(0,0,0,7879234,94);
     
     if(
         !((ZERO == ZERO) && (ONE == ONE) && (A == A) && (MAX == MAX) &&
@@ -31,10 +31,10 @@ int main() {
         (B > ZERO) && (B > ONE) && (B > A) &&
         (A > ZERO) && (A > ONE) && (ONE > ZERO))
     ) {
-        std::cout << "uint512:comparisons : FAILED\n";
+        std::cout << "uint320:comparisons : FAILED\n";
     }
     else {
-        std::cout << "uint512:comparisons : PASSED\n";
+        std::cout << "uint320:comparisons : PASSED\n";
         Tests[0] = true;
     }
 
@@ -47,11 +47,11 @@ int main() {
     }
 
     if(!failed_cnt) {
-        std::cout << "uint512 comparision ALL test PASSED\n";
+        std::cout << "uint320 comparision ALL test PASSED\n";
         return 0;
     }
     else {
-        std::cout << "uint512 comparision SOME test FAILED\n";
+        std::cout << "uint320 comparision SOME test FAILED\n";
         return 1;
     }
 }

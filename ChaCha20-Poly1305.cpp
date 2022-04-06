@@ -198,17 +198,17 @@ namespace poly1305 {
         memcpy(unclamped_r,key,HALF_KEY_BYTES);
         clamp(unclamped_r);
         
-        uint512 r(unclamped_r,HALF_KEY_BYTES),
+        uint320 r(unclamped_r,HALF_KEY_BYTES),
                 s(key+HALF_KEY_BYTES,HALF_KEY_BYTES),
                 a(0),
-                p(0,0,0,0,0,0x3, 0xffffffffffffffff, 0xfffffffffffffffb);
+                p(0,0,0x3, 0xffffffffffffffff, 0xfffffffffffffffb);
 
         size_t blocks = msg_len/HALF_KEY_BYTES;
         size_t remain = msg_len%HALF_KEY_BYTES;
 
         // 16 byte blocks
         for(size_t i=0; i<blocks; ++i) {
-            uint512 n(msg+(i*HALF_KEY_BYTES),HALF_KEY_BYTES);
+            uint320 n(msg+(i*HALF_KEY_BYTES),HALF_KEY_BYTES);
             n.limbs[2] |= 0x01;
 
             a = (a + n) * r;
@@ -222,7 +222,7 @@ namespace poly1305 {
             memset(last_block+remain+1,0x00,(HALF_KEY_BYTES-remain)-1);
             last_block[remain] = 0x01;
 
-            uint512 n(last_block,HALF_KEY_BYTES);
+            uint320 n(last_block,HALF_KEY_BYTES);
 
             a += n;
             a = (r * a) % p;

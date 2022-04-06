@@ -11,7 +11,7 @@
 // #define PRINT_FAILED_OUTPUTS
 std::vector<bool> TEST_RESULTS;
 const static std::string TEST_NAME = "Block Function Additional Test 4 ";
-void ASSERT_UINT512(const uint512& A, const uint512& B, const std::string& TEST_MESSAGE);
+void ASSERT_UINT512(const uint320& A, const uint320& B, const std::string& TEST_MESSAGE);
 
 template<typename T>
 void ASSERT_ARRAY(T* A, T* B, size_t length, std::string TEST_MESSAGE, std::vector<bool>& RESULTS);
@@ -94,7 +94,7 @@ int main() {
 }
 
 
-void ASSERT_UINT512(const uint512& A, const uint512& B, const std::string& TEST_MESSAGE) {
+void ASSERT_UINT512(const uint320& A, const uint320& B, const std::string& TEST_MESSAGE) {
     std::cout << TEST_NAME << ":" << TEST_MESSAGE << " : ";
     if(A!=B) {
         std::cout << "FAILED\n";

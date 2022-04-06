@@ -30,12 +30,12 @@ ifeq ($(OS), Linux)
 	@mkdir $(HEADER_OUT)
 	@mkdir $(LIB_OUT)
 	@echo "creating static lib"
-	@echo "compiling uint512..."
-	@$(CC) -c uint512.cpp $(LIB_OPTIMIZATION) $(USERFLAGS)
+	@echo "compiling uint320..."
+	@$(CC) -c uint320.cpp $(LIB_OPTIMIZATION) $(USERFLAGS)
 	@echo "compiling ChaCha20..."
 	@$(CC) -c ChaCha20-Poly1305.cpp $(LIB_OPTIMIZATION) $(USERFLAGS)
 	@echo "compiling $(LIB_OUTNAME)..."
-	@ar -r $(LIB_OUTNAME) uint512.o ChaCha20-Poly1305.o
+	@ar -r $(LIB_OUTNAME) uint320.o ChaCha20-Poly1305.o
 	@echo "build done : output -> $(LIB_OUTNAME)"
 	@echo "moving files to build folder"
 	@mv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))$(LIB_OUTNAME) ./$(LIB_OUT)/
@@ -46,12 +46,12 @@ else
 	@mkdir "$(HEADER_OUT)"
 	@mkdir "$(LIB_OUT)"
 	@echo "creating static lib"
-	@echo "compiling uint512..."
-	@$(CC) -c uint512.cpp $(LIB_OPTIMIZATION) $(USERFLAGS)
+	@echo "compiling uint320..."
+	@$(CC) -c uint320.cpp $(LIB_OPTIMIZATION) $(USERFLAGS)
 	@echo "compiling ChaCha20..."
 	@$(CC) -c ChaCha20-Poly1305.cpp $(LIB_OPTIMIZATION) $(USERFLAGS)
 	@echo "compiling $(LIB_OUTNAME)..."
-	@ar -r $(LIB_OUTNAME) uint512.o ChaCha20.o
+	@ar -r $(LIB_OUTNAME) uint320.o ChaCha20.o
 	@echo "build done : output -> $(LIB_OUTNAME)"
 	@echo "moving files to build folder"
 	@move "./$(LIB_OUTNAME)" "$(LIB_OUT)"

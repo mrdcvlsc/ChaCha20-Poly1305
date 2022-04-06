@@ -9,9 +9,9 @@
 #endif
 
 std::vector<bool> TEST_RESULTS;
-const static std::string TEST_NAME = "uint512 add "; 
+const static std::string TEST_NAME = "uint320 add "; 
 
-void ASSERT_UINT512(const uint512& A, const uint512& B, const std::string& TEST_MESSAGE);
+void ASSERT_UINT512(const uint320& A, const uint320& B, const std::string& TEST_MESSAGE);
 
 template<typename T>
 void ASSERT_ARRAY(T* A, T* B, size_t length, std::string TEST_MESSAGE, std::vector<bool>& RESULTS);
@@ -23,9 +23,9 @@ void printBytes(unsigned char* bytearray, size_t len) {
     std::cout << "\n"; 
 }
 
-uint512 fib(size_t nth) {
-    uint512 base0(0,0,0,0,0,0,0,0), base1(0,0,0,0,0,0,0,1);
-    uint512 nthfib(0,0,0,0,0,0,0,0);
+uint320 fib(size_t nth) {
+    uint320 base0(0,0,0,0,0), base1(0,0,0,0,1);
+    uint320 nthfib(0,0,0,0,0);
     for(size_t i=2; i<=nth; ++i) {
         nthfib = base0 + base1;
         base0 = base1;
@@ -41,33 +41,34 @@ int main() {
     // TEST VARIABLES
     ulongint max = 0xffffffffffffffff;
 
-    uint512 MAX(max,max,max,max,max,max,max,max);
-    uint512 ZERO(0,0,0,0,0,0,0,0);
-    uint512 ONE(0,0,0,0,0,0,0,1);
-    uint512 TWO(0,0,0,0,0,0,0,2);
+    uint320 MAX(max,max,max,max,max);
+    uint320 ZERO(0,0,0,0,0);
+    uint320 ONE(0,0,0,0,1);
+    uint320 TWO(0,0,0,0,2);
 
-    uint512 NUM1(0,0,0,87123,0,9993284613,111273861823,1),
-            NUM2(0,0,0,0,8834,110,77770,10),
-            NUMC(0,0,0,0x15453, 0x0000000000002282, 0x0000000253a56c73, 0x00000019e8719289, 0x000000000000000b);
+    uint320 NUM1(0x15453,0x00,0x253a56c05,0x19e87062bf,0x01),
+            NUM2(0,0x2282,0x6e,0x12fca,0xa),
+            NUMC(0x15453, 0x0000000000002282, 0x0000000253a56c73, 0x00000019e8719289, 0x000000000000000b),
+            
+    CFIB462(
+        0xbf2e7ee72b7d39a0,
+        0x4f98c3696e1e6f92,
+        0x6c37f145ea105a4c,
+        0x35aab97428b1a4d3,
+        0x7af6ea1c8b65f068
+    );
 
-    uint512 CMAXMAX(max,max,max,max,max,max,max,0xfffffffffffffffe);
+    uint320 CMAXMAX(max,max,max,max,0xfffffffffffffffe),
 
-    uint512 CFIB739(
-        0xec30e4c53f672485, 0x7556f50afc80013b,
-        0x0995173248cef4d3, 0x8bc099887fa83367, 
-        0xd5dbd26953b22fe5, 0x7ecd1921fb7b6309,
-        0xca7cac791eb08301, 0x891182cd299e32b5
-    ), 
-
-    CFIB100(0,0,0,0,0,0,0x13, 0x33db76a7c594bfc3);
+    CFIB100(0,0,0,0x13, 0x33db76a7c594bfc3);
 
     // ANSWERS        
-    uint512 MAXONE = MAX + ONE, 
+    uint320 MAXONE = MAX + ONE, 
             MAXTWO = MAX + TWO,
             MAXMAX = MAX + MAX,
             NUMA = NUM1 + NUM2,
             FIB100 = fib(100),
-            FIB739 = fib(739);
+            FIB462 = fib(462);
 
     // TESTING ANSWER       
     ASSERT_UINT512(MAXONE,ZERO,"MAX + 1");
@@ -75,7 +76,7 @@ int main() {
     ASSERT_UINT512(MAXMAX,CMAXMAX,"MAX + MAX");
     ASSERT_UINT512(NUMA,NUMC,"NUM1 + NUM2");
     ASSERT_UINT512(FIB100,CFIB100,"fibonacci(100)");
-    ASSERT_UINT512(FIB739,CFIB739,"fibonacci(739)");
+    ASSERT_UINT512(FIB462,CFIB462,"fibonacci(739)");
 
     // SUMMARY OF RESULTS 
     size_t failed_cnt = 0; 
@@ -100,7 +101,7 @@ int main() {
 }
 
 
-void ASSERT_UINT512(const uint512& A, const uint512& B, const std::string& TEST_MESSAGE) {
+void ASSERT_UINT512(const uint320& A, const uint320& B, const std::string& TEST_MESSAGE) {
     std::cout << TEST_NAME << ":" << TEST_MESSAGE << " : ";
     if(A!=B) {
         std::cout << "FAILED\n";

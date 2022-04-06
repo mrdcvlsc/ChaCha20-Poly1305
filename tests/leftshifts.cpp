@@ -11,7 +11,7 @@
 std::vector<bool> TEST_RESULTS;
 const static std::string TEST_NAME = "Left Shifts";
 
-void ASSERT_UINT512(const uint512& A, const uint512& B, const std::string& TEST_MESSAGE);
+void ASSERT_UINT512(const uint320& A, const uint320& B, const std::string& TEST_MESSAGE);
 
 template<typename T>
 void ASSERT_ARRAY(T* A, T* B, size_t length, std::string TEST_MESSAGE, std::vector<bool>& RESULTS);
@@ -29,31 +29,31 @@ int main() {
 
     // TEST VARIABLES
     ulongint max = 0xffffffffffffffff;
-    uint512 MAX(max,max,max,max,max,max,max,max);
-    uint512 ZERO(0,0,0,0,0,0,0,0);
-    uint512 CLS032(max,max,max,max,max,max,max,0xffffffff00000000);
-    uint512 CLS064(max,max,max,max,max,max,max,0);
-    uint512 CLS096(max,max,max,max,max,max,0xffffffff00000000, 0);
-    uint512 CLS128(max,max,max,max,max,max,0,0);
-    uint512 CLS160(max,max,max,max,max,0xffffffff00000000,0,0);
-    uint512 CLS192(max,max,max,max,max,0,0,0);
-    uint512 CLS256(max,max,max,max,0,0,0,0);
-    uint512 CLS500(0xfff0000000000000,0,0,0,0,0,0,0);
+    uint320 MAX(max,max,max,max,max);
+    uint320 ZERO(0,0,0,0,0);
+    uint320 CLS032(max,max,max,max,0xffffffff00000000);
+    uint320 CLS064(max,max,max,max,0);
+    uint320 CLS096(max,max,max,0xffffffff00000000, 0);
+    uint320 CLS128(max,max,max,0,0);
+    uint320 CLS160(max,max,0xffffffff00000000,0,0);
+    uint320 CLS192(max,max,0,0,0);
+    uint320 CLS256(max,0,0,0,0);
+    uint320 CLS500(0,0,0,0,0);
 
-    // uint512 CLS000 = 
+    // uint320 CLS000 = 
 
     // ANSWERS
-    uint512 LS000 = MAX << 0;
-    uint512 LS032 = MAX << 32;
-    uint512 LS064 = MAX << 64;
-    uint512 LS096 = MAX << 96;
-    uint512 LS128 = MAX << 128;
-    uint512 LS160 = MAX << 160;
-    uint512 LS192 = MAX << 192;
-    uint512 LS256 = MAX << 256;
-    uint512 LS500 = MAX << 500;
-    uint512 LS512 = MAX << 512;
-    uint512 LS600 = MAX << 600;
+    uint320 LS000 = MAX << 0;
+    uint320 LS032 = MAX << 32;
+    uint320 LS064 = MAX << 64;
+    uint320 LS096 = MAX << 96;
+    uint320 LS128 = MAX << 128;
+    uint320 LS160 = MAX << 160;
+    uint320 LS192 = MAX << 192;
+    uint320 LS256 = MAX << 256;
+    uint320 LS500 = MAX << 500;
+    uint320 LS512 = MAX << 512;
+    uint320 LS600 = MAX << 600;
 
     // TESTING ANSWER
     ASSERT_UINT512(LS000, MAX,    "MAX <<   0");
@@ -92,7 +92,7 @@ int main() {
 }
 
 
-void ASSERT_UINT512(const uint512& A, const uint512& B, const std::string& TEST_MESSAGE) {
+void ASSERT_UINT512(const uint320& A, const uint320& B, const std::string& TEST_MESSAGE) {
     std::cout << TEST_NAME << ":" << TEST_MESSAGE << " : ";
     if(A!=B) {
         std::cout << "FAILED\n";
