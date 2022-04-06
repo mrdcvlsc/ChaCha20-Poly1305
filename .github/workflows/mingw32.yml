@@ -13,5 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: compiler architecture
+      run: gcc -dumpmachine
     - name: compile and run tests in header mode
       run: make header_test
