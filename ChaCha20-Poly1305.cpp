@@ -224,13 +224,13 @@ namespace poly1305 {
 
             uint320 n(last_block,HALF_KEY_BYTES);
 
-            a += n;
-            a = (r * a) % p;
+            a = (a + n) * r;
+            a = a % p;
 
             delete [] last_block;
         }
 
-        a+=s;
+        a = a + s;
 
         memcpy(output,(unsigned char*)a.limbs,UINT128BYTES);
         delete [] unclamped_r;

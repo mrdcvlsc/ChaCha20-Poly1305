@@ -13,10 +13,6 @@
 #include "ChaCha20-Poly1305.hpp"
 #endif
 
-uint320::uint320() {
-    limbs = new ulongint[UINT320LIMBS];
-}
-
 uint320::uint320(ulongint num) {
     limbs = new ulongint[UINT320LIMBS];
     limbs[0] = num;
@@ -137,20 +133,8 @@ bool uint320::operator!=(const uint320& with) const {
 }
 
 bool uint320::operator<(const uint320& with) const {
-    if(compare(with)==LESS)
-        return true;
-    return false;
-}
-
-bool uint320::operator>(const uint320& with) const {
-    if(compare(with)==GREAT)
-        return true;
-    return false;
-}
-
-bool uint320::operator<=(const uint320& with) const {
     int value = compare(with);
-    if(value==LESS || value==EQUAL)
+    if(value==LESS)
         return true;
     return false;
 }
@@ -160,73 +144,6 @@ bool uint320::operator>=(const uint320& with) const {
     if(value==GREAT || value==EQUAL)
         return true;
     return false;
-}
-
-/// @return returns true if the uint320 is not zero
-bool uint320::boolean() const {
-    for(size_t i=0; i<UINT320LIMBS; ++i) {
-        if(limbs[i])
-            return true;
-    }
-    return false;
-}
-
-bool uint320::operator&&(const uint320& with) const {
-    return boolean() && with.boolean();
-}
-
-bool uint320::operator||(const uint320& with) const {
-    return boolean() || with.boolean();
-}
-
-bool uint320::operator!() const {
-    return !boolean();
-}
-
-uint320 uint320::operator&(const uint320& with) const {
-    uint320 result(0,0,0,0,0);
-    for(size_t i=0; i<UINT320LIMBS; ++i)
-        result.limbs[i] = limbs[i] & with.limbs[i];
-    return result;
-}
-
-uint320 uint320::operator|(const uint320& with) const {
-    uint320 result(0,0,0,0,0);
-    for(size_t i=0; i<UINT320LIMBS; ++i)
-        result.limbs[i] = limbs[i] | with.limbs[i];
-    return result;
-}
-
-uint320 uint320::operator^(const uint320& with) const {
-    uint320 result(0,0,0,0,0);
-    for(size_t i=0; i<UINT320LIMBS; ++i)
-        result.limbs[i] = limbs[i] ^ with.limbs[i];
-    return result;
-}
-
-uint320 uint320::operator~() const {
-    uint320 result(0,0,0,0,0);
-    for(size_t i=0; i<UINT320LIMBS; ++i)
-        result.limbs[i] = ~limbs[i];
-    return result;
-}
-
-uint320& uint320::operator&=(const uint320& with) {
-    for(size_t i=0; i<UINT320LIMBS; ++i)
-        limbs[i] &= with.limbs[i];
-    return *this;
-}
-
-uint320& uint320::operator|=(const uint320& with) {
-    for(size_t i=0; i<UINT320LIMBS; ++i)
-        limbs[i] |= with.limbs[i];
-    return *this;
-}
-
-uint320& uint320::operator^=(const uint320& with) {
-    for(size_t i=0; i<UINT320LIMBS; ++i)
-        limbs[i] ^= with.limbs[i];
-    return *this;
 }
 
 uint320 uint320::operator+(const uint320& add) const {
@@ -304,10 +221,6 @@ uint320 uint320::operator+(const uint320& add) const {
     return sum;
 }
 
-uint320& uint320::operator+=(const uint320& add) {
-    return *this = *this + add;
-}
-
 uint320 uint320::operator-(const uint320& sub) const {
     
     uint320 dif = *this;
@@ -336,10 +249,6 @@ uint320 uint320::operator-(const uint320& sub) const {
     }
 
     return dif;
-}
-
-uint320& uint320::operator-=(const uint320& sub) {
-    return *this = *this - sub;
 }
 
 /// This is the ugly part
@@ -521,38 +430,6 @@ uint320 uint320::operator*(const uint320& mr) const {
     return pd;
 }
 
-uint320& uint320::operator*=(const uint320& mul) {
-    *this = *this * mul;
-    return *this;
-}
-
-/** long division using bits, shifts and subtract */
-uint320 uint320::ss_div(const uint320& divisor) const {
-    
-    uint320
-        quotient(0),
-        pdvn(0),
-        bit(0);
-
-    for(size_t i=0; i<UINT320BITS; ++i) {
-
-        pdvn = pdvn << 1;
-        quotient = quotient << 1;
-
-        bit = *this << i;
-        bit = bit >> UINT319BITS;
-
-        pdvn.limbs[UINT320_LS_LIMB] |= bit.limbs[UINT320_LS_LIMB];
-
-        if(pdvn>=divisor) {
-            pdvn = pdvn - divisor;            
-            quotient.limbs[UINT320_LS_LIMB] |= 1;
-        }
-    }
-
-    return quotient;
-}
-
 /** long division using bits, shifts and subtract */
 uint320 uint320::ss_mod(const uint320& divisor) const {
     
@@ -572,38 +449,12 @@ uint320 uint320::ss_mod(const uint320& divisor) const {
         pdvn.limbs[UINT320_LS_LIMB] |= bit.limbs[UINT320_LS_LIMB];
 
         if(pdvn>=divisor) {
-            pdvn -= divisor;
+            pdvn = pdvn - divisor;
             quotient.limbs[UINT320_LS_LIMB] |= 1;
         }
     }
 
     return pdvn;
-}
-
-uint320 uint320::operator/(const uint320& divisor) const {
-
-    int value = divisor.one_or_zero();
-    if(value == 0) {
-        std::cout << "\nError!!!\nuint320 operands:\n";
-        std::cout << "Dividen = "; printHex();
-        std::cout << "Divisor = "; divisor.printHex();
-        throw std::domain_error("division by zero is not possible");
-    }
-    else if(*this == divisor) {
-        return uint320(1); // remainder zero
-    }
-    else if(*this < divisor) {
-        return uint320(0); // remainder *this (dividen)
-    }
-    else if(value == 1) {
-        return *this;
-    }
-    return this->ss_div(divisor);
-}
-
-uint320& uint320::operator/=(const uint320& divisor) {
-    *this = *this / divisor;
-    return *this;
 }
 
 uint320 uint320::operator%(const uint320& divisor) const {
@@ -625,11 +476,6 @@ uint320 uint320::operator%(const uint320& divisor) const {
         return uint320(0);
     }
     return this->ss_mod(divisor);
-}
-
-uint320& uint320::operator%=(const uint320& divisor) {
-    *this = *this % divisor;
-    return *this;
 }
 
 // LEFT SHIFT
@@ -674,10 +520,6 @@ uint320 uint320::operator<<(size_t lshift) const {
     return result;
 }
 
-uint320& uint320::operator<<=(size_t lshift) {
-    return (*this = *this << lshift);
-}
-
 // RIGHT SHIFT 
 
 uint320 uint320::operator>>(size_t rshift) const {
@@ -718,10 +560,6 @@ uint320 uint320::operator>>(size_t rshift) const {
     }
 
     return result;
-}
-
-uint320& uint320::operator>>=(size_t rshift) {
-    return (*this = *this >> rshift);
 }
 
 /// the limb[7] will be printed first then 6,5, ..., the limb[0] will be printed last.
