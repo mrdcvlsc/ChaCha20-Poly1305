@@ -39,7 +39,7 @@ int main() {
 
     // encryption (with C++ style casting on parameters).
     unsigned char *cipher_text = new unsigned char[lorem.size()];
-    unsigned char *encrypt_mac = new unsigned char[__POLY1305_MAC_BYTES__];
+    unsigned char *encrypt_mac = new unsigned char[POLY1305_MAC_BYTES];
     ChaCha20_Poly1305::aead_encrypt(
         cipher_text,encrypt_mac,
         reinterpret_cast<const unsigned char*>(lorem.data()),lorem.size(),
@@ -48,7 +48,7 @@ int main() {
 
     // decryption (with C style casting on parameters).
     unsigned char *recover_text = new unsigned char[lorem.size()];
-    unsigned char *decrypt_mac  = new unsigned char[__POLY1305_MAC_BYTES__];
+    unsigned char *decrypt_mac  = new unsigned char[POLY1305_MAC_BYTES];
     ChaCha20_Poly1305::aead_decrypt(
         recover_text,decrypt_mac,
         cipher_text,lorem.size(),
@@ -67,7 +67,7 @@ int main() {
     }
 
     bool authentic = true;
-    for(size_t i=0; i<__POLY1305_MAC_BYTES__; ++i) {
+    for(size_t i=0; i<POLY1305_MAC_BYTES; ++i) {
         if(encrypt_mac[i]!=decrypt_mac[i]) {
             authentic = false;
             break;
