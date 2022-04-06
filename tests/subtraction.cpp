@@ -9,9 +9,9 @@
 #endif
 
 std::vector<bool> TEST_RESULTS;
-const static std::string TEST_NAME = "uint512 subtract "; 
+const static std::string TEST_NAME = "uint320 subtract "; 
 
-void ASSERT_UINT512(const uint512& A, const uint512& B, const std::string& TEST_MESSAGE);
+void ASSERT_UINT512(const uint320& A, const uint320& B, const std::string& TEST_MESSAGE);
 
 template<typename T>
 void ASSERT_ARRAY(T* A, T* B, size_t length, std::string TEST_MESSAGE, std::vector<bool>& RESULTS);
@@ -23,17 +23,6 @@ void printBytes(unsigned char* bytearray, size_t len) {
     std::cout << "\n"; 
 }
 
-uint512 fib(size_t nth) {
-    uint512 base0(0,0,0,0,0,0,0,0), base1(0,0,0,0,0,0,0,1);
-    uint512 nthfib(0,0,0,0,0,0,0,0);
-    for(size_t i=2; i<=nth; ++i) {
-        nthfib = base0 + base1;
-        base0 = base1;
-        base1 = nthfib;
-    }
-    return nthfib;
-}
-
 int main() {
     std::cout << "\n---------------------------------\n";
     std::cout << TEST_NAME << "\n=================================\n";
@@ -42,27 +31,25 @@ int main() {
     ulongint max = 0xffffffffffffffff;
 
 
-    uint512 MAX(max,max,max,max,max,max,max,max);
-    uint512 ZERO(0,0,0,0,0,0,0,0);
-    uint512 ONE(0,0,0,0,0,0,0,1);
-    uint512 TWO(0,0,0,0,0,0,0,2);
-    uint512 THREE(0,0,0,0,0,0,0,3);
+    uint320 MAX(max,max,max,max,max);
+    uint320 ZERO(0,0,0,0,0);
+    uint320 ONE(0,0,0,0,1);
+    uint320 TWO(0,0,0,0,2);
+    uint320 THREE(0,0,0,0,3);
 
-    uint512 NUM1(997816278132,678823674,1177717772171,87123,0,9993284613,111273861823,1),
-            NUM2(0,0,0,0,8834,110,77770,10),
+    uint320 NUM1(997816278132,678823674,87123,0,1),
+            NUM2(0,8834,110,77770,10),
             CMAXZERO = MAX,
             CMAXMAX = ZERO,
-            CMAXONE(max,max,max,max,max,max,max,0xfffffffffffffffe),
-            CMAXTWO(max,max,max,max,max,max,max,0xfffffffffffffffd),
+            CMAXONE(max,max,max,max,0xfffffffffffffffe),
+            CMAXTWO(max,max,max,max,0xfffffffffffffffd),
+                      
             CNUM1NUM2(
-                0xe8527c1c74, 0x00000000287606fa,
-                0x0000011235730f8b, 0x0000000000015452,
-                0xffffffffffffdd7e, 0x0000000253a56b97,
-                0x00000019e86f32f4, 0xfffffffffffffff7
+                0xe8527c1c74, 0x000000002875e478, 0x00000000000153e4, 0xfffffffffffed035, 0xfffffffffffffff7
             );
 
     // ANSWERS           
-    uint512 MAXZERO = MAX - ZERO,
+    uint320 MAXZERO = MAX - ZERO,
             MAXONE = MAX - ONE,
             MAXTWO = MAX - TWO,
             MAXMAX = MAX - MAX,
@@ -80,6 +67,9 @@ int main() {
     ASSERT_UINT512(ZEROMAX,ONE,"0 - MAX");
     ASSERT_UINT512(ONEMAX,TWO,"1 - MAX");
     ASSERT_UINT512(TWOMAX,THREE,"2 - MAX");
+
+    NUM1.printHex();
+    NUM2.printHex();
 
     // SUMMARY OF RESULTS  
     size_t failed_cnt = 0; 
@@ -104,7 +94,7 @@ int main() {
 }
 
 
-void ASSERT_UINT512(const uint512& A, const uint512& B, const std::string& TEST_MESSAGE) {
+void ASSERT_UINT512(const uint320& A, const uint320& B, const std::string& TEST_MESSAGE) {
     std::cout << TEST_NAME << ":" << TEST_MESSAGE << " : ";
     if(A!=B) {
         std::cout << "FAILED\n";
