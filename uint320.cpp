@@ -8,7 +8,7 @@
 #include "ChaCha20-Poly1305.hpp"
 #endif
 
-#define DEVMODE
+// #define DEVMODE
 #ifdef DEVMODE
 #include "ChaCha20-Poly1305.hpp"
 #endif
@@ -250,7 +250,7 @@ uint320 uint320::operator+(const uint320& add) const {
     for(size_t i=0; i<UINT320LIMBS; ++i) {
         sum.limbs[i] = sum_uint128[i];
     }
-#elif((__clang__ || __GNUC__ || __GNUG__ || __MINGW64__) && (__aarch64__ || __aarch64))
+#elif((__clang__ || __GNUC__ || __GNUG__ || __MINGW64__) && (__aarch64 || __aarch64__))
 #ifndef _HIDE_WARNING
 #warning using GCC inline asm, please enable optimization flag, recomended : -O2, to enable use C++ implementation instead, enable the -D_PURE_CPP flag.
 #endif
@@ -347,7 +347,7 @@ uint320 uint320::operator*(const uint320& mr) const {
     
     uint320 pd(0);
 
-#if(__x86_64 || __x86_64__ || __amd64 || __amd64__)
+#if(__x86_64 || __x86_64__ || __amd64 || __amd64__ || __aarch64__ || __aarch64)
 #if(_MSC_VER || _PURE_CPP)
     __uint128_t __uint128_product[UINT320LIMBS+1] = {0,0,0,0,0,0};
 

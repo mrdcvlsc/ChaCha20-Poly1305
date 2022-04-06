@@ -4,10 +4,6 @@ CXXFLAGS := -std=c++11 -Wall -Wextra
 
 OS := $(shell uname)
 
-ifeq ($(OS), Linux)
-TESTFLAGS += -fsanitize=address
-endif
-
 SRC := tests
 SRC_FILES := $(wildcard $(SRC)/*.cpp)
 OBJ := $(patsubst $(SRC)/%.cpp,$(SRC)/%.out,$(SRC_FILES))
