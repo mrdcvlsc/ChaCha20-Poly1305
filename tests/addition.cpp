@@ -78,7 +78,7 @@ int main() {
     ASSERT_UINT512(FIB100,CFIB100,"fibonacci(100)");
     ASSERT_UINT512(FIB462,CFIB462,"fibonacci(739)");
 
-    // SUMMARY OF RESULTS 
+    // SUMMARY OF RESULTS  
     size_t failed_cnt = 0; 
     for(auto e : TEST_RESULTS) {     
         if(!e) failed_cnt++;

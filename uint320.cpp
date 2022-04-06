@@ -8,7 +8,7 @@
 #include "ChaCha20-Poly1305.hpp"
 #endif
 
-// #define DEVMODE
+#define DEVMODE
 #ifdef DEVMODE
 #include "ChaCha20-Poly1305.hpp"
 #endif
@@ -233,21 +233,43 @@ uint320 uint320::operator+(const uint320& add) const {
     
     uint320 sum = *this;
 
-#if(__x86_64 || __x86_64__ || __amd64 || __amd64__)
+#if(__x86_64 || __x86_64__ || __amd64 || __amd64__ || __aarch64__)
 #if(_MSC_VER || _PURE_CPP)
-    ulongint carry = 0, prev;
+    __uint128_t sum_uint128[UINT320LIMBS+1] = {0,0,0,0,0,0};
 
     for(size_t i=0; i<UINT320LIMBS; ++i) {
-        prev = sum.limbs[i];
-        sum.limbs[i] += add.limbs[i] + carry;
+        sum_uint128[i] += (__uint128_t)sum.limbs[i] + (__uint128_t)add.limbs[i];
+        
+        // carry high part
+        sum_uint128[i+1] += (sum_uint128[i] >> UINT64BITS);
 
-        if(sum.limbs[i]<prev || (carry && (limbs[i] == add.limbs[i]) && (add.limbs[i] == __UINT64_MAX__))) {
-            carry = 1;
-        }
-        else {
-            carry = 0;
-        }
+        // zero-out high part
+        sum_uint128[i] = (sum_uint128[i] << UINT64BITS) >> UINT64BITS;
     }
+
+    for(size_t i=0; i<UINT320LIMBS; ++i) {
+        sum.limbs[i] = sum_uint128[i];
+    }
+#elif((__clang__ || __GNUC__ || __GNUG__ || __MINGW64__) && (__aarch64__ || __aarch64))
+#ifndef _HIDE_WARNING
+#warning using GCC inline asm, please enable optimization flag, recomended : -O2, to enable use C++ implementation instead, enable the -D_PURE_CPP flag.
+#endif
+    __uint128_t sum_uint128[UINT320LIMBS+1] = {0,0,0,0,0,0};
+
+    for(size_t i=0; i<UINT320LIMBS; ++i) {
+        sum_uint128[i] += (__uint128_t)sum.limbs[i] + (__uint128_t)add.limbs[i];
+        
+        // carry high part
+        sum_uint128[i+1] += (sum_uint128[i] >> UINT64BITS);
+
+        // zero-out high part
+        sum_uint128[i] = (sum_uint128[i] << UINT64BITS) >> UINT64BITS;
+    }
+
+    for(size_t i=0; i<UINT320LIMBS; ++i) {
+        sum.limbs[i] = sum_uint128[i];
+    }
+
 #elif(__clang__ || __GNUC__ || __GNUG__ || __MINGW64__)
 #ifndef _HIDE_WARNING
 #warning using GCC inline asm, please enable optimization flag, recomended : -O2, to enable use C++ implementation instead, enable the -D_PURE_CPP flag.
@@ -327,19 +349,60 @@ uint320 uint320::operator*(const uint320& mr) const {
 
 #if(__x86_64 || __x86_64__ || __amd64 || __amd64__)
 #if(_MSC_VER || _PURE_CPP)
-    ulongint carry = 0, prev;
+    __uint128_t __uint128_product[UINT320LIMBS+1] = {0,0,0,0,0,0};
 
     for(size_t i=0; i<UINT320LIMBS; ++i) {
-        prev = pd.limbs[i];
-        pd.limbs[i] += mr.limbs[i] + carry;
+        for(size_t j=0; j<UINT320LIMBS-i; ++j) {
 
-        if(pd.limbs[i]<prev || (carry && (limbs[i] == mr.limbs[i]) && (mr.limbs[i] == __UINT64_MAX__))) {
-            carry = 1;
-        }
-        else {
-            carry = 0;
+            __uint128_t prd = (__uint128_t)limbs[j] * (__uint128_t)mr.limbs[i];
+            __uint128_product[i+j] += ((prd << UINT64BITS) >> UINT64BITS);
+            __uint128_product[i+j+1] += (prd >> UINT64BITS); // carry
+
+            for(size_t k=j+i; k<UINT320LIMBS; ++k) {
+                if((ulongint)(__uint128_product[k] >> UINT64BITS)) { // if carry again in carry
+                    __uint128_product[k+1] += __uint128_product[k] >> UINT64BITS;
+                    __uint128_product[k] = (__uint128_product[k] << UINT64BITS) >> UINT64BITS;
+                }
+                else if(k>j+i){
+                    break;
+                }
+            }
         }
     }
+
+    for(size_t i=0; i<UINT320LIMBS; ++i) {
+        pd.limbs[i] = __uint128_product[i];
+    }
+#elif((__clang__ || __GNUC__ || __GNUG__ || __MINGW64__) && (__aarch64__ || __aarch64))
+#ifndef _HIDE_WARNING
+#warning using GCC inline asm, please enable optimization flag, recomended : -O2, to enable use C++ implementation instead, enable the -D_PURE_CPP flag.
+#endif
+
+    __uint128_t __uint128_product[UINT320LIMBS+1] = {0,0,0,0,0,0};
+
+    for(size_t i=0; i<UINT320LIMBS; ++i) {
+        for(size_t j=0; j<UINT320LIMBS-i; ++j) {
+
+            __uint128_t prd = (__uint128_t)limbs[j] * (__uint128_t)mr.limbs[i];
+            __uint128_product[i+j] += ((prd << UINT64BITS) >> UINT64BITS);
+            __uint128_product[i+j+1] += (prd >> UINT64BITS); // carry
+
+            for(size_t k=j+i; k<UINT320LIMBS; ++k) {
+                if((ulongint)(__uint128_product[k] >> UINT64BITS)) { // if carry again in carry
+                    __uint128_product[k+1] += __uint128_product[k] >> UINT64BITS;
+                    __uint128_product[k] = (__uint128_product[k] << UINT64BITS) >> UINT64BITS;
+                }
+                else if(k>j+i){
+                    break;
+                }
+            }
+        }
+    }
+
+    for(size_t i=0; i<UINT320LIMBS; ++i) {
+        pd.limbs[i] = __uint128_product[i];
+    }
+
 #elif(__clang__ || __GNUC__ || __GNUG__ || __MINGW64__)
 #ifndef _HIDE_WARNING
 #warning using GCC inline asm, please enable optimization flag, recomended : -O2, to enable use C++ implementation instead, enable the -D_PURE_CPP flag.
