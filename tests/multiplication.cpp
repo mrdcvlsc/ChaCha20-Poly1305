@@ -74,6 +74,7 @@ int main() {
     ASSERT_UINT512(MAXMAX,CMAXMAX,"MAX*MAX");
     ASSERT_UINT512(NUM1NUM2,CNUM1NUM2,"NUM1*NUM2");
 
+
     // SUMMARY OF RESULTS  
     size_t failed_cnt = 0; 
     for(auto e : TEST_RESULTS) {     

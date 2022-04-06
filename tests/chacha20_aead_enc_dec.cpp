@@ -81,7 +81,7 @@ int main() {
     ASSERT_ARRAY<unsigned char>(recovered,plaintext,sizeof(plaintext),      "ChaCha20 recovered text",TEST_RESULTS);
     ASSERT_ARRAY<unsigned char>(tag,correct_tag,sizeof(correct_tag),        "Poly1305 encryption tag",TEST_RESULTS);
     ASSERT_ARRAY<unsigned char>(tag,recovered_tag,sizeof(recovered_tag),    "Poly1305 decryption tag",TEST_RESULTS);
-    
+
     // SUMMARY OF RESULTS
     size_t failed_cnt = 0;
     for(auto e : TEST_RESULTS) {     

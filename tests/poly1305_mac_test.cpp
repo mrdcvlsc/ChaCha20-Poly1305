@@ -54,8 +54,7 @@ int main() {
     // TESTING ANSWER  
     ASSERT_ARRAY<unsigned char>(tag,correct_tag,16,"output tag correctness 1",TEST_RESULTS);
 
-    // SUMMARY OF RESULTS 
-
+    // SUMMARY OF RESULTS
 
     size_t failed_cnt = 0;
     for(auto e : TEST_RESULTS) {
