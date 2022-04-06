@@ -1,5 +1,11 @@
 #ifndef uidMRDCVLSC_uint320_CPP
 #define uidMRDCVLSC_uint320_CPP
+
+/*
+    THIS IS A TRIMMED DOWN VERSION OF UINT320
+    See full version in https://github.com/mrdcvlsc/uint320
+*/
+
 #include <iostream>
 #include <cstring>
 #include <bitset>
