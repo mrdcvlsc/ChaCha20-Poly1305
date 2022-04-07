@@ -162,30 +162,35 @@ namespace chacha20
 
     void QUARTERROUND(unsigned int *state, size_t x, size_t y, size_t z, size_t w);
 
-    /**Initializes a ChaCha state.
-    * 
-    * note The output is an unsigned int array with 16 elements.
-    * 
-    * @param output this is the resulting initial ChaCha state.
-    * @param key a 32-bytes/256-bits key.
-    * @param counter a 32 bit unsigned integer block counter, this is essential when
-    * initializing ChaCha states for different ChaCha blocks, It creates uniqueness for different blocks.
-    * @param nonce a 12-bytes/96-bits number only once, in some crypto scheme, this is called an IV.*/
+    /**
+     * Initializes a ChaCha state.
+     * 
+     * note The output is an unsigned int array with 16 elements.
+     * 
+     * @param output this is the resulting initial ChaCha state.
+     * @param key a 32-bytes/256-bits key.
+     * @param counter a 32 bit unsigned integer block counter, this is essential when
+     * initializing ChaCha states for different ChaCha blocks, It creates uniqueness for different blocks.
+     * @param nonce a 12-bytes/96-bits number only once, in some crypto scheme, this is called an IV.
+    */
     void init_state( // function parameters
         unsigned int       *output,
         const unsigned int *key,
         unsigned int        counter,
         const unsigned int *nonce);
 
-    /**Transforms an initial ChaCha state.
+    /**
+     * Transforms an initial ChaCha state.
      * 
      * @note the input and output are both 16 unsigned int arrays.
      * 
      * @param output this is where the result of the transformed ChaCha state will go.
-     * @param input this is the initial ChaCha state.*/
+     * @param input this is the initial ChaCha state.
+    */
     void apply_20rounds(unsigned int *output, const unsigned int *input);
 
-    /**The ChaCha20 Block Encryption.
+    /**
+     * The ChaCha20 Block Encryption.
      * @param key A 256-bit key, treated as a concatenation of eight 32-bit little-endian integers.
      * @param counter a 32 bit unsigned integer block counter, this is essential when
      * initializing ChaCha states for different ChaCha blocks, It creates uniqueness for different blocks.
@@ -206,7 +211,8 @@ namespace chacha20
         size_t               textLen
     );
 
-    /**The ChaCha20 Block Encryption.
+    /**
+     * The ChaCha20 Block Encryption.
      * @param outputCipher encrypted plaintext message,
      * heap size should be equal to the inputText's textLen.
      * @param key A 256-bit key, treated as a concatenation of eight 32-bit little-endian integers.
@@ -215,7 +221,7 @@ namespace chacha20
      * @param nonce a number only once.
      * @param inputText plain text message to be encrypted.
      * @param textLen size of the message in bytes.
-     * */
+    */
     void encrypt( // function parameters
         unsigned char       *outputCipher,
         const unsigned char *key,
@@ -231,7 +237,21 @@ namespace poly1305 {
 
     void clamp(unsigned char r[HALF_KEY_BYTES]);
 
-    /**Generates the 16 byte(128-bits) tag using the 32 byte(256-bits) one time key
+    /**
+     * Generate the one-time Poly1305 key.
+     * 
+     * @param output a 32 byte unsigned char array where the generated key will be stored.
+     * @param key a 32 byte or 256-bit session integrity key.
+     * @param nonce a number only once, this must be unique per invocation with the same key,
+     * so it MUST NOT be randomly generated (because random number generation might produce
+     * the same value). Instead a counter is a good way to get the value for the nonce instead.
+     * other methods, such as a Linear Feedback Shift Register (LFSR) are also possible.
+     * @param counter optional argument, this defaults to 0.
+    */
+    void key_gen(unsigned char *output, const unsigned char *key, const unsigned int *nonce, unsigned int counter=0);
+
+    /**
+     * Generates the 16 byte(128-bits) tag using the 32 byte(256-bits) one time key
      * and an arbitrary length message.
      * 
      * @param output an `unsigned char` array with an element size of 16 where the output tag will be written.
@@ -241,22 +261,19 @@ namespace poly1305 {
     */
     void mac(unsigned char *output, const unsigned char *key, const unsigned char* msg, size_t msg_len);
 
-    /**Generate the one-time Poly1305 key pseudorandomly.
-     * 
-     * @param output a 32 byte unsigned char array where the generated key will be stored.
-     * @param key aa 32 byte or 256-bit session integrity key.
-     * @param nonce a number only once, this must be unique per invocation with he same key,
-     * so it MUST NOT be randomly generated (because random number generation might produce
-     * the same value). Instead a counter is a good way to get the value for the nonce instead.
-     * other methods, such as a Linear Feedback Shift Register (LFSR) are also possible.
-     * @param counter optional argument, this defaults to 0.
+    /**
+     * Poly1305 constant time tag verification.
+     * @param tag1 16 byte array or unsigned char array with 16 elements.
+     * @param tag2 16 byte array or unsigned char array with 16 elements.
+     * @return returns zero (0) if the two tags are not equal, returns one (1) if equal.
     */
-    void key_gen(unsigned char *output, const unsigned char *key, const unsigned int *nonce, unsigned int counter=0);
+    int verify(const unsigned char *tag1, const unsigned char *tag2);
 }
 
 namespace ChaCha20_Poly1305
 {   
-    /**Encryption.
+    /**
+     * Encryption.
      * 
      * Note: the nonce is produced inside this function by concatenating
      * the constant and iv; (constant|iv).
@@ -284,7 +301,8 @@ namespace ChaCha20_Poly1305
         const unsigned char *constant
     );
 
-    /**Decryption.
+    /**
+     * Decryption.
      * 
      * Note: the nonce is produced inside this function by concatenating
      * the constant and iv; (constant|iv).
@@ -314,7 +332,8 @@ namespace ChaCha20_Poly1305
 
     // ----------------------------------
 
-    /**Encryption.
+    /**
+     * Encryption.
      * 
      * @param outputCipher resulting cipher text output.
      * @param outputTag resulting 128-bit/16-bytes of unsigned
@@ -337,7 +356,8 @@ namespace ChaCha20_Poly1305
         const unsigned char *nonce
     );
 
-    /**Decryption.
+    /**
+     * Decryption.
      * 
      * @param outputText recovered plain text output.
      * @param outputTag resulting 128-bit/16-bytes of unsigned

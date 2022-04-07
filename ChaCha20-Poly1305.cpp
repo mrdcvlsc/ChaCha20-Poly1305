@@ -192,6 +192,22 @@ namespace poly1305 {
         r[12] &= 252;
     }
 
+    void key_gen(unsigned char *output, const unsigned char *key, const unsigned int *nonce, unsigned int counter) {
+        
+        unsigned int *initial_state = new unsigned int[CHACHA20_STATE_DWORDS];
+        unsigned int *transformed_state = new unsigned int[CHACHA20_STATE_DWORDS];
+        
+        chacha20::init_state(initial_state,(unsigned int*)key,counter,nonce);
+        chacha20::apply_20rounds((unsigned int*)transformed_state,initial_state);
+        
+        // We take the first 256 bits of the serialized state, and use those as the
+        // one-time Poly1305 key:
+        memcpy(output,transformed_state,32);
+
+        delete [] transformed_state;
+        delete [] initial_state;
+    }
+
     void mac(unsigned char *output, const unsigned char *key, const unsigned char* msg, size_t msg_len) {
         
         unsigned char *unclamped_r = new unsigned char[HALF_KEY_BYTES];
@@ -236,20 +252,13 @@ namespace poly1305 {
         delete [] unclamped_r;
     }
 
-    void key_gen(unsigned char *output, const unsigned char *key, const unsigned int *nonce, unsigned int counter) {
+    int verify(const unsigned char *tag1, const unsigned char *tag2) {
         
-        unsigned int *initial_state = new unsigned int[CHACHA20_STATE_DWORDS];
-        unsigned int *transformed_state = new unsigned int[CHACHA20_STATE_DWORDS];
-        
-        chacha20::init_state(initial_state,(unsigned int*)key,counter,nonce);
-        chacha20::apply_20rounds((unsigned int*)transformed_state,initial_state);
-        
-        // We take the first 256 bits of the serialized state, and use those as the
-        // one-time Poly1305 key:
-        memcpy(output,transformed_state,32);
-
-        delete [] transformed_state;
-        delete [] initial_state;
+        unsigned long *a_hi = (unsigned long*)(tag1);
+        unsigned long *a_lo = (unsigned long*)(tag1+8);
+        unsigned long *b_hi = (unsigned long*)(tag2);
+        unsigned long *b_lo = (unsigned long*)(tag2+8);
+        return (a_hi[0] == b_hi[0]) && (a_lo[0] == b_lo[0]);
     }
 }
 
