@@ -76,10 +76,8 @@ int uint320::one_or_zero() const {
     if(limbs[UINT320_LS_LIMB] > 1)
         return -1;
 
-    for(size_t i=1; i<UINT320LIMBS; ++i) {
-        if(limbs[i])
-            return -1;
-    }
+    if(limbs[1]|limbs[2]|limbs[3]|limbs[4])
+        return -1;
 
     return limbs[UINT320_LS_LIMB];
 }
@@ -105,9 +103,7 @@ int uint320::compare(const uint320& with) const {
 }
 
 bool uint320::operator==(const uint320& with) const {
-    if(compare(with)==EQUAL)
-        return true;
-    return false;
+    return compare(with)==EQUAL ? true : false;
 }
 
 bool uint320::operator!=(const uint320& with) const {
@@ -115,17 +111,11 @@ bool uint320::operator!=(const uint320& with) const {
 }
 
 bool uint320::operator<(const uint320& with) const {
-    int value = compare(with);
-    if(value==LESS)
-        return true;
-    return false;
+    return compare(with)==LESS ? true : false;
 }
 
 bool uint320::operator>=(const uint320& with) const {
-    int value = compare(with);
-    if(value==GREAT || value==EQUAL)
-        return true;
-    return false;
+    return compare(with)==GREAT ? true : false;
 }
 
 uint320& uint320::operator+=(const uint320& add) {
@@ -447,13 +437,8 @@ uint320 uint320::ss_mod(const uint320& divisor) const {
 uint320 uint320::operator%(const uint320& divisor) const {
 
     int value = divisor.one_or_zero();
-    if(value == 0) {
-        std::cout << "\nError!!!\nuint320 operands:\n";
-        std::cout << "Dividen = "; printHex();
-        std::cout << "Divisor = "; divisor.printHex();
-        throw std::domain_error("% mod:division by zero is not possible");
-    }
-    else if(*this == divisor) {
+    
+    if(*this == divisor) {
         return uint320(0);
     }
     else if(*this < divisor) {

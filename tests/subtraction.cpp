@@ -68,9 +68,6 @@ int main() {
     ASSERT_UINT512(ONEMAX,TWO,"1 - MAX");
     ASSERT_UINT512(TWOMAX,THREE,"2 - MAX");
 
-    NUM1.printHex();
-    NUM2.printHex();
-
     // SUMMARY OF RESULTS  
     size_t failed_cnt = 0; 
     for(auto e : TEST_RESULTS) {     
