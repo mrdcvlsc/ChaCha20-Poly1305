@@ -14,13 +14,12 @@
 #include "ChaCha20-Poly1305.hpp"
 #endif
 
-// #define DEVMODE
+#define DEVMODE
 #ifdef DEVMODE
 #include "ChaCha20-Poly1305.hpp"
 #endif
 
 uint320::uint320(ulongint num) {
-    limbs = new ulongint[UINT320LIMBS];
     limbs[0] = num;
     limbs[1] = 0UL;
     limbs[2] = 0UL;
@@ -29,8 +28,6 @@ uint320::uint320(ulongint num) {
 }
 
 uint320::uint320(const unsigned char *input_bytes, size_t bytes) {
-
-    limbs = new ulongint[UINT320LIMBS];
 
     if(bytes>UINT320BYTES)
         throw std::overflow_error("There should be only <= 64 bytes of data when initializing a uint320");
@@ -46,8 +43,6 @@ uint320::uint320(const unsigned char *input_bytes, size_t bytes) {
 uint320::uint320(
     ulongint n4, ulongint n3, ulongint n2, ulongint n1, ulongint n0
 ) {
-
-    limbs = new ulongint[UINT320LIMBS];
     limbs[0] = n0;
     limbs[1] = n1;
     limbs[2] = n2;
@@ -57,42 +52,23 @@ uint320::uint320(
 
 /// copy constructor
 uint320::uint320(const uint320& src) {
-
-    limbs = new ulongint[UINT320LIMBS];
     memcpy(limbs, src.limbs, UINT320BYTES);
-}
-
-/// move constructor
-uint320::uint320(uint320&& src) noexcept {
-
-    limbs = src.limbs;
-    src.limbs = NULL;
 }
 
 /// copy assignment
 uint320& uint320::operator=(const uint320& src) {
-
-    if(limbs == NULL)
-        limbs = new ulongint[UINT320LIMBS];
-
     memcpy(limbs, src.limbs, UINT320BYTES);
     return *this;
 }
 
 /// move assignment
 uint320& uint320::operator=(uint320&& src) {
-    if(limbs != NULL)
-        delete [] limbs;
-
-    limbs = src.limbs;
-    src.limbs = NULL;
+    if(limbs!=src.limbs)
+        memcpy(limbs, src.limbs, UINT320BYTES);
     return *this;
 }
 
-uint320::~uint320(){
-    if(limbs != NULL)
-        delete [] limbs;
-}
+uint320::~uint320(){}
 
 /// @return returns; 0 : if uint320 == 0, 1 : if uint320 == 1, and -1 : if uint320 != to 0 or 1.
 int uint320::one_or_zero() const {
@@ -152,16 +128,14 @@ bool uint320::operator>=(const uint320& with) const {
     return false;
 }
 
-uint320 uint320::operator+(const uint320& add) const {
-    
-    uint320 sum = *this;
+uint320& uint320::operator+=(const uint320& add) {
 
 #if(__x86_64 || __x86_64__ || __amd64 || __amd64__ || __aarch64__)
 #if(_MSC_VER || _PURE_CPP)
     __uint128_t sum_uint128[UINT320LIMBS+1] = {0,0,0,0,0,0};
 
     for(size_t i=0; i<UINT320LIMBS; ++i) {
-        sum_uint128[i] += (__uint128_t)sum.limbs[i] + (__uint128_t)add.limbs[i];
+        sum_uint128[i] += (__uint128_t)limbs[i] + (__uint128_t)add.limbs[i];
         
         // carry high part
         sum_uint128[i+1] += (sum_uint128[i] >> UINT64BITS);
@@ -171,7 +145,7 @@ uint320 uint320::operator+(const uint320& add) const {
     }
 
     for(size_t i=0; i<UINT320LIMBS; ++i) {
-        sum.limbs[i] = sum_uint128[i];
+        limbs[i] = sum_uint128[i];
     }
 #elif((__clang__ || __GNUC__ || __GNUG__ || __MINGW64__) && (__aarch64 || __aarch64__))
 #ifndef _HIDE_WARNING
@@ -180,7 +154,7 @@ uint320 uint320::operator+(const uint320& add) const {
     __uint128_t sum_uint128[UINT320LIMBS+1] = {0,0,0,0,0,0};
 
     for(size_t i=0; i<UINT320LIMBS; ++i) {
-        sum_uint128[i] += (__uint128_t)sum.limbs[i] + (__uint128_t)add.limbs[i];
+        sum_uint128[i] += (__uint128_t)limbs[i] + (__uint128_t)add.limbs[i];
         
         // carry high part
         sum_uint128[i+1] += (sum_uint128[i] >> UINT64BITS);
@@ -190,7 +164,7 @@ uint320 uint320::operator+(const uint320& add) const {
     }
 
     for(size_t i=0; i<UINT320LIMBS; ++i) {
-        sum.limbs[i] = sum_uint128[i];
+        limbs[i] = sum_uint128[i];
     }
 
 #elif(__clang__ || __GNUC__ || __GNUG__ || __MINGW64__)
@@ -204,11 +178,11 @@ uint320 uint320::operator+(const uint320& add) const {
         "adcq %[adn3], %[sum3]\n\t"
         "adcq %[adn4], %[sum4]"
         :
-        [sum0]"+r"(sum.limbs[0]),
-        [sum1]"+r"(sum.limbs[1]),
-        [sum2]"+r"(sum.limbs[2]),
-        [sum3]"+r"(sum.limbs[3]),
-        [sum4]"+r"(sum.limbs[4])
+        [sum0]"+r"(limbs[0]),
+        [sum1]"+r"(limbs[1]),
+        [sum2]"+r"(limbs[2]),
+        [sum3]"+r"(limbs[3]),
+        [sum4]"+r"(limbs[4])
         :
         [adn0]"m"(add.limbs[0]),
         [adn1]"m"(add.limbs[1]),
@@ -224,24 +198,28 @@ uint320 uint320::operator+(const uint320& add) const {
 #error uint320 is not supported on 32-bit computers (x86 architectures)
 #endif
 
-    return sum;
+    return *this;
 }
 
-uint320 uint320::operator-(const uint320& sub) const {
-    
-    uint320 dif = *this;
+uint320 uint320::operator+(const uint320& add) const {
+    uint320 sum = *this;
+    return (sum+=add);
+}
+
+
+uint320& uint320::operator-=(const uint320& sub) {
 
     ulongint carry = 0, prev;
 
-    if(dif.limbs[0]<sub.limbs[0])
+    if(limbs[0]<sub.limbs[0])
         carry = 1;
 
-    dif.limbs[0] -= sub.limbs[0];
+    limbs[0] -= sub.limbs[0];
 
     for(size_t i=1; i<UINT320LIMBS; ++i) {
-        prev = dif.limbs[i];
-        dif.limbs[i] -= carry;
-        dif.limbs[i] -= sub.limbs[i];
+        prev = limbs[i];
+        limbs[i] -= carry;
+        limbs[i] -= sub.limbs[i];
 
         if(prev<sub.limbs[i]){
             carry = 1;
@@ -254,7 +232,13 @@ uint320 uint320::operator-(const uint320& sub) const {
         }
     }
 
-    return dif;
+    return *this;
+}
+
+uint320 uint320::operator-(const uint320& sub) const {
+    
+    uint320 dif = *this;
+    return (dif-=sub);
 }
 
 /// This is the ugly part
@@ -440,14 +424,12 @@ uint320 uint320::operator*(const uint320& mr) const {
 uint320 uint320::ss_mod(const uint320& divisor) const {
     
     uint320
-        quotient(0),
         pdvn(0),
         bit(0);
 
     for(size_t i=0; i<UINT320BITS; ++i) {
 
         pdvn = pdvn << 1;
-        quotient = quotient << 1;
 
         bit = *this << i;
         bit = bit >> UINT319BITS;
@@ -455,8 +437,7 @@ uint320 uint320::ss_mod(const uint320& divisor) const {
         pdvn.limbs[UINT320_LS_LIMB] |= bit.limbs[UINT320_LS_LIMB];
 
         if(pdvn>=divisor) {
-            pdvn = pdvn - divisor;
-            quotient.limbs[UINT320_LS_LIMB] |= 1;
+            pdvn -= divisor;
         }
     }
 

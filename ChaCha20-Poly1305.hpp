@@ -58,8 +58,8 @@ class uint320 {
     public:
 
     /**least significant quadword starting from index 0
-     * up to index 7 the most significant quadword.*/
-    ulongint *limbs;
+     * up to index 4 the most significant quadword.*/
+    ulongint limbs[UINT320LIMBS];
 
     uint320(ulongint num);
     uint320(const unsigned char *input_bytes, size_t bytes);
@@ -93,8 +93,10 @@ class uint320 {
     bool operator>=(const uint320& with) const;
 
     uint320 operator+(const uint320& add) const;
+    uint320& operator+=(const uint320& add);
 
     uint320 operator-(const uint320& sub) const;
+    uint320& operator-=(const uint320& sub);
 
     /// This is the ugly part.
     uint320 operator*(const uint320& mr) const;

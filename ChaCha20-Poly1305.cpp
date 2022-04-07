@@ -210,7 +210,7 @@ namespace poly1305 {
 
     void mac(unsigned char *output, const unsigned char *key, const unsigned char* msg, size_t msg_len) {
         
-        unsigned char *unclamped_r = new unsigned char[HALF_KEY_BYTES];
+        unsigned char unclamped_r[HALF_KEY_BYTES];
         memcpy(unclamped_r,key,HALF_KEY_BYTES);
         clamp(unclamped_r);
         
@@ -227,29 +227,28 @@ namespace poly1305 {
             uint320 n(msg+(i*HALF_KEY_BYTES),HALF_KEY_BYTES);
             n.limbs[2] |= 0x01;
 
-            a = (a + n) * r;
+            a += n;
+            a = a * r;
             a = a % p;
         }
 
         // remaining bytes
         if(remain) {
-            unsigned char *last_block = new unsigned char[HALF_KEY_BYTES];
+            unsigned char last_block[HALF_KEY_BYTES];
             memcpy(last_block,msg+(blocks*HALF_KEY_BYTES),remain);
             memset(last_block+remain+1,0x00,(HALF_KEY_BYTES-remain)-1);
             last_block[remain] = 0x01;
 
             uint320 n(last_block,HALF_KEY_BYTES);
 
-            a = (a + n) * r;
+            a += n;
+            a = a * r;
             a = a % p;
-
-            delete [] last_block;
         }
 
-        a = a + s;
+        a += s;
 
         memcpy(output,(unsigned char*)a.limbs,UINT128BYTES);
-        delete [] unclamped_r;
     }
 
     int verify(const unsigned char *tag1, const unsigned char *tag2) {
