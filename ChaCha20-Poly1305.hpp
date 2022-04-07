@@ -77,7 +77,7 @@ class uint320 {
     uint320& operator=(const uint320& src);
 
     /// move assignment.
-    uint320& operator=(uint320&& src);
+    uint320& operator=(uint320&& src) noexcept;
 
     ~uint320();
 

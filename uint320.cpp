@@ -14,7 +14,7 @@
 #include "ChaCha20-Poly1305.hpp"
 #endif
 
-#define DEVMODE
+// #define DEVMODE
 #ifdef DEVMODE
 #include "ChaCha20-Poly1305.hpp"
 #endif
@@ -55,14 +55,21 @@ uint320::uint320(const uint320& src) {
     memcpy(limbs, src.limbs, UINT320BYTES);
 }
 
+/// move constructor
+uint320::uint320(uint320&& src) noexcept {
+    if(limbs!=src.limbs)
+        memcpy(limbs, src.limbs, UINT320BYTES);
+}
+
 /// copy assignment
 uint320& uint320::operator=(const uint320& src) {
-    memcpy(limbs, src.limbs, UINT320BYTES);
+    if(limbs!=src.limbs)
+        memcpy(limbs, src.limbs, UINT320BYTES);
     return *this;
 }
 
 /// move assignment
-uint320& uint320::operator=(uint320&& src) {
+uint320& uint320::operator=(uint320&& src) noexcept {
     if(limbs!=src.limbs)
         memcpy(limbs, src.limbs, UINT320BYTES);
     return *this;
