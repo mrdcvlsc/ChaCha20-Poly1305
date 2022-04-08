@@ -28,6 +28,7 @@
 #define UINT64BITS 64
 
 #define UINT320LIMBS 5
+#define UINT320LIMBS_MINUS_1 4
 #define UINT320BYTES 40
 #define UINT319BITS 319
 #define UINT320BITS 320
@@ -70,14 +71,8 @@ class uint320 {
     /// copy constructor.
     uint320(const uint320& src);
 
-    /// move constructor.
-    uint320(uint320&& src) noexcept;
-
     /// copy assignment.
     uint320& operator=(const uint320& src);
-
-    /// move assignment.
-    uint320& operator=(uint320&& src) noexcept;
 
     ~uint320();
 

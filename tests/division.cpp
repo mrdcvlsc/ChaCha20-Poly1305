@@ -57,6 +57,7 @@ int main() {
 
     // ANSWERS
 
+
     uint320 NUM1NUM2_MOD = NUM1 % NUM2,
             NUM2NUM1_MOD = NUM2 % NUM1,
             MAXNUM1_MOD = MAX % NUM1,
@@ -67,9 +68,6 @@ int main() {
     ASSERT_UINT512(NUM2NUM1_MOD,CNUM2NUM1_MOD,"NUM2%NUM1");
     ASSERT_UINT512(MAXNUM1_MOD,CMAXNUM1_MOD,"MAX%NUM1");
     ASSERT_UINT512(MAXNUM2_MOD,CMAXNUM2_MOD,"MAX%NUM2");
-
-    // CNUM1NUM2_MOD.printHex();
-    // NUM1NUM2_MOD.printHex();
 
     // SUMMARY OF RESULTS  
     size_t failed_cnt = 0; 
