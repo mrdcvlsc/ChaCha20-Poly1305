@@ -482,18 +482,30 @@ uint320 uint320::operator<<(size_t lshift) const {
     if(bit_shifts) {
         // compute carries.
         ulongint carries[UINT320LIMBS-1];
-        for(size_t i=0; i<UINT320LIMBS-1; ++i) {
-            carries[i] = result.limbs[i] >> (UINT64BITS-bit_shifts);
-        }
+
+        size_t ci = 0;
+        carries[ci] = result.limbs[ci] >> (UINT64BITS-bit_shifts); ++ci;
+        carries[ci] = result.limbs[ci] >> (UINT64BITS-bit_shifts); ++ci;
+        carries[ci] = result.limbs[ci] >> (UINT64BITS-bit_shifts); ++ci;
+        carries[ci] = result.limbs[ci] >> (UINT64BITS-bit_shifts);
 
         // apply shift to first index.
         result.limbs[UINT320_LS_LIMB] <<= bit_shifts;
 
         // apply shifts and the carry over to the procceding indecies.
-        for(size_t i=1; i<UINT320LIMBS; ++i) {
-            result.limbs[i] <<= bit_shifts;
-            result.limbs[i] |= carries[i-1];
-        }
+
+        size_t ri = 1;
+        result.limbs[ri] <<= bit_shifts;
+        result.limbs[ri] |= carries[ri-1]; ++ri;
+
+        result.limbs[ri] <<= bit_shifts;
+        result.limbs[ri] |= carries[ri-1]; ++ri;
+
+        result.limbs[ri] <<= bit_shifts;
+        result.limbs[ri] |= carries[ri-1]; ++ri;
+
+        result.limbs[ri] <<= bit_shifts;
+        result.limbs[ri] |= carries[ri-1];
     }
 
     return result;
@@ -524,18 +536,28 @@ uint320 uint320::operator>>(size_t rshift) const {
     if(bit_shifts) {
         // compute carries.
         ulongint carries[UINT320LIMBS-1];
-        for(size_t i=0; i<UINT320LIMBS-1; ++i) {
-            carries[i] = result.limbs[i+1] << (UINT64BITS-bit_shifts);
-        }
+        
+        size_t ci = 0;
+        carries[ci] = result.limbs[ci+1] << (UINT64BITS-bit_shifts); ++ci;
+        carries[ci] = result.limbs[ci+1] << (UINT64BITS-bit_shifts); ++ci;
+        carries[ci] = result.limbs[ci+1] << (UINT64BITS-bit_shifts); ++ci;
+        carries[ci] = result.limbs[ci+1] << (UINT64BITS-bit_shifts);
 
         // apply shift to last index.
         result.limbs[UINT320_MS_LIMB] >>= bit_shifts;
 
-        // apply shifts and the carry over to the procceding indecies.
-        for(size_t i=0; i<UINT320LIMBS-1; ++i) {
-            result.limbs[i] >>= bit_shifts;
-            result.limbs[i] |= carries[i];
-        }
+        size_t ri = 0;
+        result.limbs[ri] >>= bit_shifts;
+        result.limbs[ri] |= carries[ri]; ++ri;
+
+        result.limbs[ri] >>= bit_shifts;
+        result.limbs[ri] |= carries[ri]; ++ri;
+
+        result.limbs[ri] >>= bit_shifts;
+        result.limbs[ri] |= carries[ri]; ++ri;
+
+        result.limbs[ri] >>= bit_shifts;
+        result.limbs[ri] |= carries[ri];
     }
 
     return result;
