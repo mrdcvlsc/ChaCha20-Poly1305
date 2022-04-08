@@ -53,10 +53,10 @@ int main() {
     
     CMAXNUM2_MOD(0x58, 0x6cdea70994f7ab77, 0x4d68060b3d2bb9f5, 0xd2e20f560e44dd8c, 0x3780d1441d74e266);
                           
-
     uint320 CNUM1NUM2(0xc1b5e3), CNUM2NUM1(0), CMAXMAX(1);
 
     // ANSWERS
+
 
     uint320 NUM1NUM2_MOD = NUM1 % NUM2,
             NUM2NUM1_MOD = NUM2 % NUM1,
@@ -68,7 +68,6 @@ int main() {
     ASSERT_UINT512(NUM2NUM1_MOD,CNUM2NUM1_MOD,"NUM2%NUM1");
     ASSERT_UINT512(MAXNUM1_MOD,CMAXNUM1_MOD,"MAX%NUM1");
     ASSERT_UINT512(MAXNUM2_MOD,CMAXNUM2_MOD,"MAX%NUM2");
-
 
     // SUMMARY OF RESULTS  
     size_t failed_cnt = 0; 

@@ -6,7 +6,7 @@
 #include "ChaCha20-Poly1305.hpp"
 #endif
 
-// #define DEVMODE
+#define DEVMODE
 #ifdef DEVMODE
 #include "ChaCha20-Poly1305.hpp"
 #endif
@@ -116,8 +116,8 @@ namespace chacha20
         size_t blocks = textLen/CHACHA20_BLK_FUNC_OUTPUT_BYTES;
         size_t lastblock_bytes = (textLen%CHACHA20_BLK_FUNC_OUTPUT_BYTES);
 
-        unsigned int *chacha_state = new unsigned int[CHACHA20_STATE_DWORDS];
-        unsigned int *key_stream = new unsigned int[CHACHA20_STATE_DWORDS];
+        unsigned int chacha_state[CHACHA20_STATE_DWORDS];
+        unsigned int key_stream[CHACHA20_STATE_DWORDS];
 
         // initialize ChaCha20 state
         chacha20::init_state(
@@ -152,7 +152,7 @@ namespace chacha20
         // XOR remaining key_stream bytes and plaintext bytes
         if(lastblock_bytes) {
 
-            unsigned char *padded_last_bytes = new unsigned char[CHACHA20_BLK_FUNC_OUTPUT_BYTES];
+            unsigned char padded_last_bytes[CHACHA20_BLK_FUNC_OUTPUT_BYTES];
             unsigned int *padded_last_block = (unsigned int*) padded_last_bytes;
             memcpy(padded_last_bytes,inputText+(CHACHA20_BLK_FUNC_OUTPUT_BYTES*blocks),lastblock_bytes);
 
@@ -171,12 +171,7 @@ namespace chacha20
             }
 
             memcpy(outputCipher+(CHACHA20_BLK_FUNC_OUTPUT_BYTES*blocks),padded_last_bytes,lastblock_bytes);
-
-            delete [] padded_last_bytes;
         }
-
-        delete [] chacha_state;
-        delete [] key_stream;
     }
 }
 
@@ -192,9 +187,22 @@ namespace poly1305 {
         r[12] &= 252;
     }
 
+    void key_gen(unsigned char *output, const unsigned char *key, const unsigned int *nonce, unsigned int counter) {
+        
+        unsigned int initial_state[CHACHA20_STATE_DWORDS];
+        unsigned int transformed_state[CHACHA20_STATE_DWORDS];
+        
+        chacha20::init_state(initial_state,(unsigned int*)key,counter,nonce);
+        chacha20::apply_20rounds((unsigned int*)transformed_state,initial_state);
+        
+        // We take the first 256 bits of the serialized state, and use those as the
+        // one-time Poly1305 key:
+        memcpy(output,transformed_state,32);
+    }
+
     void mac(unsigned char *output, const unsigned char *key, const unsigned char* msg, size_t msg_len) {
         
-        unsigned char *unclamped_r = new unsigned char[HALF_KEY_BYTES];
+        unsigned char unclamped_r[HALF_KEY_BYTES];
         memcpy(unclamped_r,key,HALF_KEY_BYTES);
         clamp(unclamped_r);
         
@@ -211,45 +219,37 @@ namespace poly1305 {
             uint320 n(msg+(i*HALF_KEY_BYTES),HALF_KEY_BYTES);
             n.limbs[2] |= 0x01;
 
-            a = (a + n) * r;
+            a += n;
+            a = a * r;
             a = a % p;
         }
 
         // remaining bytes
         if(remain) {
-            unsigned char *last_block = new unsigned char[HALF_KEY_BYTES];
+            unsigned char last_block[HALF_KEY_BYTES];
             memcpy(last_block,msg+(blocks*HALF_KEY_BYTES),remain);
             memset(last_block+remain+1,0x00,(HALF_KEY_BYTES-remain)-1);
             last_block[remain] = 0x01;
 
             uint320 n(last_block,HALF_KEY_BYTES);
 
-            a = (a + n) * r;
+            a += n;
+            a = a * r;
             a = a % p;
-
-            delete [] last_block;
         }
 
-        a = a + s;
+        a += s;
 
         memcpy(output,(unsigned char*)a.limbs,UINT128BYTES);
-        delete [] unclamped_r;
     }
 
-    void key_gen(unsigned char *output, const unsigned char *key, const unsigned int *nonce, unsigned int counter) {
+    int verify(const unsigned char *tag1, const unsigned char *tag2) {
         
-        unsigned int *initial_state = new unsigned int[CHACHA20_STATE_DWORDS];
-        unsigned int *transformed_state = new unsigned int[CHACHA20_STATE_DWORDS];
-        
-        chacha20::init_state(initial_state,(unsigned int*)key,counter,nonce);
-        chacha20::apply_20rounds((unsigned int*)transformed_state,initial_state);
-        
-        // We take the first 256 bits of the serialized state, and use those as the
-        // one-time Poly1305 key:
-        memcpy(output,transformed_state,32);
-
-        delete [] transformed_state;
-        delete [] initial_state;
+        unsigned long *a_hi = (unsigned long*)(tag1);
+        unsigned long *a_lo = (unsigned long*)(tag1+8);
+        unsigned long *b_hi = (unsigned long*)(tag2);
+        unsigned long *b_lo = (unsigned long*)(tag2+8);
+        return (a_hi[0] == b_hi[0]) && (a_lo[0] == b_lo[0]);
     }
 }
 
@@ -266,15 +266,13 @@ namespace ChaCha20_Poly1305
         const unsigned char *iv,
         const unsigned char *constant
     ) {
-        unsigned int *nonce = new unsigned int[3];
+        unsigned int nonce[3];
         unsigned char *nonce_char = (unsigned char*) nonce;
 
         memcpy(nonce_char,constant,4);
         memcpy(nonce_char+4,iv,8);
 
         aead_encrypt(outputCipher,outputTag,inputText,textLen,AAD,AAD_len,key,nonce_char);
-
-        delete [] nonce;
     }
 
     void aead_decrypt(
@@ -288,15 +286,13 @@ namespace ChaCha20_Poly1305
         const unsigned char *iv,
         const unsigned char *constant
     ) {
-        unsigned int *nonce = new unsigned int[3];
+        unsigned int nonce[3];
         unsigned char *nonce_char = (unsigned char*) nonce;
 
         memcpy(nonce_char,constant,4);
         memcpy(nonce_char+4,iv,8);
 
         aead_decrypt(outputText,outputTag,inputCipher,cipherLen,AAD,AAD_len,key,nonce_char);
-
-        delete [] nonce;
     }
 
     // nonce version
@@ -312,7 +308,7 @@ namespace ChaCha20_Poly1305
         const unsigned char *nonce
     ) {
 
-        unsigned char *poly1305_key = new unsigned char[32];
+        unsigned char poly1305_key[32];
         poly1305::key_gen(poly1305_key,key,(unsigned int*)nonce);
 
         chacha20::encrypt(outputCipher,key,1,(unsigned char*)nonce,inputText,textLen);
@@ -336,7 +332,6 @@ namespace ChaCha20_Poly1305
         poly1305::mac(outputTag,poly1305_key,mac_data,mac_len);
 
         delete [] mac_data;
-        delete [] poly1305_key;
     }
 
     void aead_decrypt(
@@ -350,7 +345,7 @@ namespace ChaCha20_Poly1305
         const unsigned char *nonce
     ) {
 
-        unsigned char *poly1305_key = new unsigned char[32];
+        unsigned char poly1305_key[32];
         poly1305::key_gen(poly1305_key,key,(unsigned int*)nonce);
 
         chacha20::encrypt(outputText,key,1,(unsigned char*)nonce,inputCipher,cipherLen);
@@ -374,7 +369,6 @@ namespace ChaCha20_Poly1305
         poly1305::mac(outputTag,poly1305_key,mac_data,mac_len);
 
         delete [] mac_data;
-        delete [] poly1305_key;
     }
 }
 

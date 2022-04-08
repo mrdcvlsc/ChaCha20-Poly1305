@@ -97,11 +97,11 @@ void ASSERT_ARRAY(T* A, T* B, size_t length, std::string TEST_MESSAGE, std::vect
         }
     }
 
-    if(!result_passed) {
-        std::cout << "FAILED\n";
-    }
-    else {
+    if(result_passed && poly1305::verify(A,B)) {
         std::cout << "PASSED\n";
     }
-    RESULTS.push_back(result_passed);
+    else {
+        std::cout << "FAILED\n";
+    }
+    RESULTS.push_back(result_passed && poly1305::verify(A,B));
 }
