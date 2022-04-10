@@ -182,7 +182,6 @@ uint320 uint320::operator+(const uint320& add) const {
     return (sum+=add);
 }
 
-
 uint320& uint320::operator-=(const uint320& sub) {
 
     ulongint carry = 0, prev;
@@ -409,7 +408,7 @@ uint320 uint320::ss_mod(const uint320& divisor) const {
 
         bit = limbs[UINT320LIMBS_MINUS_1-(i/64)] << i%64;
         bit >>= 63;
-
+        
         pdvn.limbs[UINT320_LS_LIMB] |= bit;
 
         if(pdvn>=divisor) {
@@ -462,29 +461,27 @@ uint320 uint320::operator<<(size_t lshift) const {
         // compute carries.
         ulongint carries[UINT320LIMBS_MINUS_1];
 
-        size_t ci = 0;
-        carries[ci] = result.limbs[ci] >> (UINT64BITS-bit_shifts); ++ci;
-        carries[ci] = result.limbs[ci] >> (UINT64BITS-bit_shifts); ++ci;
-        carries[ci] = result.limbs[ci] >> (UINT64BITS-bit_shifts); ++ci;
-        carries[ci] = result.limbs[ci] >> (UINT64BITS-bit_shifts);
+        carries[0] = result.limbs[0] >> (UINT64BITS-bit_shifts);
+        carries[1] = result.limbs[1] >> (UINT64BITS-bit_shifts);
+        carries[2] = result.limbs[2] >> (UINT64BITS-bit_shifts);
+        carries[3] = result.limbs[3] >> (UINT64BITS-bit_shifts);
 
         // apply shift to first index.
         result.limbs[UINT320_LS_LIMB] <<= bit_shifts;
 
         // apply shifts and the carry over to the procceding indecies.
 
-        size_t ri = 1;
-        result.limbs[ri] <<= bit_shifts;
-        result.limbs[ri] |= carries[ri-1]; ++ri;
+        result.limbs[1] <<= bit_shifts;
+        result.limbs[1] |= carries[0];
 
-        result.limbs[ri] <<= bit_shifts;
-        result.limbs[ri] |= carries[ri-1]; ++ri;
+        result.limbs[2] <<= bit_shifts;
+        result.limbs[2] |= carries[1];
 
-        result.limbs[ri] <<= bit_shifts;
-        result.limbs[ri] |= carries[ri-1]; ++ri;
+        result.limbs[3] <<= bit_shifts;
+        result.limbs[3] |= carries[2];
 
-        result.limbs[ri] <<= bit_shifts;
-        result.limbs[ri] |= carries[ri-1];
+        result.limbs[4] <<= bit_shifts;
+        result.limbs[4] |= carries[3];
     }
 
     return result;
@@ -516,27 +513,25 @@ uint320 uint320::operator>>(size_t rshift) const {
         // compute carries.
         ulongint carries[UINT320LIMBS_MINUS_1];
         
-        size_t ci = 0;
-        carries[ci] = result.limbs[ci+1] << (UINT64BITS-bit_shifts); ++ci;
-        carries[ci] = result.limbs[ci+1] << (UINT64BITS-bit_shifts); ++ci;
-        carries[ci] = result.limbs[ci+1] << (UINT64BITS-bit_shifts); ++ci;
-        carries[ci] = result.limbs[ci+1] << (UINT64BITS-bit_shifts);
+        carries[0] = result.limbs[1] << (UINT64BITS-bit_shifts);
+        carries[1] = result.limbs[2] << (UINT64BITS-bit_shifts);
+        carries[2] = result.limbs[3] << (UINT64BITS-bit_shifts);
+        carries[3] = result.limbs[4] << (UINT64BITS-bit_shifts);
 
         // apply shift to last index.
         result.limbs[UINT320_MS_LIMB] >>= bit_shifts;
 
-        size_t ri = 0;
-        result.limbs[ri] >>= bit_shifts;
-        result.limbs[ri] |= carries[ri]; ++ri;
+        result.limbs[0] >>= bit_shifts;
+        result.limbs[0] |= carries[0];
 
-        result.limbs[ri] >>= bit_shifts;
-        result.limbs[ri] |= carries[ri]; ++ri;
+        result.limbs[1] >>= bit_shifts;
+        result.limbs[1] |= carries[1];
 
-        result.limbs[ri] >>= bit_shifts;
-        result.limbs[ri] |= carries[ri]; ++ri;
+        result.limbs[2] >>= bit_shifts;
+        result.limbs[2] |= carries[2];
 
-        result.limbs[ri] >>= bit_shifts;
-        result.limbs[ri] |= carries[ri];
+        result.limbs[3] >>= bit_shifts;
+        result.limbs[3] |= carries[3];
     }
 
     return result;
