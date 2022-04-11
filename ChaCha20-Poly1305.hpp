@@ -71,8 +71,14 @@ class uint320 {
     /// copy constructor.
     uint320(const uint320& src);
 
+    /// move constructor.
+    // uint320(uint320&& src) noexcept;
+
     /// copy assignment.
     uint320& operator=(const uint320& src);
+
+    /// move assignment
+    // uint320& uint320::operator=(uint320&& src) noexcept;
 
     ~uint320();
 
