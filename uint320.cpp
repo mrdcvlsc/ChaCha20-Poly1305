@@ -186,12 +186,7 @@ uint320& uint320::operator-=(const uint320& sub) {
 
     ulongint carry = 0, prev;
 
-    if(limbs[0]<sub.limbs[0])
-        carry = 1;
-
-    limbs[0] -= sub.limbs[0];
-
-    for(size_t i=1; i<UINT320LIMBS; ++i) {
+    for(size_t i=0; i<UINT320LIMBS; ++i) {
         prev = limbs[i];
         limbs[i] -= carry;
         limbs[i] -= sub.limbs[i];
