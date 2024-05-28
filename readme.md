@@ -10,6 +10,7 @@ A from scratch C++ (with slight inline assembly) implementation of ```ChaCha20 &
 ![gcc-gnu](https://github.com/mrdcvlsc/ChaCha20-Poly1305/actions/workflows/gcc-gnu.yml/badge.svg)
 ![clang](https://github.com/mrdcvlsc/ChaCha20-Poly1305/actions/workflows/clang.yml/badge.svg)
 ![mingw64](https://github.com/mrdcvlsc/ChaCha20-Poly1305/actions/workflows/mingw64.yml/badge.svg)
+![msvc](https://github.com/mrdcvlsc/ChaCha20-Poly1305/actions/workflows/msvc.yml/badge.svg)
 
 All test from RFC-8439 is implemented here and is inside the ```tests``` folder.
 
