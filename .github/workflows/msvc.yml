@@ -1,0 +1,34 @@
+name: msvc
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  header-mode-tests:
+
+    name: ${{ matrix.platform.name }}
+    runs-on: ${{ matrix.platform.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+        - { name: Windows VS2019, os: windows-2019,   flags: -DBUILD_SHARED_LIBS=FALSE -DCMAKE_BUILD_TYPE=Debug }
+        - { name: Windows VS2022, os: windows-2022,   flags: -DBUILD_SHARED_LIBS=FALSE -DCMAKE_BUILD_TYPE=Debug }
+        - { name: Windows VS2022, os: windows-latest, flags: -DBUILD_SHARED_LIBS=FALSE -DCMAKE_BUILD_TYPE=Debug }
+        - { name: Windows Clang,  os: windows-latest, flags: -DBUILD_SHARED_LIBS=FALSE -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ }
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Configure test executables
+      run: cmake -S tests -B tests ${{matrix.platform.flags}}
+
+    - name: Build ${{matrix.platform.bin}} test executables
+      run: cmake --build tests --config Debug
+
+    - name: Run ${{matrix.platform.bin}} test executables
+      run: ctest --test-dir tests

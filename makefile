@@ -62,8 +62,9 @@ header_test: $(OBJ)
 # -------------------------- test program compilation ---------------------------
 
 $(SRC)/%.out: $(SRC)/%.cpp
-	@echo "compiling test program - compiler : $(CC)"
-	@$(CC) $(TESTFLAGS) $(CXXFLAGS) -o $@ $<
+# @echo "compiling test program - compiler : $(CC)"
+# @echo "flags: $<"
+	$(CC) $(TESTFLAGS) $(CXXFLAGS) -o $@ $<
 
 clean:
 ifeq ($(OS), Linux)

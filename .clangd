@@ -1,0 +1,17 @@
+InlayHints:
+  Designators: No
+  Enabled: Yes
+  ParameterNames: No
+  DeducedTypes: Yes
+
+CompileFlags:
+  Add: [-std=c++11, -I"include/epi", -I"benchmark/boost/include", -Wall, -Wextra, -Wpedantic, -Werror]
+  Compiler: clang++
+
+Diagnostics:
+  ClangTidy:
+    Add: [modernize*, cppcoreguidelines*, performance*, bugprone*, clang-analyzer*, darwin*, abseil* ]
+    Remove: [
+      modernize-use-trailing-return-type,
+      cppcoreguidelines-avoid-magic-numbers
+    ]

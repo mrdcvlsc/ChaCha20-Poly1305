@@ -51,7 +51,8 @@ typedef unsigned long long ulongint;
 typedef unsigned long ulongint;
 #define PRINT_LIMBHEX "%016lx "
 #else
-#error not supported
+#define PRINT_LIMBHEX "%016lx "
+#define _PURE_CPP
 #endif
 
 /// for intel & amd x86_64 & x64 architectures only.

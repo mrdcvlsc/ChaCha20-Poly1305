@@ -19,6 +19,8 @@
 #include "ChaCha20-Poly1305.hpp"
 #endif
 
+#include "ChaCha20-Poly1305.hpp"
+
 uint320::uint320(ulongint num) {
     limbs[0] = num;
     limbs[1] = 0UL;
@@ -59,7 +61,9 @@ uint320& uint320::operator=(const uint320& src) {
     return *this;
 }
 
-uint320::~uint320(){}
+uint320::~uint320(){
+    memset(limbs, 0x00, UINT320BYTES);
+}
 
 /// @return returns; 0 : if uint320 == 0, 1 : if uint320 == 1, and -1 : if uint320 != to 0 or 1.
 int uint320::one_or_zero() const {
@@ -154,11 +158,11 @@ uint320& uint320::operator+=(const uint320& add) {
         "adcq %[adn3], %[sum3]\n\t"
         "adcq %[adn4], %[sum4]"
         :
-        [sum0]"+r"(limbs[0]),
-        [sum1]"+r"(limbs[1]),
-        [sum2]"+r"(limbs[2]),
-        [sum3]"+r"(limbs[3]),
-        [sum4]"+r"(limbs[4])
+        [sum0]"+g"(limbs[0]),
+        [sum1]"+g"(limbs[1]),
+        [sum2]"+g"(limbs[2]),
+        [sum3]"+g"(limbs[3]),
+        [sum4]"+g"(limbs[4])
         :
         [adn0]"m"(add.limbs[0]),
         [adn1]"m"(add.limbs[1]),
@@ -361,11 +365,11 @@ uint320 uint320::operator*(const uint320& mr) const {
         "addq %%rax, %[pd4]\n\t"
 
         :
-        [pd0]"+r"(pd.limbs[0]),
-        [pd1]"+r"(pd.limbs[1]),
-        [pd2]"+r"(pd.limbs[2]),
-        [pd3]"+r"(pd.limbs[3]),
-        [pd4]"+r"(pd.limbs[4])
+        [pd0]"+g"(pd.limbs[0]),
+        [pd1]"+g"(pd.limbs[1]),
+        [pd2]"+g"(pd.limbs[2]),
+        [pd3]"+g"(pd.limbs[3]),
+        [pd4]"+g"(pd.limbs[4])
         :
         [mr0]"m"(mr.limbs[0]),
         [mr1]"m"(mr.limbs[1]),
