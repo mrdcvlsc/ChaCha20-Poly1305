@@ -1,6 +1,6 @@
 CC := g++
 TESTFLAGS := -g -Og -D_HIDE_WARNING
-CXXFLAGS := -std=c++11 -Wall -Wextra
+CXXFLAGS := -std=c++20 -Wall -Wextra
 
 OS := $(shell uname)
 

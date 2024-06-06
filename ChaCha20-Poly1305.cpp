@@ -1,5 +1,6 @@
 #ifndef CHACHA20_CPP_mrdcvlsc
 #define CHACHA20_CPP_mrdcvlsc
+#include "extended-precision-integers/include/epi/epi.hpp"
 #include <iostream>
 
 #ifdef _MAKE_LIB
@@ -206,17 +207,21 @@ namespace poly1305 {
         memcpy(unclamped_r,key,HALF_KEY_BYTES);
         clamp(unclamped_r);
         
-        uint320 r(unclamped_r,HALF_KEY_BYTES),
-                s(key+HALF_KEY_BYTES,HALF_KEY_BYTES),
-                a(0),
-                p(0,0,0x3, 0xffffffffffffffff, 0xfffffffffffffffb);
+        epi::uint320_t r, s, a, p;
+
+        // uint320 r(unclamped_r,HALF_KEY_BYTES),
+        //         s(key+HALF_KEY_BYTES,HALF_KEY_BYTES),
+        //         a(0),
+        //         p(0,0,0x3, 0xffffffffffffffff, 0xfffffffffffffffb);
 
         size_t blocks = msg_len/HALF_KEY_BYTES;
         size_t remain = msg_len%HALF_KEY_BYTES;
 
         // 16 byte blocks
         for(size_t i=0; i<blocks; ++i) {
-            uint320 n(msg+(i*HALF_KEY_BYTES),HALF_KEY_BYTES);
+
+            epi::uint320_t n;
+            // uint320 n(msg+(i*HALF_KEY_BYTES),HALF_KEY_BYTES);
             n.limbs[2] |= 0x01;
 
             a += n;
