@@ -5,7 +5,7 @@ HEADER_OUT:=build/include
 LIB_OUT:=build/lib
 LIB_OUTNAME:=libchacha20.a
 
-CXXFLAGS:=-std=c++11 -Wall -Wextra
+CXXFLAGS:=-std=c++20 -Wall -Wextra
 USERFLAGS:=-D_MAKE_LIB -D_HIDE_WARNING
 TEST_OPTIMIZATION:=-g -Og
 HEADER_PATHS:=-I./$(HEADER_OUT)
@@ -31,7 +31,7 @@ ifeq ($(OS), Linux)
 	@mkdir $(LIB_OUT)
 	@echo "creating static lib"
 	@echo "compiling ChaCha20..."
-	@$(CXX) -c ChaCha20-Poly1305.cpp $(LIB_OPTIMIZATION) $(USERFLAGS)
+	@$(CXX) $(CXXFLAGS) -c ChaCha20-Poly1305.cpp $(LIB_OPTIMIZATION) $(USERFLAGS)
 	@echo "compiling $(LIB_OUTNAME)..."
 	@ar -r $(LIB_OUTNAME) ChaCha20-Poly1305.o
 	@echo "build done : output -> $(LIB_OUTNAME)"
@@ -45,7 +45,7 @@ else
 	@mkdir "$(LIB_OUT)"
 	@echo "creating static lib"
 	@echo "compiling ChaCha20..."
-	@$(CXX) -c ChaCha20-Poly1305.cpp $(LIB_OPTIMIZATION) $(USERFLAGS)
+	@$(CXX) $(CXXFLAGS) -c ChaCha20-Poly1305.cpp $(LIB_OPTIMIZATION) $(USERFLAGS)
 	@echo "compiling $(LIB_OUTNAME)..."
 	@ar -r $(LIB_OUTNAME) ChaCha20.o
 	@echo "build done : output -> $(LIB_OUTNAME)"
@@ -70,14 +70,14 @@ ifeq ($(OS), Linux)
 	@echo ""
 	@echo "running build test"
 	@cp static-build.cpp  build
-	@$(CXX) build/static-build.cpp -o build/static-build.out -I./$(HEADER_OUT)/ -L./$(LIB_OUT) $(LIBS)
+	@$(CXX) $(CXXFLAGS) build/static-build.cpp -o build/static-build.out -I./$(HEADER_OUT)/ -L./$(LIB_OUT) $(LIBS)
 	@./build/static-build.out
 else
 	@echo "==============================="
 	@echo ""
 	@echo "running build test"
 	@copy static-build.cpp  build
-	@$(CXX) build/static-build.cpp -o build/static-build.exe -I./$(HEADER_OUT)/ -L./$(LIB_OUT) $(LIBS)
+	@$(CXX) $(CXXFLAGS) build/static-build.cpp -o build/static-build.exe -I./$(HEADER_OUT)/ -L./$(LIB_OUT) $(LIBS)
 	@build/static-build.exe
 endif
 

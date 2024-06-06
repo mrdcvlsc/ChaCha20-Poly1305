@@ -238,7 +238,7 @@ namespace poly1305 {
             
             std::cout << std::dec << "n = " << std::hex << n << '\n';
             
-            constexpr epi::uint320_t mask_n("0x10000000000000000000000006b637566");
+            constexpr epi::uint320_t mask_n("0x100000000000000000000000000000000");
             n |= mask_n;
             // n.limbs[2] |= 0x01;
 
