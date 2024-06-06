@@ -1,27 +1,27 @@
-CC := g++
+CXX:=g++
 INSTALL_PREFIX=/usr/local/
 
 HEADER_OUT:=build/include
 LIB_OUT:=build/lib
 LIB_OUTNAME:=libchacha20.a
 
-CXXFLAGS := -std=c++11 -Wall -Wextra
-USERFLAGS := -D_MAKE_LIB -D_HIDE_WARNING
-TEST_OPTIMIZATION := -g -Og
-HEADER_PATHS := -I./$(HEADER_OUT)
-LIB_OPTIMIZATION := -O2
-LIB_PATHS := -L./$(LIB_OUT)
-LIBS := -lchacha20
+CXXFLAGS:=-std=c++11 -Wall -Wextra
+USERFLAGS:=-D_MAKE_LIB -D_HIDE_WARNING
+TEST_OPTIMIZATION:=-g -Og
+HEADER_PATHS:=-I./$(HEADER_OUT)
+LIB_OPTIMIZATION:=-O2
+LIB_PATHS:=-L./$(LIB_OUT)
+LIBS:=-lchacha20
 
-OS := $(shell uname)
+OS:=$(shell uname)
 
 ifeq ($(OS), Linux)
-TEST_OPTIMIZATION += -fsanitize=address
+TEST_OPTIMIZATION+=-fsanitize=address
 endif
 
-SRC := tests
-SRC_FILES := $(wildcard $(SRC)/*.cpp)
-OBJ := $(patsubst $(SRC)/%.cpp,$(SRC)/%.out,$(SRC_FILES))
+SRC:=tests
+SRC_FILES:=$(wildcard $(SRC)/*.cpp)
+OBJ:=$(patsubst $(SRC)/%.cpp,$(SRC)/%.out,$(SRC_FILES))
 
 default:
 ifeq ($(OS), Linux)
@@ -30,12 +30,10 @@ ifeq ($(OS), Linux)
 	@mkdir $(HEADER_OUT)
 	@mkdir $(LIB_OUT)
 	@echo "creating static lib"
-	@echo "compiling uint320..."
-	@$(CC) -c uint320.cpp $(LIB_OPTIMIZATION) $(USERFLAGS)
 	@echo "compiling ChaCha20..."
-	@$(CC) -c ChaCha20-Poly1305.cpp $(LIB_OPTIMIZATION) $(USERFLAGS)
+	@$(CXX) -c ChaCha20-Poly1305.cpp $(LIB_OPTIMIZATION) $(USERFLAGS)
 	@echo "compiling $(LIB_OUTNAME)..."
-	@ar -r $(LIB_OUTNAME) uint320.o ChaCha20-Poly1305.o
+	@ar -r $(LIB_OUTNAME) ChaCha20-Poly1305.o
 	@echo "build done : output -> $(LIB_OUTNAME)"
 	@echo "moving files to build folder"
 	@mv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))$(LIB_OUTNAME) ./$(LIB_OUT)/
@@ -46,12 +44,10 @@ else
 	@mkdir "$(HEADER_OUT)"
 	@mkdir "$(LIB_OUT)"
 	@echo "creating static lib"
-	@echo "compiling uint320..."
-	@$(CC) -c uint320.cpp $(LIB_OPTIMIZATION) $(USERFLAGS)
 	@echo "compiling ChaCha20..."
-	@$(CC) -c ChaCha20-Poly1305.cpp $(LIB_OPTIMIZATION) $(USERFLAGS)
+	@$(CXX) -c ChaCha20-Poly1305.cpp $(LIB_OPTIMIZATION) $(USERFLAGS)
 	@echo "compiling $(LIB_OUTNAME)..."
-	@ar -r $(LIB_OUTNAME) uint320.o ChaCha20.o
+	@ar -r $(LIB_OUTNAME) ChaCha20.o
 	@echo "build done : output -> $(LIB_OUTNAME)"
 	@echo "moving files to build folder"
 	@move "./$(LIB_OUTNAME)" "$(LIB_OUT)"
@@ -74,14 +70,14 @@ ifeq ($(OS), Linux)
 	@echo ""
 	@echo "running build test"
 	@cp static-build.cpp  build
-	@$(CC) build/static-build.cpp -o build/static-build.out -I./$(HEADER_OUT)/ -L./$(LIB_OUT) $(LIBS)
+	@$(CXX) build/static-build.cpp -o build/static-build.out -I./$(HEADER_OUT)/ -L./$(LIB_OUT) $(LIBS)
 	@./build/static-build.out
 else
 	@echo "==============================="
 	@echo ""
 	@echo "running build test"
 	@copy static-build.cpp  build
-	@$(CC) build/static-build.cpp -o build/static-build.exe -I./$(HEADER_OUT)/ -L./$(LIB_OUT) $(LIBS)
+	@$(CXX) build/static-build.cpp -o build/static-build.exe -I./$(HEADER_OUT)/ -L./$(LIB_OUT) $(LIBS)
 	@build/static-build.exe
 endif
 
@@ -93,14 +89,6 @@ static_test: $(OBJ)
 	@./$(SRC)/QuarterRound_test.out
 	@./$(SRC)/BlockFunction_test.out
 	@./$(SRC)/Encryption_test.out
-	@./$(SRC)/constructor.out
-	@./$(SRC)/comparison.out
-	@./$(SRC)/leftshifts.out
-	@./$(SRC)/rightshifts.out
-	@./$(SRC)/addition.out
-	@./$(SRC)/subtraction.out
-	@./$(SRC)/multiplication.out
-	@./$(SRC)/division.out
 	@./$(SRC)/poly1305_mac_test.out
 	@./$(SRC)/poly1305_keygen.out
 	@./$(SRC)/chacha20_aead_enc_dec.out
@@ -134,8 +122,8 @@ static_test: $(OBJ)
 # -------------------------- test program compilation ---------------------------
 
 $(SRC)/%.out: $(SRC)/%.cpp
-	@echo "compiling test program (static build) - compiler : $(CC)"
-	@$(CC) $(CXXFLAGS) $(USERFLAGS) $(HEADER_PATHS) -o $@ $< $(LIB_PATHS) $(LIBS) $(TEST_OPTIMIZATION)
+	@echo "compiling test program (static build) - compiler : $(CXX)"
+	@$(CXX) $(CXXFLAGS) $(USERFLAGS) $(HEADER_PATHS) -o $@ $< $(LIB_PATHS) $(LIBS) $(TEST_OPTIMIZATION)
 
 install:
 ifeq ($(OS), Linux)

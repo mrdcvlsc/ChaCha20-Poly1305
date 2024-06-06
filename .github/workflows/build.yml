@@ -17,19 +17,22 @@ jobs:
     - name: install clang
       run: sudo apt install clang
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+
+    - name: get updated submodules
+      run: git submodule update --init --recursive
     
     - name: build and compile the static library.
-      run: make -f staticlib CC=clang++
+      run: make -f staticlib CXX=clang++
 
     - name: run the tests for the static library.
-      run: make -f staticlib static_test CC=clang++
+      run: make -f staticlib static_test CXX=clang++
 
     - name: clean test executables
       run: make clean
 
     - name: install the static library.
-      run: sudo make -f staticlib install CC=clang++
+      run: sudo make -f staticlib install CXX=clang++
 
     - name: compile the static sample program for the library.
       run: clang++ static-build.cpp -o static-build.out -lchacha20 -fsanitize=address
@@ -48,7 +51,10 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+
+    - name: get updated submodules
+      run: git submodule update --init --recursive
     
     - name: build and compile the static library.
       run: make -f staticlib

@@ -1,8 +1,9 @@
 #ifndef CHACHA20_CPP_mrdcvlsc
 #define CHACHA20_CPP_mrdcvlsc
-#include "extended-precision-integers/include/epi/epi.hpp"
 #include <cstring>
 #include <iostream>
+
+#include "extended-precision-integers/include/epi/epi.hpp"
 
 #ifdef _MAKE_LIB
 #include "ChaCha20-Poly1305.hpp"

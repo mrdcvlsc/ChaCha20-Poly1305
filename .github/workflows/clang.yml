@@ -16,7 +16,10 @@ jobs:
     - name: install clang
       run: sudo apt install clang
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+
+    - name: get updated submodules
+      run: git submodule update --init --recursive
 
     - name: compile and run tests in header mode
-      run: make header_test CC=clang++
+      run: make header_test CXX=clang++
