@@ -66,3 +66,8 @@ else
 	@echo "deleting compiled test programs"
 	del tests\*.out
 endif
+
+style:
+	@echo fixing code format and code style...
+	@clang-format -i -style=file *.hpp *.cpp tests/*.cpp
+	@echo done fixing style format.
