@@ -1,6 +1,9 @@
 #ifndef CHACHA20_CPP_mrdcvlsc
 #define CHACHA20_CPP_mrdcvlsc
+#include <cstring>
 #include <iostream>
+
+#include "extended-precision-integers/include/epi/epi.hpp"
 
 #ifdef _MAKE_LIB
 #include "ChaCha20-Poly1305.hpp"
@@ -206,18 +209,40 @@ namespace poly1305 {
         memcpy(unclamped_r,key,HALF_KEY_BYTES);
         clamp(unclamped_r);
         
-        uint320 r(unclamped_r,HALF_KEY_BYTES),
-                s(key+HALF_KEY_BYTES,HALF_KEY_BYTES),
-                a(0),
-                p(0,0,0x3, 0xffffffffffffffff, 0xfffffffffffffffb);
+        epi::uint320_t r, s, a = 0;
+        constexpr epi::uint320_t p("0x3fffffffffffffffffffffffffffffffb");
+
+        memcpy(&r, unclamped_r, HALF_KEY_BYTES);
+        memcpy(&s, key+HALF_KEY_BYTES, HALF_KEY_BYTES);
+        memcpy(&r, unclamped_r, HALF_KEY_BYTES);
+
+        std::cout << std::dec << "r = " << std::hex << r << '\n';
+        std::cout << std::dec << "s = " << std::hex << s << '\n';
+        std::cout << std::dec << "a = " << std::hex << a << '\n';
+        std::cout << std::dec << "p = " << std::hex << p << '\n';
+
+        // uint320 r(unclamped_r,HALF_KEY_BYTES),
+        //         s(key+HALF_KEY_BYTES,HALF_KEY_BYTES),
+        //         a(0),
+        //         p(0,0,0x3, 0xffffffffffffffff, 0xfffffffffffffffb);
 
         size_t blocks = msg_len/HALF_KEY_BYTES;
         size_t remain = msg_len%HALF_KEY_BYTES;
 
         // 16 byte blocks
         for(size_t i=0; i<blocks; ++i) {
-            uint320 n(msg+(i*HALF_KEY_BYTES),HALF_KEY_BYTES);
-            n.limbs[2] |= 0x01;
+
+            epi::uint320_t n;
+            memcpy(&n, msg+(i*HALF_KEY_BYTES), HALF_KEY_BYTES);
+            // uint320 n(msg+(i*HALF_KEY_BYTES),HALF_KEY_BYTES);
+            
+            std::cout << std::dec << "n = " << std::hex << n << '\n';
+            
+            constexpr epi::uint320_t mask_n("0x100000000000000000000000000000000");
+            n |= mask_n;
+            // n.limbs[2] |= 0x01;
+
+            std::cout << std::dec << "n | " << std::hex << n << '\n';
 
             a += n;
             a = a * r;
@@ -231,7 +256,12 @@ namespace poly1305 {
             memset(last_block+remain+1,0x00,(HALF_KEY_BYTES-remain)-1);
             last_block[remain] = 0x01;
 
-            uint320 n(last_block,HALF_KEY_BYTES);
+            epi::uint320_t n;
+            memcpy(&n, last_block, HALF_KEY_BYTES);
+
+            // uint320 n(last_block,HALF_KEY_BYTES);
+
+            std::cout << std::dec << "n L " << std::hex << n << '\n';
 
             a += n;
             a = a * r;
@@ -240,7 +270,7 @@ namespace poly1305 {
 
         a += s;
 
-        memcpy(output,(unsigned char*)a.limbs,UINT128BYTES);
+        memcpy(output,(unsigned char*) &a, 16);
     }
 
     int verify(const unsigned char *tag1, const unsigned char *tag2) {

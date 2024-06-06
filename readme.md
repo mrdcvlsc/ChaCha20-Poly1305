@@ -3,7 +3,7 @@
 ![build](https://github.com/mrdcvlsc/ChaCha20-Poly1305/actions/workflows/build.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-A from scratch C++ (with slight inline assembly) implementation of ```ChaCha20 & Poly1305``` stream cipher described in [RFC - 8439](https://www.rfc-editor.org/info/rfc8439).
+A from scratch C++ implementation of ```ChaCha20 & Poly1305``` stream cipher described in [RFC - 8439](https://www.rfc-editor.org/info/rfc8439).
 
 **tests:**
 
@@ -17,6 +17,7 @@ All test from RFC-8439 is implemented here and is inside the ```tests``` folder.
 -----
 
 # Environment Requirements
+- std=c++20
 - x86_64 or aarch64 architecture
 - little endian system
 

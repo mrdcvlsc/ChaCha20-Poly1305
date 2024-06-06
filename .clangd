@@ -5,7 +5,7 @@ InlayHints:
   DeducedTypes: Yes
 
 CompileFlags:
-  Add: [-std=c++11, -I"include/epi", -I"benchmark/boost/include", -Wall, -Wextra, -Wpedantic, -Werror]
+  Add: [-std=c++20, -I"include/epi", -I"benchmark/boost/include", -Wall, -Wextra, -Wpedantic, -Werror]
   Compiler: clang++
 
 Diagnostics:

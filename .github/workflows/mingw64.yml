@@ -12,8 +12,13 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+
+    - name: get updated submodules
+      run: git submodule update --init --recursive
+    
     - name: compiler architecture
       run: gcc -dumpmachine
+
     - name: compile and run tests in header mode
       run: make header_test

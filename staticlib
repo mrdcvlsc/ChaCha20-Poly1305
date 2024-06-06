@@ -1,68 +1,73 @@
-CC := g++
+CXX:=g++
 INSTALL_PREFIX=/usr/local/
 
+EPI_HEADER_OUT:=build/include/extended-precision-integers/include/epi
 HEADER_OUT:=build/include
 LIB_OUT:=build/lib
 LIB_OUTNAME:=libchacha20.a
 
-CXXFLAGS := -std=c++11 -Wall -Wextra
-USERFLAGS := -D_MAKE_LIB -D_HIDE_WARNING
-TEST_OPTIMIZATION := -g -Og
-HEADER_PATHS := -I./$(HEADER_OUT)
-LIB_OPTIMIZATION := -O2
-LIB_PATHS := -L./$(LIB_OUT)
-LIBS := -lchacha20
+CXXFLAGS:=-std=c++20 -Wall -Wextra
+USERFLAGS:=-D_MAKE_LIB -D_HIDE_WARNING
+TEST_OPTIMIZATION:=-g -Og
+HEADER_PATHS:=-I./$(HEADER_OUT)
+LIB_OPTIMIZATION:=-O2
+LIB_PATHS:=-L./$(LIB_OUT)
+LIBS:=-lchacha20
 
-OS := $(shell uname)
+OS:=$(shell uname)
 
 ifeq ($(OS), Linux)
-TEST_OPTIMIZATION += -fsanitize=address
+TEST_OPTIMIZATION+=-fsanitize=address
 endif
 
-SRC := tests
-SRC_FILES := $(wildcard $(SRC)/*.cpp)
-OBJ := $(patsubst $(SRC)/%.cpp,$(SRC)/%.out,$(SRC_FILES))
+SRC:=tests
+SRC_FILES:=$(wildcard $(SRC)/*.cpp)
+OBJ:=$(patsubst $(SRC)/%.cpp,$(SRC)/%.out,$(SRC_FILES))
 
 default:
 ifeq ($(OS), Linux)
-	@echo "creating build directory"
-	@mkdir build
-	@mkdir $(HEADER_OUT)
-	@mkdir $(LIB_OUT)
-	@echo "creating static lib"
-	@echo "compiling uint320..."
-	@$(CC) -c uint320.cpp $(LIB_OPTIMIZATION) $(USERFLAGS)
-	@echo "compiling ChaCha20..."
-	@$(CC) -c ChaCha20-Poly1305.cpp $(LIB_OPTIMIZATION) $(USERFLAGS)
-	@echo "compiling $(LIB_OUTNAME)..."
-	@ar -r $(LIB_OUTNAME) uint320.o ChaCha20-Poly1305.o
-	@echo "build done : output -> $(LIB_OUTNAME)"
-	@echo "moving files to build folder"
-	@mv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))$(LIB_OUTNAME) ./$(LIB_OUT)/
-	@cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))ChaCha20-Poly1305.hpp ./$(HEADER_OUT)/
+	echo "creating build directory"
+	mkdir build
+	mkdir build/include
+	mkdir build/include/extended-precision-integers
+	mkdir build/include/extended-precision-integers/include
+	mkdir build/include/extended-precision-integers/include/epi
+	mkdir $(LIB_OUT)
+	echo "creating static lib"
+	echo "compiling ChaCha20..."
+	$(CXX) $(CXXFLAGS) -c ChaCha20-Poly1305.cpp $(LIB_OPTIMIZATION) $(USERFLAGS)
+	echo "compiling $(LIB_OUTNAME)..."
+	ar -r $(LIB_OUTNAME) ChaCha20-Poly1305.o
+	echo "build done : output -> $(LIB_OUTNAME)"
+	echo "moving files to build folder"
+	mv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))$(LIB_OUTNAME) ./$(LIB_OUT)/
+	cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))ChaCha20-Poly1305.hpp ./$(HEADER_OUT)/
+	cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))extended-precision-integers/include/epi/epi.hpp ./$(EPI_HEADER_OUT)/
 else
-	@echo "creating build directory"
-	@mkdir build
-	@mkdir "$(HEADER_OUT)"
-	@mkdir "$(LIB_OUT)"
-	@echo "creating static lib"
-	@echo "compiling uint320..."
-	@$(CC) -c uint320.cpp $(LIB_OPTIMIZATION) $(USERFLAGS)
-	@echo "compiling ChaCha20..."
-	@$(CC) -c ChaCha20-Poly1305.cpp $(LIB_OPTIMIZATION) $(USERFLAGS)
-	@echo "compiling $(LIB_OUTNAME)..."
-	@ar -r $(LIB_OUTNAME) uint320.o ChaCha20.o
-	@echo "build done : output -> $(LIB_OUTNAME)"
-	@echo "moving files to build folder"
-	@move "./$(LIB_OUTNAME)" "$(LIB_OUT)"
-	@copy "./ChaCha20-Poly1305.hpp" "$(HEADER_OUT)"
+	echo "creating build directory"
+	mkdir build
+	mkdir build/include
+	mkdir build/include/extended-precision-integers
+	mkdir build/include/extended-precision-integers/include
+	mkdir build/include/extended-precision-integers/include/epi
+	mkdir "$(LIB_OUT)"
+	echo "creating static lib"
+	echo "compiling ChaCha20..."
+	$(CXX) $(CXXFLAGS) -c ChaCha20-Poly1305.cpp $(LIB_OPTIMIZATION) $(USERFLAGS)
+	echo "compiling $(LIB_OUTNAME)..."
+	ar -r $(LIB_OUTNAME) ChaCha20.o
+	echo "build done : output -> $(LIB_OUTNAME)"
+	echo "moving files to build folder"
+	move "./$(LIB_OUTNAME)" "$(LIB_OUT)"
+	copy "./ChaCha20-Poly1305.hpp" "$(HEADER_OUT)"
+	copy "./extended-precision-integers/include/epi/epi.hpp" "$(EPI_HEADER_OUT)"
 endif
 
 cleanup:
 ifeq ($(OS), Linux)
-	@echo "removing objects..."
-	@rm -rf build
-	@rm *.o *.out
+	echo "removing objects..."
+	rm -rf build
+	rm *.o *.out
 else
 	rmdir /S build
 	del *.o *.out *.exe
@@ -70,97 +75,100 @@ endif
 
 build_test:
 ifeq ($(OS), Linux)
-	@echo "==============================="
-	@echo ""
-	@echo "running build test"
-	@cp static-build.cpp  build
-	@$(CC) build/static-build.cpp -o build/static-build.out -I./$(HEADER_OUT)/ -L./$(LIB_OUT) $(LIBS)
-	@./build/static-build.out
+	echo "==============================="
+	echo ""
+	echo "running build test"
+	cp static-build.cpp  build
+	$(CXX) $(CXXFLAGS) build/static-build.cpp -o build/static-build.out -I./$(HEADER_OUT)/ -L./$(LIB_OUT) $(LIBS)
+	./build/static-build.out
 else
-	@echo "==============================="
-	@echo ""
-	@echo "running build test"
-	@copy static-build.cpp  build
-	@$(CC) build/static-build.cpp -o build/static-build.exe -I./$(HEADER_OUT)/ -L./$(LIB_OUT) $(LIBS)
-	@build/static-build.exe
+	echo "==============================="
+	echo ""
+	echo "running build test"
+	copy static-build.cpp  build
+	$(CXX) $(CXXFLAGS) build/static-build.cpp -o build/static-build.exe -I./$(HEADER_OUT)/ -L./$(LIB_OUT) $(LIBS)
+	build/static-build.exe
 endif
 
 # -------------------------- run test programs ---------------------------
 
 static_test: $(OBJ)
-	@echo "----------------------------------------------------"
-	@echo "Running Initial Tests..."
-	@./$(SRC)/QuarterRound_test.out
-	@./$(SRC)/BlockFunction_test.out
-	@./$(SRC)/Encryption_test.out
-	@./$(SRC)/constructor.out
-	@./$(SRC)/comparison.out
-	@./$(SRC)/leftshifts.out
-	@./$(SRC)/rightshifts.out
-	@./$(SRC)/addition.out
-	@./$(SRC)/subtraction.out
-	@./$(SRC)/multiplication.out
-	@./$(SRC)/division.out
-	@./$(SRC)/poly1305_mac_test.out
-	@./$(SRC)/poly1305_keygen.out
-	@./$(SRC)/chacha20_aead_enc_dec.out
-	@echo "----------------------------------------------------"
-	@echo "Running Additional Tests..."
-	@./$(SRC)/BlockFunction_test1.out
-	@./$(SRC)/BlockFunction_test2.out
-	@./$(SRC)/BlockFunction_test3.out
-	@./$(SRC)/BlockFunction_test4.out
-	@./$(SRC)/BlockFunction_test5.out
-	@./$(SRC)/ChaCha20Encryption_t1.out
-	@./$(SRC)/ChaCha20Encryption_t2.out
-	@./$(SRC)/ChaCha20Encryption_t3.out
-	@./$(SRC)/Poly1305_mac_t1.out
-	@./$(SRC)/Poly1305_mac_t2.out
-	@./$(SRC)/Poly1305_mac_t3.out
-	@./$(SRC)/Poly1305_mac_t4.out
-	@./$(SRC)/Poly1305_mac_t5.out
-	@./$(SRC)/Poly1305_mac_t6.out
-	@./$(SRC)/Poly1305_mac_t7.out
-	@./$(SRC)/Poly1305_mac_t8.out
-	@./$(SRC)/Poly1305_mac_t9.out
-	@./$(SRC)/Poly1305_mac_t10.out
-	@./$(SRC)/Poly1305_mac_t11.out
-	@./$(SRC)/Poly1305_keygen_t1.out
-	@./$(SRC)/Poly1305_keygen_t2.out
-	@./$(SRC)/Poly1305_keygen_t3.out
-	@./$(SRC)/ChaCha20Poly1305_decrypt.out
-	@./$(SRC)/ChaCha20Poly1305_decrypt_nonceV.out
+	echo "----------------------------------------------------"
+	echo "Running Initial Tests..."
+	./$(SRC)/QuarterRound_test.out
+	./$(SRC)/BlockFunction_test.out
+	./$(SRC)/Encryption_test.out
+	./$(SRC)/poly1305_mac_test.out
+	./$(SRC)/poly1305_keygen.out
+	./$(SRC)/chacha20_aead_enc_dec.out
+	echo "----------------------------------------------------"
+	echo "Running Additional Tests..."
+	./$(SRC)/BlockFunction_test1.out
+	./$(SRC)/BlockFunction_test2.out
+	./$(SRC)/BlockFunction_test3.out
+	./$(SRC)/BlockFunction_test4.out
+	./$(SRC)/BlockFunction_test5.out
+	./$(SRC)/ChaCha20Encryption_t1.out
+	./$(SRC)/ChaCha20Encryption_t2.out
+	./$(SRC)/ChaCha20Encryption_t3.out
+	./$(SRC)/Poly1305_mac_t1.out
+	./$(SRC)/Poly1305_mac_t2.out
+	./$(SRC)/Poly1305_mac_t3.out
+	./$(SRC)/Poly1305_mac_t4.out
+	./$(SRC)/Poly1305_mac_t5.out
+	./$(SRC)/Poly1305_mac_t6.out
+	./$(SRC)/Poly1305_mac_t7.out
+	./$(SRC)/Poly1305_mac_t8.out
+	./$(SRC)/Poly1305_mac_t9.out
+	./$(SRC)/Poly1305_mac_t10.out
+	./$(SRC)/Poly1305_mac_t11.out
+	./$(SRC)/Poly1305_keygen_t1.out
+	./$(SRC)/Poly1305_keygen_t2.out
+	./$(SRC)/Poly1305_keygen_t3.out
+	./$(SRC)/ChaCha20Poly1305_decrypt.out
+	./$(SRC)/ChaCha20Poly1305_decrypt_nonceV.out
 
 # -------------------------- test program compilation ---------------------------
 
 $(SRC)/%.out: $(SRC)/%.cpp
-	@echo "compiling test program (static build) - compiler : $(CC)"
-	@$(CC) $(CXXFLAGS) $(USERFLAGS) $(HEADER_PATHS) -o $@ $< $(LIB_PATHS) $(LIBS) $(TEST_OPTIMIZATION)
+	echo "compiling test program (static build) - compiler : $(CXX)"
+	$(CXX) $(CXXFLAGS) $(USERFLAGS) $(HEADER_PATHS) -o $@ $< $(LIB_PATHS) $(LIBS) $(TEST_OPTIMIZATION)
 
 install:
 ifeq ($(OS), Linux)
-	@cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))$(LIB_OUT)/$(LIB_OUTNAME) $(INSTALL_PREFIX)lib
-	@cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))$(HEADER_OUT)/ChaCha20-Poly1305.hpp $(INSTALL_PREFIX)include
-	@echo "$(LIB_OUTNAME) now installed to $(INSTALL_PREFIX)lib"
-	@echo "ChaCha20-Poly1305.hpp now installed to $(INSTALL_PREFIX)include"
+	cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))$(LIB_OUT)/$(LIB_OUTNAME) $(INSTALL_PREFIX)lib
+	cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))$(HEADER_OUT)/ChaCha20-Poly1305.hpp $(INSTALL_PREFIX)include
+	mkdir "$(INSTALL_PREFIX)include/extended-precision-integers"
+	mkdir "$(INSTALL_PREFIX)include/extended-precision-integers/include"
+	mkdir "$(INSTALL_PREFIX)include/extended-precision-integers/include/epi"
+	cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))$(HEADER_OUT)/extended-precision-integers/include/epi/epi.hpp $(INSTALL_PREFIX)include/extended-precision-integers/include/epi
+	echo "$(LIB_OUTNAME) now installed to $(INSTALL_PREFIX)lib"
+	echo "ChaCha20-Poly1305.hpp now installed to $(INSTALL_PREFIX)include"
+	echo "epi.hpp now installed to $(INSTALL_PREFIX)include/extended-precision-integers/include/epi"
 else
-	@echo .
-	@echo For Mingw64 in windows, please specify your mingw64 folder path with the INSTALL_PREFIX
-	@echo eample:
-	@echo .
-	@echo mingw32-make -f staticlib install INSTALL_PREFIX=PATH\mingw64
-	@echo .
+	echo .
+	echo For Mingw64 in windows, please specify your mingw64 folder path with the INSTALL_PREFIX
+	echo eample:
+	echo .
+	echo mingw32-make -f staticlib install INSTALL_PREFIX=PATH\mingw64
+	echo .
 	copy build\lib\$(LIB_OUTNAME) "$(INSTALL_PREFIX)\lib"
-	copy build\include\ChaCha20-Poly1305.hpp "$(INSTALL_PREFIX)\include
-	@echo install success
+	copy build\include\ChaCha20-Poly1305.hpp "$(INSTALL_PREFIX)\include"
+	mkdir "$(INSTALL_PREFIX)\include\extended-precision-integers"
+	mkdir "$(INSTALL_PREFIX)\include\extended-precision-integers\include"
+	mkdir "$(INSTALL_PREFIX)\include\extended-precision-integers\include\epi"
+	copy build\include\extended-precision-integers\include\epi\epi.hpp "$(INSTALL_PREFIX)\include\extended-precision-integers\include\epi"
+	echo install success
 endif
 
 uninstall:
 ifeq ($(OS), Linux)
-	@rm $(INSTALL_PREFIX)lib/$(LIB_OUTNAME)
-	@rm $(INSTALL_PREFIX)include/ChaCha20-Poly1305.hpp
+	rm $(INSTALL_PREFIX)lib/$(LIB_OUTNAME)
+	rm $(INSTALL_PREFIX)include/ChaCha20-Poly1305.hpp
+	rm $(INSTALL_PREFIX)include/extended-precision-integers/include/epi/epi.hpp
 else
 	del "$(INSTALL_PREFIX)\lib\$(LIB_OUTNAME)"
 	del "$(INSTALL_PREFIX)\include\ChaCha20-Poly1305.hpp"
+	del "$(INSTALL_PREFIX)\include\extended-precision-integers\include\epi\epi.hpp"
 	echo uninstall success
 endif

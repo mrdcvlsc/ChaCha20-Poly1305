@@ -23,6 +23,9 @@ jobs:
     
     steps:
     - uses: actions/checkout@v3
+
+    - name: get updated submodules
+      run: git submodule update --init --recursive
     
     - name: Configure test executables
       run: cmake -S tests -B tests ${{matrix.platform.flags}}
@@ -31,4 +34,4 @@ jobs:
       run: cmake --build tests --config Debug
 
     - name: Run ${{matrix.platform.bin}} test executables
-      run: ctest --test-dir tests
+      run: ctest --test-dir tests --build-config Debug --output-on-failure

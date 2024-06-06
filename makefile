@@ -1,16 +1,16 @@
-CC := g++
-TESTFLAGS := -g -Og -D_HIDE_WARNING
-CXXFLAGS := -std=c++11 -Wall -Wextra
+CXX:=g++
+TESTFLAGS:=-g -Og -D_HIDE_WARNING
+CXXFLAGS:=-std=c++20 -Wall -Wextra
 
-OS := $(shell uname)
+OS:=$(shell uname)
 
 ifeq ($(OS), Linux)
-TESTFLAGS += -fsanitize=address
+TESTFLAGS+=-fsanitize=address
 endif
 
-SRC := tests
-SRC_FILES := $(wildcard $(SRC)/*.cpp)
-OBJ := $(patsubst $(SRC)/%.cpp,$(SRC)/%.out,$(SRC_FILES))
+SRC:=tests
+SRC_FILES:=$(wildcard $(SRC)/*.cpp)
+OBJ:=$(patsubst $(SRC)/%.cpp,$(SRC)/%.out,$(SRC_FILES))
 
 # -------------------------- run test programs ---------------------------
 
@@ -21,14 +21,6 @@ header_test: $(OBJ)
 	@./$(SRC)/QuarterRound_test.out
 	@./$(SRC)/BlockFunction_test.out
 	@./$(SRC)/Encryption_test.out
-	@./$(SRC)/constructor.out
-	@./$(SRC)/comparison.out
-	@./$(SRC)/leftshifts.out
-	@./$(SRC)/rightshifts.out
-	@./$(SRC)/addition.out
-	@./$(SRC)/subtraction.out
-	@./$(SRC)/multiplication.out
-	@./$(SRC)/division.out
 	@./$(SRC)/poly1305_mac_test.out
 	@./$(SRC)/poly1305_keygen.out
 	@./$(SRC)/chacha20_aead_enc_dec.out
@@ -62,9 +54,9 @@ header_test: $(OBJ)
 # -------------------------- test program compilation ---------------------------
 
 $(SRC)/%.out: $(SRC)/%.cpp
-# @echo "compiling test program - compiler : $(CC)"
+# @echo "compiling test program - compiler : $(CXX)"
 # @echo "flags: $<"
-	$(CC) $(TESTFLAGS) $(CXXFLAGS) -o $@ $<
+	$(CXX) $(TESTFLAGS) $(CXXFLAGS) -o $@ $<
 
 clean:
 ifeq ($(OS), Linux)

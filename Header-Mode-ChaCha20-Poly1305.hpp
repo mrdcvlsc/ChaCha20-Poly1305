@@ -4,8 +4,6 @@
 #include <cstdint>
 
 #include "ChaCha20-Poly1305.hpp"
-
-#include "uint320.cpp"
 #include "ChaCha20-Poly1305.cpp"
 
 #endif
