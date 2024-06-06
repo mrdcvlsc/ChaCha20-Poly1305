@@ -16,6 +16,16 @@ All test from RFC-8439 is implemented here and is inside the ```tests``` folder.
 
 -----
 
+# Clone the repository and download the submodule
+
+```bash
+git clone https://github.com/mrdcvlsc/ChaCha20-Poly1305.git
+cd ChaCha20-Poly1305
+git submodule update --init --recursive
+```
+
+-----
+
 # Environment Requirements
 - std=c++20
 - x86_64 or aarch64 architecture
@@ -27,7 +37,9 @@ If your system does not have these requirements, it might produce wrong results 
 
 # Main Functions
 
-Note: one **byte** is equivalent to one ```unsigned char```, If we have an array with a size of **5 bytes**, that is an array of type ```unsigned char``` with **5 elements**.
+**Note:** one **byte** is equivalent to one ```unsigned char```, If we have an array with a size of **5 bytes**, that is an array of type ```unsigned char``` with **5 elements**.
+
+The sizes of the parameter arrays are mentioned in the documentation comments in the example code below:
 
 ```c++
 /**Encryption.
@@ -48,7 +60,7 @@ Note: one **byte** is equivalent to one ```unsigned char```, If we have an array
  * 
  * @param key a 256-bit key or 32 byte unsigned char array.
  * 
- * @param nonce number only once.
+ * @param nonce number only/use once, a 12 byte array with random values
 */
 ChaCha20_Poly1305::aead_encrypt(
     unsigned char       *outputCipher,
@@ -79,7 +91,7 @@ ChaCha20_Poly1305::aead_encrypt(
  * 
  * @param key a 256-bit key or 32 byte unsigned char array.
  * 
- * @param nonce number only once.
+ * @param nonce number only/use once, a 12 byte array with random values
 */
 ChaCha20_Poly1305::aead_decrypt(
     unsigned char       *outputText,
