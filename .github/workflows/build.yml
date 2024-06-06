@@ -13,10 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-
-    - name: install clang
-      run: sudo apt install clang
-
+      
     - uses: actions/checkout@v3
 
     - name: get updated submodules
