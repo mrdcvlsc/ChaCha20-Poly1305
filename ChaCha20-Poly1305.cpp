@@ -319,12 +319,36 @@ namespace ChaCha20_Poly1305 {
         unsigned char *mac_data = new unsigned char[mac_len];
 
         size_t curr_pos = 0;
-        memcpy(mac_data, AAD, AAD_len);
-        memset(mac_data + (curr_pos += AAD_len), 0x00, padding1);
-        memcpy(mac_data + (curr_pos += padding1), outputCipher, textLen);
-        memset(mac_data + (curr_pos += textLen), 0x00, padding2);
-        memcpy(mac_data + (curr_pos += padding2), &AAD_len, 8);
-        memcpy(mac_data + (curr_pos += 8), &textLen, 8);
+
+        // Copy AAD
+        memcpy(mac_data + curr_pos, AAD, AAD_len);
+        curr_pos += AAD_len;
+
+        // Add padding after AAD
+        if (padding1 > 0) {
+        memset(mac_data + curr_pos, 0x00, padding1);
+        curr_pos += padding1;
+        }
+
+        // Copy ciphertext
+        memcpy(mac_data + curr_pos, outputCipher, textLen);
+        curr_pos += textLen;
+
+        // Add padding after ciphertext
+        if (padding2 > 0) {
+        memset(mac_data + curr_pos, 0x00, padding2);
+        curr_pos += padding2;
+        }
+
+        // Copy AAD_len as a 64-bit little-endian integer
+        uint64_t aad_len_le = (uint64_t)AAD_len;
+        memcpy(mac_data + curr_pos, &aad_len_le, 8);
+        curr_pos += 8;
+
+        // Copy textLen as a 64-bit little-endian integer
+        uint64_t text_len_le = (uint64_t)textLen;
+        memcpy(mac_data + curr_pos, &text_len_le, 8);
+        curr_pos += 8;
 
         poly1305::mac(outputTag, poly1305_key, mac_data, mac_len);
 
